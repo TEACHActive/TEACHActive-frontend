@@ -1,0 +1,25 @@
+{
+  "sessions": [
+    {
+      "date": 1605801860916,
+      "name": "Utilitarianism",
+      "class_name": "HCI 589 - Ethics",
+      "data": {
+        "metrics": [
+          {
+            "name": "hand_raises",
+            "icon": "",
+            "color": "",
+            "metric": 1,
+            "unit": "min",
+            "trend": 0,
+            "trend_metric": 1,
+            "trend_metric_unit": "",
+            "help_text": "",
+            "has_alert": true
+          }
+        ]
+      }
+    }
+  ]
+}
