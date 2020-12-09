@@ -1,12 +1,11 @@
 import React from "react";
-import { MetricLayout } from "./components/MetricLayout/metricLayout";
-// import MetricDisplay from "./components/MetricDisplay/metricDisplay";
 
 import {
   UploadOutlined,
   UserOutlined,
   VideoCameraOutlined,
 } from "@ant-design/icons";
+import SessionPage from "./pages/session/sessionPage";
 
 export class ComponentRoute {
   name: string;
@@ -15,6 +14,7 @@ export class ComponentRoute {
   icon: any;
   link: string;
   inSidebar: boolean;
+  exact: boolean;
 
   constructor(data: any) {
     this.name = data.name;
@@ -23,29 +23,28 @@ export class ComponentRoute {
     this.icon = data.icon;
     this.link = data.link;
     this.inSidebar = data.inSidebar;
+    this.exact = data.exact;
   }
 }
 
 export const routes: ComponentRoute[] = [
   {
-    name: "Session",
+    name: "Base",
     path: "/",
     component: <div>content</div>,
     icon: <UserOutlined />,
-    link: "/session",
+    link: "/",
     inSidebar: false,
+    exact: true,
   },
   {
     name: "Session",
-    path: "/session",
-    component: (
-      <div style={{ display: "flex" }}>
-        <MetricLayout />
-      </div>
-    ),
+    path: "/session/:id",
+    component: <SessionPage />,
     icon: <UserOutlined />,
-    link: "/session",
+    link: "/session/1",
     inSidebar: true,
+    exact: false,
   },
   {
     name: "Progress",
@@ -54,6 +53,7 @@ export const routes: ComponentRoute[] = [
     icon: <UploadOutlined />,
     link: "/progress",
     inSidebar: true,
+    exact: true,
   },
   {
     name: "C",
@@ -62,5 +62,6 @@ export const routes: ComponentRoute[] = [
     icon: <VideoCameraOutlined />,
     link: "/c",
     inSidebar: true,
+    exact: true,
   },
 ];

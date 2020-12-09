@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Modal, Card } from "antd";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import COLOR from "../../constants/colors";
 import { TREND } from "../../constants/constants";
@@ -29,19 +30,20 @@ export default function MetricDisplay(props: IMetricDisplayProps) {
     <React.Fragment>
       <Card
         style={{
-          width: "15em",
-          height: "12em",
+          width: "12em",
+          height: "10em",
           display: "flex",
-          flexDirection: "column",
+          flexDirection: "row",
+          justifyContent: "center",
         }}
       >
         <div className="MetricDisplay--top">
           <div
             style={{
               position: "absolute",
-              backgroundColor: "yellow",
-              width: "5em",
-              height: "5em",
+              backgroundColor: props.color,
+              width: "4em",
+              height: "4em",
               left: "10px",
               top: "-20%",
             }}
@@ -50,7 +52,12 @@ export default function MetricDisplay(props: IMetricDisplayProps) {
           </div>
           <p style={{ float: "right" }}>{props.name}</p>
         </div>
-        <div className="MetricDisplay--bottom"></div>
+        <div className="MetricDisplay--bottom">
+          <div style={{ display: "flex", margin: "1em" }}>
+            <h3>{props.metric}</h3>
+            <FontAwesomeIcon icon={props.trend ? "arrow-down" : "arrow-up"} />
+          </div>
+        </div>
         {/* <div>
           <div
             style={{

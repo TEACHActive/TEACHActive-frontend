@@ -1,6 +1,7 @@
 {
   "sessions": [
     {
+      "id": 1,
       "date": 1605801860916,
       "name": "Utilitarianism",
       "class_name": "HCI 589 - Ethics",
@@ -9,8 +10,102 @@
           {
             "name": "hand_raises",
             "icon": "",
-            "color": "",
+            "color": "yellow",
             "metric": 1,
+            "unit": "min",
+            "trend": 1,
+            "trend_metric": 1,
+            "trend_metric_unit": "",
+            "help_text": "",
+            "has_alert": true
+          },
+          {
+            "name": "student_speech",
+            "icon": "",
+            "color": "green",
+            "metric": 1,
+            "unit": "min",
+            "trend": 0,
+            "trend_metric": 1,
+            "trend_metric_unit": "",
+            "help_text": "",
+            "has_alert": true
+          },
+          {
+            "name": "Instructor_Speech",
+            "icon": "",
+            "color": "pink",
+            "metric": 1,
+            "unit": "min",
+            "trend": 0,
+            "trend_metric": 1,
+            "trend_metric_unit": "",
+            "help_text": "",
+            "has_alert": true
+          },
+          {
+            "name": "Class_Performance",
+            "icon": "",
+            "color": "blue",
+            "metric": 1,
+            "unit": "min",
+            "trend": 0,
+            "trend_metric": 1,
+            "trend_metric_unit": "",
+            "help_text": "",
+            "has_alert": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "date": 1607098145036,
+      "name": "Utilitarianism Cont.",
+      "class_name": "HCI 589 - Ethics",
+      "data": {
+        "metrics": [
+          {
+            "name": "hand_raises",
+            "icon": "",
+            "color": "yellow",
+            "metric": 2,
+            "unit": "min",
+            "trend": 0,
+            "trend_metric": 1,
+            "trend_metric_unit": "",
+            "help_text": "",
+            "has_alert": true
+          },
+          {
+            "name": "student_speech",
+            "icon": "",
+            "color": "green",
+            "metric": 5,
+            "unit": "min",
+            "trend": 0,
+            "trend_metric": 1,
+            "trend_metric_unit": "",
+            "help_text": "",
+            "has_alert": true
+          },
+          {
+            "name": "Instructor_Speech",
+            "icon": "",
+            "color": "pink",
+            "metric": 0,
+            "unit": "min",
+            "trend": 1,
+            "trend_metric": 1,
+            "trend_metric_unit": "",
+            "help_text": "",
+            "has_alert": true
+          },
+          {
+            "name": "Class_Performance",
+            "icon": "",
+            "color": "blue",
+            "metric": 10,
             "unit": "min",
             "trend": 0,
             "trend_metric": 1,
