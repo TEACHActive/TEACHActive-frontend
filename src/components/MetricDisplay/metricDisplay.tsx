@@ -1,9 +1,12 @@
 import React, { useState } from "react";
-import { Modal, Card } from "antd";
+import { Modal, Card, Button } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import COLOR from "../../constants/colors";
 import { TREND } from "../../constants/constants";
+
+import "./metricDisplay.css";
+import { hexToRgb } from "../../util/util";
 
 type ColorKeys = keyof typeof COLOR;
 type ColorValues = typeof COLOR[ColorKeys];
@@ -26,6 +29,8 @@ export interface IMetricDisplayProps {
 
 export default function MetricDisplay(props: IMetricDisplayProps) {
   const [helpVisible, setHelpVisible] = useState(false);
+  const darkRGB = hexToRgb(props.color.dark);
+  const lightRGB = hexToRgb(props.color.light);
   return (
     <React.Fragment>
       <Card
@@ -39,25 +44,59 @@ export default function MetricDisplay(props: IMetricDisplayProps) {
       >
         <div className="MetricDisplay--top">
           <div
+            className="colorBlock"
             style={{
-              position: "absolute",
-              backgroundColor: props.color,
-              width: "4em",
-              height: "4em",
-              left: "10px",
-              top: "-20%",
+              background: `linear-gradient(\
+                45deg,\
+                rgba(${darkRGB?.r}, ${darkRGB?.g}, ${darkRGB?.b}, 1) 0%,\
+                rgba(${lightRGB?.r}, ${lightRGB?.g}, ${lightRGB?.b}, 1) 100%\
+              )`,
             }}
           >
             {props.icon}
           </div>
-          <p style={{ float: "right" }}>{props.name}</p>
+          <p
+            style={{
+              position: "absolute",
+              right: "15px",
+              top: "5px",
+              width: "40%",
+            }}
+          >
+            {props.name}
+          </p>
         </div>
         <div className="MetricDisplay--bottom">
-          <div style={{ display: "flex", margin: "1em" }}>
-            <h3>{props.metric}</h3>
-            <FontAwesomeIcon icon={props.trend ? "arrow-down" : "arrow-up"} />
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-around",
+              alignItems: "center",
+              margin: "1em",
+              marginTop: "3em",
+              width: "100%",
+            }}
+          >
+            <h1>{props.metric}</h1>
+            <FontAwesomeIcon
+              style={{ color: "blue" }}
+              size="2x"
+              icon={props.trend ? "arrow-down" : "arrow-up"}
+            />
           </div>
         </div>
+        <Button
+          style={{
+            borderRadius: "50%",
+            position: "absolute",
+            top: "-10px",
+            right: "-10px",
+          }}
+          size="small"
+          onClick={() => setHelpVisible(true)}
+        >
+          ?
+        </Button>
         {/* <div>
           <div
             style={{
@@ -68,7 +107,7 @@ export default function MetricDisplay(props: IMetricDisplayProps) {
           />
         </div>
         <div></div>
-        <Button onClick={() => setHelpVisible(true)}>?</Button> */}
+         */}
       </Card>
 
       {helpVisible && (

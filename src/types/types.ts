@@ -1,4 +1,5 @@
 import moment from "moment";
+import COLOR from "../constants/colors";
 
 export class Session {
   id: number;
@@ -18,10 +19,16 @@ export class Session {
   }
 }
 
+type ColorKeys = keyof typeof COLOR;
+type ColorValues = typeof COLOR[ColorKeys];
+
 export class SessionMetric {
   name: string;
   icon: string;
-  color: string;
+  color: {
+    dark: string;
+    light: string;
+  };
   metric: number;
   unit: string;
   trend: number; //Oneof(0,1)
@@ -33,6 +40,9 @@ export class SessionMetric {
   constructor(data: any) {
     this.name = data.name;
     this.icon = data.icon;
+    if (data.color) {
+      this.color = { light: data.color.light, dark: data.color.dark };
+    }
     this.color = data.color;
     this.metric = data.metric;
     this.unit = data.unit;

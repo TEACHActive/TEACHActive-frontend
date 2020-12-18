@@ -24,6 +24,7 @@ library.add(faEdit, faArrowUp, faArrowDown);
 
 function App(props: any) {
   let history = useHistory();
+
   return (
     <div className="App">
       <Layout className="layout">
