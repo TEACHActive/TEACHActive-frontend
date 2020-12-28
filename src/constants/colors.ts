@@ -1,5 +1,12 @@
 const COLOR = {
-  RED: "#D81B60",
+  RED: {
+    light: "#D81B60",
+    dark: "#D81B60",
+  },
+  YELLOW: {
+    light: "#D81B60",
+    dark: "#D81B60",
+  },
 };
 
 export default COLOR;

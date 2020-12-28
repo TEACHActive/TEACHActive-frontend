@@ -8,9 +8,12 @@
       "data": {
         "metrics": [
           {
-            "name": "hand_raises",
+            "name": "Hand Raises",
             "icon": "",
-            "color": "yellow",
+            "color": {
+              "light": "#FFC107",
+              "dark": "#E6AE05"
+            },
             "metric": 1,
             "unit": "min",
             "trend": 1,
@@ -20,9 +23,12 @@
             "has_alert": true
           },
           {
-            "name": "student_speech",
+            "name": "Student Speech",
             "icon": "",
-            "color": "green",
+            "color": {
+              "light": "#004D40",
+              "dark": "#01332A"
+            },
             "metric": 1,
             "unit": "min",
             "trend": 0,
@@ -32,9 +38,12 @@
             "has_alert": true
           },
           {
-            "name": "Instructor_Speech",
+            "name": "Instructor Speech",
             "icon": "",
-            "color": "pink",
+            "color": {
+              "light": "#D81B60",
+              "dark": "#CB1859"
+            },
             "metric": 1,
             "unit": "min",
             "trend": 0,
@@ -44,9 +53,12 @@
             "has_alert": true
           },
           {
-            "name": "Class_Performance",
+            "name": "Class Performance",
             "icon": "",
-            "color": "blue",
+            "color": {
+              "light": "#1E88E5",
+              "dark": "#1E7FD4"
+            },
             "metric": 1,
             "unit": "min",
             "trend": 0,
@@ -66,9 +78,12 @@
       "data": {
         "metrics": [
           {
-            "name": "hand_raises",
+            "name": "Hand Raises",
             "icon": "",
-            "color": "yellow",
+            "color": {
+              "light": "",
+              "dark": ""
+            },
             "metric": 2,
             "unit": "min",
             "trend": 0,
@@ -78,9 +93,12 @@
             "has_alert": true
           },
           {
-            "name": "student_speech",
+            "name": "Student Speech",
             "icon": "",
-            "color": "green",
+            "color": {
+              "light": "",
+              "dark": ""
+            },
             "metric": 5,
             "unit": "min",
             "trend": 0,
@@ -90,9 +108,12 @@
             "has_alert": true
           },
           {
-            "name": "Instructor_Speech",
+            "name": "Instructor Speech",
             "icon": "",
-            "color": "pink",
+            "color": {
+              "light": "",
+              "dark": ""
+            },
             "metric": 0,
             "unit": "min",
             "trend": 1,
@@ -102,9 +123,12 @@
             "has_alert": true
           },
           {
-            "name": "Class_Performance",
+            "name": "Class Performance",
             "icon": "",
-            "color": "blue",
+            "color": {
+              "light": "",
+              "dark": ""
+            },
             "metric": 10,
             "unit": "min",
             "trend": 0,
