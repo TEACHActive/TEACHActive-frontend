@@ -5,6 +5,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import COLOR from "../../constants/colors";
 import { TREND } from "../../constants/constants";
 
+import "./metricDisplay.css";
+
 type ColorKeys = keyof typeof COLOR;
 type ColorValues = typeof COLOR[ColorKeys];
 
@@ -50,12 +52,33 @@ export default function MetricDisplay(props: IMetricDisplayProps) {
           >
             {props.icon}
           </div>
-          <p style={{ float: "right" }}>{props.name}</p>
+          <p
+            style={{
+              position: "absolute",
+              right: "10px",
+              top: "5%",
+              maxWidth: "100px",
+            }}
+          >
+            {props.name}
+          </p>
         </div>
         <div className="MetricDisplay--bottom">
-          <div style={{ display: "flex", margin: "1em" }}>
+          <div
+            style={{
+              display: "flex",
+              margin: "1em",
+              marginTop: "3em",
+              justifyContent: "space-around",
+              alignItems: "center",
+            }}
+          >
             <h3>{props.metric}</h3>
-            <FontAwesomeIcon icon={props.trend ? "arrow-down" : "arrow-up"} />
+            <FontAwesomeIcon
+              size="2x"
+              color="lightblue"
+              icon={props.trend ? "arrow-down" : "arrow-up"}
+            />
           </div>
         </div>
         {/* <div>
