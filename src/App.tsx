@@ -11,6 +11,11 @@ import {
 
 import "./App.css";
 import { ComponentRoute, routes } from "./routes";
+import {
+  ISessionPageAPIHandler,
+  SessionPageFakeAPIHandler,
+} from "./pages/session/sessionPage.handler";
+import { Session } from "./pages/session/sessionPage.types";
 
 const { SubMenu } = Menu;
 
@@ -21,6 +26,15 @@ library.add(faEdit, faArrowUp, faArrowDown);
 function App(props: any) {
   let history = useHistory();
 
+  const [sessions, setSessions] = React.useState<Session[]>([]);
+  const apiHandler: ISessionPageAPIHandler = new SessionPageFakeAPIHandler();
+  React.useEffect(() => {
+    (async function getSetSesssions() {
+      const allSessions = await apiHandler.getAllSessions();
+      setSessions(allSessions);
+    })();
+  }, [apiHandler]);
+
   return (
     <div className="App">
       <Layout className="layout">
@@ -30,33 +44,36 @@ function App(props: any) {
           <Menu theme="dark" mode="inline">
             {routes
               .filter((item: ComponentRoute) => item.inSidebar)
-              .map((item: ComponentRoute, i: number) => (
-                <SubMenu
-                  key={i}
-                  icon={item.icon}
-                  title={item.name}
-                  onTitleClick={() => history.push(item.link)}
-                >
-                  {item.name.toLowerCase() === "session" ? (
-                    <div />
-                  ) : (
-                    // SessionJSON.sessions.map((session: any, i: number) => {
-                    //   const sessionObj: Session = new Session(session);
-                    //   return (
-                    //     <Menu.ItemGroup key={i} title="Month">
-                    //       <Menu.Item
-                    //         onClick={() => history.push(`${sessionObj.id}`)}
-                    //       >
-                    //         {sessionObj.date.format("MMM Do YY")}{" "}
-                    //         <FontAwesomeIcon icon="edit" />
-                    //       </Menu.Item>
-                    //     </Menu.ItemGroup>
-                    //   );
-                    // })
-                    <Link to={item.link} />
-                  )}
-                </SubMenu>
-              ))}
+              .map((item: ComponentRoute, i: number) =>
+                item.name.toLowerCase() === "session" ? (
+                  <SubMenu
+                    key={i}
+                    icon={item.icon}
+                    title={item.name}
+                    onTitleClick={(e) => console.log(e.key)}
+                  >
+                    {sessions.map((sessions: Session, i: number) => {
+                      const date = sessions.createdAt?.toLocaleString();
+                      console.log(date);
+
+                      return (
+                        <Menu.Item key={i} title={date}>
+                          {date}
+                        </Menu.Item>
+                      );
+                    })}
+                  </SubMenu>
+                ) : (
+                  <Menu.Item
+                    key={i}
+                    icon={item.icon}
+                    title={item.name}
+                    onClick={() => history.push(item.link)}
+                  >
+                    {item.name}
+                  </Menu.Item>
+                )
+              )}
           </Menu>
         </Sider>
         <Layout>

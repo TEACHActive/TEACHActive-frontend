@@ -2,7 +2,6 @@ import * as React from "react";
 import { useParams } from "react-router-dom";
 
 import { Session } from "./sessionPage.types";
-import { InfoCard } from "./InfoCard/infoCard";
 import {
   ISessionPageAPIHandler,
   SessionPageFakeAPIHandler,
@@ -25,7 +24,7 @@ export default function SessionPage(props: ISessionPageProps) {
       const allSessions = await apiHandler.getAllSessions();
       setSessions(allSessions);
     })();
-  }, []);
+  }, [apiHandler]);
 
   const matchingSession: Session | undefined = sessions!.find(
     (session: Session) => session.id === id
