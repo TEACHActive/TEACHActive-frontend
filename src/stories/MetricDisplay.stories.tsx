@@ -6,7 +6,7 @@ import "antd/dist/antd.css";
 
 import MetricDisplay, {
   IMetricDisplayProps,
-} from "../components/MetricDisplay/metricDisplay";
+} from "../pages/session/MetricDisplay/metricDisplay";
 import COLOR from "../constants/colors";
 
 export default {

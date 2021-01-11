@@ -8,13 +8,9 @@ import {
   faArrowUp,
   faArrowDown,
 } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import "./App.css";
 import { ComponentRoute, routes } from "./routes";
-import SessionJSON from "./data/session.json";
-// import history from "./history";
-import { Session } from "./types/types";
 
 const { SubMenu } = Menu;
 
@@ -42,20 +38,21 @@ function App(props: any) {
                   onTitleClick={() => history.push(item.link)}
                 >
                   {item.name.toLowerCase() === "session" ? (
-                    SessionJSON.sessions.map((session: any, i: number) => {
-                      const sessionObj: Session = new Session(session);
-                      return (
-                        <Menu.ItemGroup key={i} title="Month">
-                          <Menu.Item
-                            onClick={() => history.push(`${sessionObj.id}`)}
-                          >
-                            {sessionObj.date.format("MMM Do YY")}{" "}
-                            <FontAwesomeIcon icon="edit" />
-                          </Menu.Item>
-                        </Menu.ItemGroup>
-                      );
-                    })
+                    <div />
                   ) : (
+                    // SessionJSON.sessions.map((session: any, i: number) => {
+                    //   const sessionObj: Session = new Session(session);
+                    //   return (
+                    //     <Menu.ItemGroup key={i} title="Month">
+                    //       <Menu.Item
+                    //         onClick={() => history.push(`${sessionObj.id}`)}
+                    //       >
+                    //         {sessionObj.date.format("MMM Do YY")}{" "}
+                    //         <FontAwesomeIcon icon="edit" />
+                    //       </Menu.Item>
+                    //     </Menu.ItemGroup>
+                    //   );
+                    // })
                     <Link to={item.link} />
                   )}
                 </SubMenu>

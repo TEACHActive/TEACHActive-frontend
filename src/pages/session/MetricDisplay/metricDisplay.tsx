@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import { Modal, Card, Button } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import COLOR from "../../constants/colors";
-import { TREND } from "../../constants/constants";
+import COLOR from "../../../constants/colors";
+import { TREND } from "../../../constants/constants";
 
 import "./metricDisplay.css";
-import { hexToRgb } from "../../util/util";
+import { hexToRgb } from "../../../util";
 
 type ColorKeys = keyof typeof COLOR;
 type ColorValues = typeof COLOR[ColorKeys];
@@ -27,10 +27,16 @@ export interface IMetricDisplayProps {
   has_alert: boolean;
 }
 
+const whiteColor = {
+  r: 255,
+  g: 255,
+  b: 255,
+};
+
 export default function MetricDisplay(props: IMetricDisplayProps) {
   const [helpVisible, setHelpVisible] = useState(false);
-  const darkRGB = hexToRgb(props.color.dark);
-  const lightRGB = hexToRgb(props.color.light);
+  const darkRGB = props.color ? hexToRgb(props.color.dark) : whiteColor;
+  const lightRGB = props.color ? hexToRgb(props.color.light) : whiteColor;
   return (
     <React.Fragment>
       <Card

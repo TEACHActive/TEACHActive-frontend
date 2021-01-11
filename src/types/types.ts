@@ -1,23 +1,5 @@
-import moment from "moment";
+import { DateTime } from "luxon";
 import COLOR from "../constants/colors";
-
-export class Session {
-  id: number;
-  date: moment.Moment;
-  name: string;
-  class_name: "HCI 589 - Ethics";
-  data: SessionMetric[];
-
-  constructor(obj_data: any) {
-    this.id = obj_data.id;
-    this.date = moment(obj_data.date);
-    this.name = obj_data.name;
-    this.class_name = obj_data.class_name;
-    this.data = obj_data.data.metrics.map(
-      (metric: any) => new SessionMetric(metric)
-    );
-  }
-}
 
 type ColorKeys = keyof typeof COLOR;
 type ColorValues = typeof COLOR[ColorKeys];

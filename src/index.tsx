@@ -5,15 +5,11 @@ import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import "antd/dist/antd.css";
 import { BrowserRouter as Router } from "react-router-dom";
-import { /*APIHandler,*/ FakeAPIHandler } from "./api/apiHandler";
-import APIContext from "./context/apiContext";
 
 ReactDOM.render(
-  <APIContext.Provider value={new FakeAPIHandler()}>
-    <Router>
-      <App />
-    </Router>
-  </APIContext.Provider>,
+  <Router>
+    <App />
+  </Router>,
   document.getElementById("root")
 );
 
