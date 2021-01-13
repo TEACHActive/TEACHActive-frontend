@@ -1,9 +1,10 @@
 import * as React from "react";
 import { Empty } from "antd";
 
-import { Session } from "./sessionPage.types";
-import { InfoCard } from "./InfoCard/infoCard";
-import MetricDisplay from "./MetricDisplay/metricDisplay";
+import { Session, SessionMetric } from "./sessionPage.types";
+import { InfoCard } from "../../components/InfoCard/infoCard";
+import MetricDisplay from "../../components/MetricDisplay/metricDisplay";
+import { InstructorMovement } from "../../components/InfoCard/instructorMovement";
 
 export interface ISessionPagePresentationalProps {
   session: Session | undefined;
@@ -15,8 +16,10 @@ export function SessionPagePresentational(
   if (!props.session) {
     return <Empty />;
   }
+
   return (
     <div>
+      <h1 style={{ marginBottom: "3em" }}>{props.session.className}</h1>
       <div
         style={{
           width: "100%",
@@ -33,14 +36,16 @@ export function SessionPagePresentational(
             width: "100%",
           }}
         >
-          {props.session &&
-            [1, 1, 1, 1].map((item: any, i: number) => (
+          {props.session.metrics &&
+            props.session.metrics.map((item: SessionMetric, i: number) => (
               <MetricDisplay
                 key={i}
-                icon={item.icon}
+                metricType={item.metricType}
                 color={item.color}
                 name={item.name}
                 metric={item.metric}
+                denominator={item.denominator}
+                hasDenominator={item.hasDenominator}
                 unit={item.unit}
                 trend={item.trend}
                 trend_metric={item.trend_metric}
@@ -51,21 +56,19 @@ export function SessionPagePresentational(
             ))}
         </div>
 
-        <br />
-        <br />
-        <br />
-
-        <div style={{ display: "flex" }}>
+        <div style={{ display: "flex", marginTop: "2em" }}>
           <InfoCard
-            bannerColor="pink"
+            color={{ light: "#ED80A2", dark: "#D1728F" }}
             icon=""
             title="In-Class Activity"
             helpWindowText="This is help text"
           >
-            <h1>Test</h1>
+            <div className="infoCardContent">
+              <InstructorMovement />
+            </div>
           </InfoCard>
           <InfoCard
-            bannerColor="yellow"
+            color={{ light: "#FAB558", dark: "#E09F4B" }}
             icon=""
             title="Behavioral Engagement"
             helpWindowText="This is help text"

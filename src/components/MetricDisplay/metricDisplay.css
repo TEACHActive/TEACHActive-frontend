@@ -4,6 +4,11 @@
   height: 4em;
   left: 10px;
   top: -20%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  border-radius: 3px;
 }
 
 .MetricDisplay--bottom {
@@ -16,4 +21,12 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+
+.fa-icon {
+  font-size: 30px;
+}
+
+.metric-text {
+  font-size: 30px;
 }

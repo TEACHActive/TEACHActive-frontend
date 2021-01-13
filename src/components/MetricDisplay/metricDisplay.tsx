@@ -2,23 +2,26 @@ import React, { useState } from "react";
 import { Modal, Card, Button } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import COLOR from "../../../constants/colors";
-import { TREND } from "../../../constants/constants";
+import COLOR from "../../constants/colors";
+import { TREND } from "../../constants/constants";
 
 import "./metricDisplay.css";
-import { hexToRgb } from "../../../util";
+import { hexToRgb } from "../../util";
+import { SessionMetricType } from "../../pages/session/sessionPage.types";
 
-type ColorKeys = keyof typeof COLOR;
-type ColorValues = typeof COLOR[ColorKeys];
+// type ColorKeys = keyof typeof COLOR;
+// type ColorValues = typeof COLOR[ColorKeys];
 
 type TrendKeys = keyof typeof TREND;
 type TrendValues = typeof TREND[TrendKeys];
 
 export interface IMetricDisplayProps {
-  icon: any;
-  color: ColorValues;
+  color: any;
+  metricType: SessionMetricType;
   name: string;
   metric: number;
+  denominator: number;
+  hasDenominator: boolean;
   unit?: string;
   trend: TrendValues;
   trend_metric: number;
@@ -37,11 +40,28 @@ export default function MetricDisplay(props: IMetricDisplayProps) {
   const [helpVisible, setHelpVisible] = useState(false);
   const darkRGB = props.color ? hexToRgb(props.color.dark) : whiteColor;
   const lightRGB = props.color ? hexToRgb(props.color.light) : whiteColor;
+  let icon: any = "";
+
+  switch (props.metricType) {
+    case SessionMetricType.HandRaises:
+      icon = "hand-paper";
+      break;
+    case SessionMetricType.StudentSpeech:
+      icon = "comments";
+      break;
+    case SessionMetricType.InstructorSpeech:
+      icon = "comment";
+      break;
+    case SessionMetricType.ClassPerformance:
+      icon = "id-card";
+      break;
+  }
   return (
     <React.Fragment>
       <Card
         style={{
-          width: "12em",
+          width: "17em",
+          minWidth: "220px",
           height: "10em",
           display: "flex",
           flexDirection: "row",
@@ -59,7 +79,7 @@ export default function MetricDisplay(props: IMetricDisplayProps) {
               )`,
             }}
           >
-            {props.icon}
+            <FontAwesomeIcon icon={icon} className="fa-icon" />
           </div>
           <p
             style={{
@@ -83,12 +103,17 @@ export default function MetricDisplay(props: IMetricDisplayProps) {
               width: "100%",
             }}
           >
-            <h1>{props.metric}</h1>
+            <h1 className="metric-text">{props.metric}</h1>
+            {props.hasDenominator && <span>/ {props.denominator}</span>}
+            <span>{props.unit}</span>
             <FontAwesomeIcon
               style={{ color: "blue" }}
               size="2x"
               icon={props.trend ? "arrow-down" : "arrow-up"}
             />
+            <span>
+              {props.trend_metric} {props.trend_metric_unit}
+            </span>
           </div>
         </div>
         <Button

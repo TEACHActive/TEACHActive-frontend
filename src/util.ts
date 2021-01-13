@@ -1,5 +1,6 @@
 // A helper function for automatically converting hex color code to rgb color elements
 export function hexToRgb(hex: string) {
+  if (!hex) return null;
   // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
   let shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
   let hex2 = hex.replace(shorthandRegex, function (m, r, g, b) {

@@ -33,3 +33,8 @@ hr {
 .site-layout-background {
   background: #fff;
 }
+
+.sessionNameEditIcon:hover {
+  color: rgb(84, 84, 218);
+  transition: 0.3s;
+}
