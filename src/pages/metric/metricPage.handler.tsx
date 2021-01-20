@@ -1,17 +1,17 @@
 import axios from "axios";
 import { APIResponse } from "../../types/types";
 
-import SessionJSON from "./sessionPage.json";
-import { AvgGradeAssignmentResponse, Session } from "./sessionPage.types";
+import MetricJSON from "./metricPage.json";
+import { AvgGradeAssignmentResponse, Session } from "./metricPage.types";
 
 const TEACHACTIVE_PORT = 4000;
 const BASE_SERVER_URL = "http://teachactive-test.ece.iastate.edu";
 
-let jsonSessions = SessionJSON.data.sessions.map(
+let jsonSessions = MetricJSON.data.sessions.map(
   (session: any, i: number) => new Session(session)
 );
 
-export interface ISessionPageAPIHandler {
+export interface IMetricPageAPIHandler {
   getAllSessions(): Promise<APIResponse<Session[]>>;
   getAverageGrades(
     courseId: number,
@@ -24,7 +24,7 @@ export interface ISessionPageAPIHandler {
   ): Promise<APIResponse<Session>>;
 }
 
-export class SessionPageAPIHandler implements ISessionPageAPIHandler {
+export class MetricPageAPIHandler implements IMetricPageAPIHandler {
   getAllSessions(): Promise<APIResponse<Session[]>> {
     return Promise.resolve(
       new APIResponse<Session[]>({
@@ -66,7 +66,7 @@ export class SessionPageAPIHandler implements ISessionPageAPIHandler {
   }
 }
 
-export class SessionPageFakeAPIHandler implements ISessionPageAPIHandler {
+export class MetricPageFakeAPIHandler implements IMetricPageAPIHandler {
   getAllSessions(): Promise<APIResponse<Session[]>> {
     return Promise.resolve(
       new APIResponse<Session[]>({

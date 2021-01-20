@@ -1,7 +1,15 @@
 import * as React from "react";
 import { Dropdown, Menu } from "antd";
 import { DownOutlined } from "@ant-design/icons";
-import { LineChart, Line, CartesianGrid, XAxis, YAxis } from "recharts";
+import {
+  LineChart,
+  Line,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 export interface IInstructorMovementProps {}
 
@@ -49,6 +57,7 @@ export function InstructorMovement(props: IInstructorMovementProps) {
           <CartesianGrid stroke="#ccc" />
           <XAxis dataKey="name" />
           <YAxis />
+          <Tooltip />
         </LineChart>
       )}
     </div>

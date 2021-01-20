@@ -19,6 +19,7 @@ export class Session {
   metrics?: SessionMetric[];
   className: string;
   name: string;
+  sessionHandRaiseData?: SessionHandRaiseData[];
 
   constructor(data: any) {
     this.id = data.id;
@@ -31,6 +32,12 @@ export class Session {
       );
     this.className = data.className;
     this.name = data.name;
+    if (data.sessionHandRaiseData) {
+      this.sessionHandRaiseData = data.sessionHandRaiseData.map(
+        (sessionHandRaiseData: SessionHandRaiseData) =>
+          new SessionHandRaiseData(sessionHandRaiseData)
+      );
+    }
   }
 }
 
@@ -79,4 +86,21 @@ export enum SessionMetricType {
   StudentSpeech,
   InstructorSpeech,
   ClassPerformance,
+}
+
+export class SessionHandRaiseData {
+  frame: number;
+  totalHandsRaised: number;
+  totalArmsCrosses: number;
+  totalHandsOnFace: number;
+  totalOther: number;
+  totalError: number;
+  constructor(data: any) {
+    this.frame = data.frame;
+    this.totalHandsRaised = data.totalHandsRaised;
+    this.totalArmsCrosses = data.totalArmsCrosses;
+    this.totalHandsOnFace = data.totalHandsOnFace;
+    this.totalOther = data.totalOther;
+    this.totalError = data.totalError;
+  }
 }

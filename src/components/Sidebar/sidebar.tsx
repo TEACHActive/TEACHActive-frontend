@@ -1,12 +1,15 @@
 import * as React from "react";
 import { Menu, Layout, Input, Button } from "antd";
+import { useSelector, useDispatch } from "react-redux";
+
 import { ComponentRoute, routes } from "../../routes";
-import { Session } from "../../pages/session/sessionPage.types";
+import { Session } from "../../pages/metric/metricPage.types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  ISessionPageAPIHandler,
-  SessionPageFakeAPIHandler,
-} from "../../pages/session/sessionPage.handler";
+  IMetricPageAPIHandler,
+  MetricPageFakeAPIHandler,
+} from "../../pages/metric/metricPage.handler";
+import * as ReducerActionType from "../../redux/actionTypes";
 
 const { SubMenu } = Menu;
 const { Header, Content, Footer, Sider } = Layout;
@@ -21,8 +24,10 @@ export function Sidebar(props: ISidebarProps) {
     new Array()
   );
   const [newSessionName, setNewSessionName] = React.useState("");
+  const sessionID = useSelector((state: any) => state.session.id);
+  const dispatch = useDispatch();
 
-  const apiHandler: ISessionPageAPIHandler = new SessionPageFakeAPIHandler();
+  const apiHandler: IMetricPageAPIHandler = new MetricPageFakeAPIHandler();
 
   React.useEffect(() => {
     getSetSesssions();
@@ -40,6 +45,8 @@ export function Sidebar(props: ISidebarProps) {
 
     await getSetSesssions();
   }
+
+  console.log("HERE", sessionID);
 
   return (
     <>
@@ -83,9 +90,13 @@ export function Sidebar(props: ISidebarProps) {
                       <Menu.Item
                         key={session.id}
                         title={date}
-                        onClick={() =>
-                          props.history.push(`/session/${session.id}`)
-                        }
+                        onClick={() => {
+                          // props.history.push(item.link(session.id))
+                          dispatch({
+                            type: ReducerActionType.SET_SESSION_ID,
+                            payload: { id: session.id },
+                          });
+                        }}
                       >
                         {session.name ? session.name : date}{" "}
                         <FontAwesomeIcon
@@ -108,12 +119,21 @@ export function Sidebar(props: ISidebarProps) {
                   key={i}
                   icon={item.icon}
                   title={item.name}
-                  onClick={() => props.history.push(item.link)}
+                  onClick={() => props.history.push(item.link(sessionID))}
                 >
                   {item.name}
                 </Menu.Item>
               )
             )}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              marginTop: "2em",
+            }}
+          >
+            <Button type="primary">New Session</Button>
+          </div>
         </Menu>
       </Sider>
     </>

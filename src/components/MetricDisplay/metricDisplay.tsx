@@ -7,7 +7,7 @@ import { TREND } from "../../constants/constants";
 
 import "./metricDisplay.css";
 import { hexToRgb } from "../../util";
-import { SessionMetricType } from "../../pages/session/sessionPage.types";
+import { SessionMetricType } from "../../pages/metric/metricPage.types";
 
 // type ColorKeys = keyof typeof COLOR;
 // type ColorValues = typeof COLOR[ColorKeys];

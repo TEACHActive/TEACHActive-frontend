@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Empty } from "antd";
 
-import { Session, SessionMetric } from "./sessionPage.types";
+import { Session, SessionMetric } from "./metricPage.types";
 import { InfoCard } from "../../components/InfoCard/infoCard";
 import MetricDisplay from "../../components/MetricDisplay/metricDisplay";
 import { InstructorMovement } from "../../components/InfoCard/instructorMovement";

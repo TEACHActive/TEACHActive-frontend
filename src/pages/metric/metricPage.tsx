@@ -2,12 +2,14 @@ import * as React from "react";
 import { Spin, Empty } from "antd";
 import { useParams } from "react-router-dom";
 
-import { Session } from "./sessionPage.types";
+import { Session } from "./metricPage.types";
 import {
-  ISessionPageAPIHandler,
-  SessionPageFakeAPIHandler,
-} from "./sessionPage.handler";
-import { SessionPagePresentational } from "./sessionPagePresentational";
+  IMetricPageAPIHandler,
+  MetricPageFakeAPIHandler,
+} from "./metricPage.handler";
+import { SessionPagePresentational } from "./metricPagePresentational";
+
+import "./metricPage.css";
 
 export interface ISessionPageProps {}
 
@@ -15,12 +17,12 @@ interface ParamTypes {
   id: string;
 }
 
-export default function SessionPage(props: ISessionPageProps) {
+export default function MetricPage(props: ISessionPageProps) {
   const { id } = useParams<ParamTypes>();
   const [loading, setLoading] = React.useState<boolean>(true);
 
   const [sessions, setSessions] = React.useState<Session[]>([]);
-  const apiHandler: ISessionPageAPIHandler = new SessionPageFakeAPIHandler();
+  const apiHandler: IMetricPageAPIHandler = new MetricPageFakeAPIHandler();
   React.useEffect(() => {
     (async function getSetSesssions() {
       const allSessions = await (await apiHandler.getAllSessions()).data;

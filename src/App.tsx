@@ -16,10 +16,10 @@ import {
 import "./App.css";
 import { ComponentRoute, routes } from "./routes";
 import {
-  ISessionPageAPIHandler,
-  SessionPageFakeAPIHandler,
-} from "./pages/session/sessionPage.handler";
-import { Session } from "./pages/session/sessionPage.types";
+  IMetricPageAPIHandler,
+  MetricPageFakeAPIHandler,
+} from "./pages/metric/metricPage.handler";
+import { Session } from "./pages/metric/metricPage.types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Sidebar } from "./components/Sidebar/sidebar";
 

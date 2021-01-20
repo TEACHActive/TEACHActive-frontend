@@ -1,0 +1,30 @@
+.goalsReflectionsSection {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.goalsReflectionsContent {
+  width: 100%;
+}
+
+.reflectionsCollapseControlButtons--top {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+}
+.reflectionsCollapseControlButtons--bottom {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+}
+
+.reflectionsCollapseControlButtons--bottom .ant-btn {
+  margin-left: 1em;
+  margin-top: 1em;
+}
+.reflectionsCollapseControlButtons--top .ant-btn {
+  margin-left: 1em;
+  margin-bottom: 1em;
+}

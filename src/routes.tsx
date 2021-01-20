@@ -5,14 +5,14 @@ import {
   UserOutlined,
   VideoCameraOutlined,
 } from "@ant-design/icons";
-import SessionPage from "./pages/session/sessionPage";
+import { GoalsPage, ProgressPage, MetricPage, SettingsPage } from "./pages";
 
 export class ComponentRoute {
   name: string;
   path: string;
   component: React.ReactNode;
   icon: any;
-  link: string;
+  link: (id?: string) => string;
   inSidebar: boolean;
   exact: boolean;
 
@@ -33,34 +33,52 @@ export const routes: ComponentRoute[] = [
     path: "/",
     component: <div>content</div>,
     icon: <UserOutlined />,
-    link: "/",
+    link: () => "/",
     inSidebar: false,
     exact: true,
   },
   {
     name: "Session",
-    path: "/session/:id",
-    component: <SessionPage />,
+    path: "/session",
+    component: <>Test</>,
     icon: <UserOutlined />,
-    link: "/session/1",
+    link: () => "",
+    inSidebar: true,
+    exact: false,
+  },
+  {
+    name: "Metrics",
+    path: "/metrics/:id",
+    component: <MetricPage />,
+    icon: <UserOutlined />,
+    link: (id) => (id ? `/metrics/${id}` : "metrics"),
     inSidebar: true,
     exact: false,
   },
   {
     name: "Progress",
     path: "/progress",
-    component: <div>Progress</div>,
+    component: <ProgressPage />,
     icon: <UploadOutlined />,
-    link: "/progress",
+    link: () => "/progress",
     inSidebar: true,
-    exact: true,
+    exact: false,
   },
   {
-    name: "C",
-    path: "/c",
-    component: <div>C</div>,
+    name: "Goals & Reflections",
+    path: "/goals",
+    component: <GoalsPage />,
     icon: <VideoCameraOutlined />,
-    link: "/c",
+    link: () => "/goals",
+    inSidebar: true,
+    exact: false,
+  },
+  {
+    name: "Settings",
+    path: "/settings",
+    component: <SettingsPage />,
+    icon: <VideoCameraOutlined />,
+    link: () => "/settings",
     inSidebar: true,
     exact: true,
   },
