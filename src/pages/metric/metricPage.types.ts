@@ -15,7 +15,7 @@ export class AvgGradeAssignmentResponse {
 
 export class Session {
   id: string;
-  createdAt?: DateTime;
+  createdAt: DateTime;
   metrics?: SessionMetric[];
   className: string;
   name: string;
@@ -23,8 +23,7 @@ export class Session {
 
   constructor(data: any) {
     this.id = data.id;
-    if (data.createdAt)
-      this.createdAt = DateTime.fromISO(data.createdAt.RFC3339);
+    this.createdAt = DateTime.fromISO(data.createdAt);
 
     if (data.metrics)
       this.metrics = data.metrics.map(

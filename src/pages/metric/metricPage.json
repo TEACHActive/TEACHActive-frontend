@@ -2,9 +2,7 @@
   "data": {
     "sessions": [
       {
-        "createdAt": {
-          "RFC3339": "2002-10-02T10:00:00-05:00"
-        },
+        "createdAt": "2002-10-02T10:00:00-05:00",
         "id": "eaabf485-0483-445d-a42f-01ef9a015931",
         "className": "HCI 589 - Ethics",
         "metrics": [
@@ -79,9 +77,7 @@
         ]
       },
       {
-        "createdAt": {
-          "RFC3339": "2021-01-11T11:42:08+00:00"
-        },
+        "createdAt": "2021-01-11T11:42:08+00:00",
         "id": "eaabf485-0483-445d-a42f-01ef9a015932",
         "className": "HCI 521",
         "metrics": [

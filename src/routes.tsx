@@ -7,6 +7,7 @@ import {
 } from "@ant-design/icons";
 import { GoalsPage, ProgressPage, MetricPage, SettingsPage } from "./pages";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Session } from "./pages/metric/metricPage.types";
 
 export class ComponentRoute {
   name: string;
@@ -28,7 +29,9 @@ export class ComponentRoute {
   }
 }
 
-export const routes: ComponentRoute[] = [
+export const routes: (session: Session | null) => ComponentRoute[] = (
+  session: Session | null
+) => [
   {
     name: "Base",
     path: "/",
@@ -43,18 +46,18 @@ export const routes: ComponentRoute[] = [
     path: "/session",
     component: <>Test</>,
     icon: <UserOutlined />,
-    link: () => "",
-    inSidebar: true,
-    exact: false,
+    link: () => "/session",
+    inSidebar: false,
+    exact: true,
   },
   {
     name: "Metrics",
-    path: "/metrics/:id",
-    component: <MetricPage />,
+    path: "/metrics",
+    component: <MetricPage session={session} />,
     icon: <UserOutlined />,
-    link: (id) => (id ? `/metrics/${id}` : "metrics"),
+    link: () => "/metrics",
     inSidebar: true,
-    exact: false,
+    exact: true,
   },
   {
     name: "Progress",
@@ -63,7 +66,7 @@ export const routes: ComponentRoute[] = [
     icon: <UploadOutlined />,
     link: () => "/progress",
     inSidebar: true,
-    exact: false,
+    exact: true,
   },
   {
     name: "Reflections & Goals",
@@ -72,7 +75,7 @@ export const routes: ComponentRoute[] = [
     icon: <FontAwesomeIcon icon="book-reader" />,
     link: () => "/goals",
     inSidebar: true,
-    exact: false,
+    exact: true,
   },
   {
     name: "Settings",

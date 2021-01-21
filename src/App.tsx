@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Layout } from "antd";
+import { Layout, TreeSelect } from "antd";
 import { Switch, Route } from "react-router-dom";
 import { useHistory } from "react-router-dom";
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -23,6 +23,7 @@ import {
 import { Session } from "./pages/metric/metricPage.types";
 
 import { Sidebar } from "./components/Sidebar/sidebar";
+import { Header } from "./components/Header/header";
 
 const { Content, Footer } = Layout;
 
@@ -40,29 +41,52 @@ library.add(
 function App(props: any) {
   const history = useHistory();
 
+  const [sessions, setSessions] = React.useState<Session[]>([]);
+  const [selectedSession, setSelectedSession] = React.useState<Session | null>(
+    null
+  );
+
+  const apiHandler: IMetricPageAPIHandler = new MetricPageFakeAPIHandler();
+
+  React.useEffect(() => {
+    getSetSesssions();
+  }, []);
+
+  async function getSetSesssions() {
+    const allSessions = await (await apiHandler.getAllSessions()).data;
+
+    setSessions(allSessions);
+  }
+
+  const injectedRoutes = routes(null);
+
+  console.log(selectedSession);
+
   return (
     <div className="App">
       <Layout className="layout">
-        <Sidebar history={history} />
+        <Sidebar
+          history={history}
+          apiHandler={apiHandler}
+          refreshSessions={getSetSesssions}
+          sessions={sessions}
+          selectedSession={selectedSession}
+        />
         <Layout>
-          {/* <Header
-            className="site-layout-sub-header-background"
-            style={{
-              paddingLeft: "1em",
-              display: "flex",
-              alignItems: "flex-start",
-            }}
-          >
-            <h1 style={{ color: "white" }}>
-              {history.location.pathname.split("/").pop()}
-            </h1>
-          </Header> */}
+          <Header
+            history={history}
+            sessions={sessions}
+            apiHandler={apiHandler}
+            refreshSessions={getSetSesssions}
+            selectedSession={selectedSession}
+            setSelectedSession={setSelectedSession}
+          />
           <div
             className="site-layout-background"
             style={{ padding: 24, minHeight: 360 }}
           >
             <Switch>
-              {routes.map((item: ComponentRoute, i: number) => (
+              {injectedRoutes.map((item: ComponentRoute, i: number) => (
                 <Route key={i} exact={item.exact} path={item.path}>
                   <Content style={{ margin: "24px 16px 0" }}>
                     {item.component}

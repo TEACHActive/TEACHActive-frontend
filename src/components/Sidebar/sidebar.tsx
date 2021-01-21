@@ -16,10 +16,13 @@ const { Header, Content, Footer, Sider } = Layout;
 
 export interface ISidebarProps {
   history: any;
+  apiHandler: IMetricPageAPIHandler;
+  refreshSessions: () => Promise<void>;
+  sessions: Session[];
+  selectedSession: Session | null;
 }
 
 export function Sidebar(props: ISidebarProps) {
-  const [sessions, setSessions] = React.useState<Session[]>([]);
   const [editingSessionIndexBool, setEditingSessionIndexBool] = React.useState(
     new Array()
   );
@@ -27,26 +30,17 @@ export function Sidebar(props: ISidebarProps) {
   const sessionID = useSelector((state: any) => state.session.id);
   const dispatch = useDispatch();
 
-  const apiHandler: IMetricPageAPIHandler = new MetricPageFakeAPIHandler();
-
-  React.useEffect(() => {
-    getSetSesssions();
-  }, []);
-
-  async function getSetSesssions() {
-    const allSessions = await (await apiHandler.getAllSessions()).data;
-    setEditingSessionIndexBool(new Array(allSessions.length).fill(false));
-    setSessions(allSessions);
-  }
-
   async function setSessionName(session: Session, newName: string) {
-    const response = await apiHandler.setSessionName(session, newName);
-    console.log(response);
+    const response = await props.apiHandler.setSessionName(session, newName);
+    // console.log(response);
 
-    await getSetSesssions();
+    await props.refreshSessions();
+    //Todo
+    // setEditingSessionIndexBool(new Array(allSessions.length).fill(false));
   }
 
   console.log("HERE", sessionID);
+  const injectedRoutes = routes(props.selectedSession);
 
   return (
     <>
@@ -54,12 +48,12 @@ export function Sidebar(props: ISidebarProps) {
         <div className="logo" />
 
         <Menu theme="dark" mode="inline">
-          {routes
+          {injectedRoutes
             .filter((item: ComponentRoute) => item.inSidebar)
             .map((item: ComponentRoute, i: number) =>
               item.name.toLowerCase() === "session" ? (
                 <SubMenu key="sessionSub" icon={item.icon} title={item.name}>
-                  {sessions.map((session: Session, i: number) => {
+                  {props.sessions.map((session: Session, i: number) => {
                     const date = session.createdAt?.toLocaleString();
                     if (editingSessionIndexBool[i]) {
                       return (
