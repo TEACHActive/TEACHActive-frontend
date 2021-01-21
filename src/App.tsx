@@ -11,6 +11,7 @@ import {
   faComment,
   faComments,
   faIdCard,
+  faBookReader,
 } from "@fortawesome/free-solid-svg-icons";
 
 import "./App.css";
@@ -20,7 +21,7 @@ import {
   MetricPageFakeAPIHandler,
 } from "./pages/metric/metricPage.handler";
 import { Session } from "./pages/metric/metricPage.types";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 import { Sidebar } from "./components/Sidebar/sidebar";
 
 const { Content, Footer } = Layout;
@@ -32,7 +33,8 @@ library.add(
   faHandPaper,
   faComment,
   faComments,
-  faIdCard
+  faIdCard,
+  faBookReader
 );
 
 function App(props: any) {

@@ -6,6 +6,7 @@ import {
   VideoCameraOutlined,
 } from "@ant-design/icons";
 import { GoalsPage, ProgressPage, MetricPage, SettingsPage } from "./pages";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export class ComponentRoute {
   name: string;
@@ -65,10 +66,10 @@ export const routes: ComponentRoute[] = [
     exact: false,
   },
   {
-    name: "Goals & Reflections",
+    name: "Reflections & Goals",
     path: "/goals",
     component: <GoalsPage />,
-    icon: <VideoCameraOutlined />,
+    icon: <FontAwesomeIcon icon="book-reader" />,
     link: () => "/goals",
     inSidebar: true,
     exact: false,
