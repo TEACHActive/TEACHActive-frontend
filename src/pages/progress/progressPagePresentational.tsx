@@ -14,20 +14,26 @@ export function ProgressPagePresentational(
   if (!props.session) {
     return <Empty />;
   }
+  const color = {
+    dark: "#ededed",
+    light: "#dedede",
+  };
   return (
     <div>
-      {props.session.metrics &&
-        props.session.metrics.map((item: SessionMetric, i: number) => {
-          return (
-            <BlockContent
-              color={item.color}
-              name={item.name}
-              help_text={item.help_text}
-              has_alert={item.has_alert}
-              icon={null}
-            ></BlockContent>
-          );
-        })}
+      <BlockContent
+        color={color}
+        name="In-Class Activity"
+        help_text=""
+        has_alert={false}
+        icon={null}
+      ></BlockContent>
+      <BlockContent
+        color={color}
+        name="Behavorial Engagement"
+        help_text=""
+        has_alert={false}
+        icon={null}
+      ></BlockContent>
     </div>
   );
 }

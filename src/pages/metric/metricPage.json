@@ -20,7 +20,7 @@
             "trend": 1,
             "trend_metric": 0,
             "trend_metric_unit": "",
-            "help_text": "Hand Raises are...",
+            "help_text": "The total frequency of detected hand raises during the class session",
             "has_alert": false
           },
           {
@@ -37,7 +37,7 @@
             "trend": 0,
             "trend_metric": 0,
             "trend_metric_unit": "min",
-            "help_text": "Student speech is...",
+            "help_text": "The total frequency of student talk (in minutes) during the class session",
             "has_alert": false
           },
           {
@@ -54,7 +54,7 @@
             "trend": 0,
             "trend_metric": 0,
             "trend_metric_unit": "min",
-            "help_text": "Instructor Speech is...",
+            "help_text": "The total frequency of instructor talk (in minutes) during the class session",
             "has_alert": false
           },
           {
@@ -71,7 +71,7 @@
             "trend": 0,
             "trend_metric": 0,
             "trend_metric_unit": "%",
-            "help_text": "Class Preformance is...",
+            "help_text": "Did you do any graded activity in this class session? You may enter manually the average class performance and compare them with future sessions!",
             "has_alert": false
           }
         ]
@@ -95,7 +95,7 @@
             "trend": 1,
             "trend_metric": -7,
             "trend_metric_unit": "",
-            "help_text": "Hand Raises are...",
+            "help_text": "The total frequency of detected hand raises during the class session",
             "has_alert": false
           },
           {
@@ -112,7 +112,7 @@
             "trend": 0,
             "trend_metric": 10,
             "trend_metric_unit": "min",
-            "help_text": "Student speech is...",
+            "help_text": "The total frequency of student talk (in minutes) during the class session",
             "has_alert": false
           },
           {
@@ -129,7 +129,7 @@
             "trend": 0,
             "trend_metric": 1,
             "trend_metric_unit": "min",
-            "help_text": "Instructor Speech is...",
+            "help_text": "The total frequency of instructor talk (in minutes) during the class session",
             "has_alert": false
           },
           {
@@ -146,7 +146,7 @@
             "trend": 0,
             "trend_metric": 4,
             "trend_metric_unit": "%",
-            "help_text": "Class Preformance is...",
+            "help_text": "Did you do any graded activity in this class session? You may enter manually the average class performance and compare them with future sessions!",
             "has_alert": false
           }
         ]

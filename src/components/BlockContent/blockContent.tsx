@@ -94,7 +94,10 @@ export default function BlockContent(props: IBlockContentProps) {
           <Modal
             visible={helpVisible}
             onCancel={() => setHelpVisible(false)}
-          ></Modal>
+            onOk={() => setHelpVisible(false)}
+          >
+            {props.help_text}
+          </Modal>
         </div>
       )}
     </div>
