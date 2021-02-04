@@ -31,4 +31,4 @@ export const getTodosByVisibilityFilter = (
   }
 };
 
-export const getSessionID = (store: any) => store.session.sessionID;
+export const getSelectedSession = (store: any) => store.session.selectedSession;

@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Spin, Empty } from "antd";
 import { useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 import { Session } from "./metricPage.types";
 import {
@@ -10,9 +11,10 @@ import {
 import { SessionPagePresentational } from "./metricPagePresentational";
 
 import "./metricPage.css";
+import { faFontAwesomeLogoFull } from "@fortawesome/free-solid-svg-icons";
 
 export interface ISessionPageProps {
-  session: Session | null;
+  // session: Session | null;
   // loading: boolean;
 }
 
@@ -38,7 +40,10 @@ export default function MetricPage(props: ISessionPageProps) {
   //   (session: Session) => session.id === id
   // );
   // if (props.loading) return <Spin />;
-  if (!props.session) return <Empty />;
 
-  return <SessionPagePresentational session={props.session} />;
+  const selectedSession: Session | null = useSelector((state: any) => state.session.selectedSession);
+
+  if (!selectedSession) return <Empty />;
+
+  return <SessionPagePresentational session={selectedSession} />;
 }

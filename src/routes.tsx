@@ -29,9 +29,7 @@ export class ComponentRoute {
   }
 }
 
-export const routes: (session: Session | null) => ComponentRoute[] = (
-  session: Session | null
-) => [
+export const routes: ComponentRoute[] = [
   {
     name: "Base",
     path: "/",
@@ -53,7 +51,7 @@ export const routes: (session: Session | null) => ComponentRoute[] = (
   {
     name: "Metrics",
     path: "/metrics",
-    component: <MetricPage session={session} />,
+    component: <MetricPage />,
     icon: <UserOutlined />,
     link: () => "/metrics",
     inSidebar: true,

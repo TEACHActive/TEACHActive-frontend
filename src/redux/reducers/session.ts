@@ -1,21 +1,22 @@
-import { SET_SESSION_ID } from "../actionTypes";
+import { Session } from "../../pages/metric/metricPage.types";
+import { SET_SELECTED_SESSION } from "../actionTypes";
 
 interface StateShape {
-  id: null | number;
+  selectedSession: null | Session;
 }
 
 const initialState = {
-  id: null,
+  selectedSession: null,
 };
 
 export default function (state = initialState, action: any) {
   switch (action.type) {
-    case SET_SESSION_ID: {
-      const { id } = action.payload;
+    case SET_SELECTED_SESSION: {
+      const { selectedSession } = action.payload;
 
       return {
         ...state,
-        id: id,
+        selectedSession: selectedSession,
       };
     }
     default:

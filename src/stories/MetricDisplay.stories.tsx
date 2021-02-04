@@ -22,7 +22,7 @@ const Template: Story<IMetricDisplayProps> = (args) => (
 );
 
 export const Primary = Template.bind({});
-Primary.args = {
-  color: COLOR.RED,
-  //   label: 'Button',
-};
+// Primary.args = {
+//   color: COLOR.RED,
+//   //   label: 'Button',
+// };

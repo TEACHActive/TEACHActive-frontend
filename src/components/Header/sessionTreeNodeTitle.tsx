@@ -10,6 +10,7 @@ export interface ISessionTreeNodeTitle {
 }
 
 export function SessionTreeNodeTitle(props: ISessionTreeNodeTitle) {
+  
   const [editing, setEditing] = React.useState(false);
   const [newSessionName, setNewSessionName] = React.useState("");
 

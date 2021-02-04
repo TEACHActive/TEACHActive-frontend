@@ -42,9 +42,9 @@ function App(props: any) {
   const history = useHistory();
 
   const [sessions, setSessions] = React.useState<Session[]>([]);
-  const [selectedSession, setSelectedSession] = React.useState<Session | null>(
-    null
-  );
+  // const [selectedSession, setSelectedSession] = React.useState<Session | null>(
+  //   null
+  // );
 
   const apiHandler: IMetricPageAPIHandler = new MetricPageFakeAPIHandler();
 
@@ -58,9 +58,7 @@ function App(props: any) {
     setSessions(allSessions);
   }
 
-  const injectedRoutes = routes(null);
-
-  console.log(selectedSession);
+  // console.log(selectedSession);
 
   return (
     <div className="App">
@@ -70,7 +68,7 @@ function App(props: any) {
           apiHandler={apiHandler}
           refreshSessions={getSetSesssions}
           sessions={sessions}
-          selectedSession={selectedSession}
+          // selectedSession={selectedSession}
         />
         <Layout>
           <Header
@@ -78,15 +76,15 @@ function App(props: any) {
             sessions={sessions}
             apiHandler={apiHandler}
             refreshSessions={getSetSesssions}
-            selectedSession={selectedSession}
-            setSelectedSession={setSelectedSession}
+            // selectedSession={selectedSession}
+            // updateSelectedSession={updateSelectedSession}
           />
           <div
             className="site-layout-background"
             style={{ padding: 24, minHeight: 360 }}
           >
             <Switch>
-              {injectedRoutes.map((item: ComponentRoute, i: number) => (
+              {routes.map((item: ComponentRoute, i: number) => (
                 <Route key={i} exact={item.exact} path={item.path}>
                   <Content style={{ margin: "24px 16px 0" }}>
                     {item.component}

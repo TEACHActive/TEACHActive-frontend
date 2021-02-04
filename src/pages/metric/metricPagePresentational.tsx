@@ -1,10 +1,11 @@
 import * as React from "react";
 import { Empty } from "antd";
 
-import { Session, SessionMetric } from "./metricPage.types";
+import { Session, SessionMetric, SessionMetricType } from "./metricPage.types";
 import { InfoCard } from "../../components/InfoCard/infoCard";
 import MetricDisplay from "../../components/MetricDisplay/metricDisplay";
 import { InstructorMovement } from "../../components/InfoCard/instructorMovement";
+import BlockContent from "../../components/BlockContent/blockContent";
 
 export interface ISessionPagePresentationalProps {
   session: Session | undefined;
@@ -37,23 +38,44 @@ export function SessionPagePresentational(
           }}
         >
           {props.session.metrics &&
-            props.session.metrics.map((item: SessionMetric, i: number) => (
-              <MetricDisplay
-                key={i}
-                metricType={item.metricType}
-                color={item.color}
-                name={item.name}
-                metric={item.metric}
-                denominator={item.denominator}
-                hasDenominator={item.hasDenominator}
-                unit={item.unit}
-                trend={item.trend}
-                trend_metric={item.trend_metric}
-                trend_metric_unit={item.trend_metric_unit}
-                help_text={item.help_text}
-                has_alert={item.has_alert}
-              />
-            ))}
+            props.session.metrics.map((item: SessionMetric, i: number) => {
+              let icon: any = "";
+              switch (item.metricType) {
+                case SessionMetricType.HandRaises:
+                  icon = "hand-paper";
+                  break;
+                case SessionMetricType.StudentSpeech:
+                  icon = "comments";
+                  break;
+                case SessionMetricType.InstructorSpeech:
+                  icon = "comment";
+                  break;
+                case SessionMetricType.ClassPerformance:
+                  icon = "id-card";
+                  break;
+              }
+              return (
+                <BlockContent
+                  color={item.color}
+                  name={item.name}
+                  help_text={item.help_text}
+                  has_alert={item.has_alert}
+                  icon={icon}
+                >
+                  <MetricDisplay
+                    key={i}
+                    metricType={item.metricType}
+                    metric={item.metric}
+                    denominator={item.denominator}
+                    hasDenominator={item.hasDenominator}
+                    unit={item.unit}
+                    trend={item.trend}
+                    trend_metric={item.trend_metric}
+                    trend_metric_unit={item.trend_metric_unit}
+                  />
+                </BlockContent>
+              );
+            })}
         </div>
 
         <div style={{ display: "flex", marginTop: "2em" }}>

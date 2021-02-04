@@ -19,7 +19,7 @@ export interface ISidebarProps {
   apiHandler: IMetricPageAPIHandler;
   refreshSessions: () => Promise<void>;
   sessions: Session[];
-  selectedSession: Session | null;
+  // selectedSession: Session | null;
 }
 
 export function Sidebar(props: ISidebarProps) {
@@ -27,7 +27,9 @@ export function Sidebar(props: ISidebarProps) {
     new Array()
   );
   const [newSessionName, setNewSessionName] = React.useState("");
-  const sessionID = useSelector((state: any) => state.session.id);
+  const selectedSession: Session | null = useSelector(
+    (state: any) => state.selectedSession
+  );
   const dispatch = useDispatch();
 
   async function setSessionName(session: Session, newName: string) {
@@ -39,16 +41,13 @@ export function Sidebar(props: ISidebarProps) {
     // setEditingSessionIndexBool(new Array(allSessions.length).fill(false));
   }
 
-  console.log("HERE", sessionID);
-  const injectedRoutes = routes(props.selectedSession);
-
   return (
     <>
       <Sider breakpoint="lg" collapsedWidth="0">
         <div className="logo" />
 
         <Menu theme="dark" mode="inline">
-          {injectedRoutes
+          {routes
             .filter((item: ComponentRoute) => item.inSidebar)
             .map((item: ComponentRoute, i: number) =>
               item.name.toLowerCase() === "session" ? (
@@ -87,8 +86,8 @@ export function Sidebar(props: ISidebarProps) {
                         onClick={() => {
                           // props.history.push(item.link(session.id))
                           dispatch({
-                            type: ReducerActionType.SET_SESSION_ID,
-                            payload: { id: session.id },
+                            type: ReducerActionType.SET_SELECTED_SESSION,
+                            payload: { selectedSession: session },
                           });
                         }}
                       >
@@ -113,7 +112,7 @@ export function Sidebar(props: ISidebarProps) {
                   key={i}
                   icon={item.icon}
                   title={item.name}
-                  onClick={() => props.history.push(item.link(sessionID))}
+                  onClick={() => props.history.push(item.link())}
                 >
                   {item.name}
                 </Menu.Item>

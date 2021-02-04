@@ -1,8 +1,9 @@
+import { Session } from "../pages/metric/metricPage.types";
 import {
   ADD_TODO,
   TOGGLE_TODO,
   SET_FILTER,
-  SET_SESSION_ID,
+  SET_SELECTED_SESSION,
 } from "./actionTypes";
 
 let nextTodoId = 0;
@@ -25,7 +26,7 @@ export const setFilter = (filter: any) => ({
   payload: { filter },
 });
 
-export const setSessionID = (id: number) => ({
-  type: SET_SESSION_ID,
-  payload: { id },
+export const setSelectedSession = (selectedSession: Session | null) => ({
+  type: SET_SELECTED_SESSION,
+  payload: { selectedSession },
 });
