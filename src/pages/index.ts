@@ -3,6 +3,7 @@ import ProgressPage from "./progress/progressPage";
 import MetricPage from "./metric/metricPage";
 import SettingsPage from "./settings/settingsPage";
 import GettingStartedPage from "./gettingStarted/gettingStarted";
+import SignInPage from "./signIn/signInPage";
 
 export {
   GoalsPage,
@@ -10,4 +11,5 @@ export {
   MetricPage,
   SettingsPage,
   GettingStartedPage,
+  SignInPage,
 };

@@ -9,6 +9,9 @@ import {
   MetricPageFakeAPIHandler,
 } from "./metricPage.handler";
 import { SessionPagePresentational } from "./metricPagePresentational";
+import { Link } from "react-router-dom";
+import { useHistory } from "react-router-dom";
+import { useOktaAuth } from "@okta/okta-react";
 
 import "./metricPage.css";
 import { faFontAwesomeLogoFull } from "@fortawesome/free-solid-svg-icons";
@@ -41,7 +44,24 @@ export default function MetricPage(props: ISessionPageProps) {
   // );
   // if (props.loading) return <Spin />;
 
-  const selectedSession: Session | null = useSelector((state: any) => state.session.selectedSession);
+  const history = useHistory();
+  const { oktaAuth, authState } = useOktaAuth();
+
+  const login = async () => history.push("/login");
+
+  const logout = async () => oktaAuth.signOut();
+
+  const button = authState.isAuthenticated ? (
+    <button onClick={logout}>Logout</button>
+  ) : (
+    <button onClick={login}>Login</button>
+  );
+
+  const selectedSession: Session | null = useSelector(
+    (state: any) => state.session.selectedSession
+  );
+
+  if (authState.isPending) return null;
 
   if (!selectedSession) return <Empty />;
 

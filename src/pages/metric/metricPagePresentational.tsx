@@ -6,6 +6,9 @@ import { InfoCard } from "../../components/InfoCard/infoCard";
 import MetricDisplay from "../../components/MetricDisplay/metricDisplay";
 import { InstructorMovement } from "../../components/InfoCard/instructorMovement";
 import BlockContent from "../../components/BlockContent/blockContent";
+import { BehavioralEngagement } from "../../components/InfoCard/behavioralEngagement";
+
+import "./metricPage.css";
 
 export interface ISessionPagePresentationalProps {
   session: Session | undefined;
@@ -78,11 +81,31 @@ export function SessionPagePresentational(
             })}
         </div>
 
-        <div style={{ display: "flex", marginTop: "2em" }}>
+        <div style={{ display: "flex", marginTop: "3em" }}>
+          {/* <BlockContent
+            color={{ light: "#ED80A2", dark: "#D1728F" }}
+            name="In-Class Activity"
+            help_text="This is help text"
+            has_alert={false}
+            icon=""
+            style={{
+              width: "4em !important",
+              height: "4em",
+              left: "10px",
+              top: "-20%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "white",
+              borderRadius: "3px",
+            }}
+          >
+            
+          </BlockContent> */}
           <InfoCard
             color={{ light: "#ED80A2", dark: "#D1728F" }}
             icon=""
-            title="In-Class Activity"
+            title="Instructor Movement"
             helpWindowText="This is help text"
           >
             <div className="infoCardContent">
@@ -95,7 +118,9 @@ export function SessionPagePresentational(
             title="Behavioral Engagement"
             helpWindowText="This is help text"
           >
-            <h1>Test</h1>
+            <div className="infoCardContent">
+              <BehavioralEngagement />
+            </div>
           </InfoCard>
         </div>
       </div>

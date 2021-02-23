@@ -14,6 +14,7 @@ export interface IBlockContentProps {
   has_alert: boolean;
   icon: any;
   children?: React.ReactNode;
+  style?: any;
 }
 
 const whiteColor = {
@@ -28,7 +29,7 @@ export default function BlockContent(props: IBlockContentProps) {
   const lightRGB = props.color ? hexToRgb(props.color.light) : whiteColor;
 
   return (
-    <div>
+    <div style={props.style}>
       <Card
         style={{
           width: "17em",

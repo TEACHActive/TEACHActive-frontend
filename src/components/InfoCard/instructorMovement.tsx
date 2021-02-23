@@ -9,7 +9,13 @@ import {
   YAxis,
   Tooltip,
   ResponsiveContainer,
+  AreaChart,
+  Area,
 } from "recharts";
+
+// import MovementPatternsJSON from "../../data/movementPatterns.json";
+// import SitVsStandJSON from "../../data//sitVsStand.json";
+import FramesJSON from "../../data/frames.json";
 
 export interface IInstructorMovementProps {}
 
@@ -36,14 +42,104 @@ export function InstructorMovement(props: IInstructorMovementProps) {
       </Menu.Item>
     </Menu>
   );
-  const data = [
-    { name: "Page A", uv: 400, pv: 2400, amt: 2400 },
-    { name: "Page B", uv: 300, pv: 2400, amt: 2400 },
-    { name: "Page C", uv: 300, pv: 2400, amt: 2400 },
-    { name: "Page D", uv: 200, pv: 2400, amt: 2400 },
-    { name: "Page E", uv: 278, pv: 2400, amt: 2400 },
-    { name: "Page F", uv: 189, pv: 2400, amt: 2400 },
-  ];
+  // console.log(FramesJSON);
+
+  let movementPatternsData;
+  let sitVsStandData;
+
+  React.useEffect(function () {
+    console.log("useeffect");
+
+    movementPatternsData = FramesJSON.frames
+      .sort(
+        (frameA: any, frameB: any) => frameA.frameNumber - frameB.frameNumber
+      )
+      .map((frame: any) => {
+        // console.log(frame);
+
+        return {
+          frameNumber: frame.frameNumber,
+          xPos:
+            frame.people && frame.people[0]
+              ? frame.people[0].body[3] ||
+                frame.people[0].body[0] ||
+                frame.people[0].body[24]
+              : null,
+        };
+      });
+    const groupEvery = 10;
+    // console.log(FramesJSON.frames.length / groupEvery);
+
+    let groupedSitStandData: any = new Array(
+      Math.ceil(FramesJSON.frames.length / groupEvery)
+    ).fill([]);
+
+    // console.log(1, groupedSitStandData);
+
+    FramesJSON.frames.forEach((frame: any, i: number) => {
+      // if (Math.floor(i / groupEvery) === 0) console.log(2, groupedSitStandData);
+      //console.log(groupedSitStandData[Math.floor(i / groupEvery)]);
+
+      groupedSitStandData[Math.floor(i / groupEvery)].push({
+        frameNumber: frame.frameNumber,
+        sitStand:
+          frame.people.length > 0
+            ? frame.people[0].inference.posture.sitStand
+            : "error",
+      });
+      // console.log(3, groupedSitStandData);
+    });
+    // console.log(4, groupedSitStandData);
+    sitVsStandData = groupedSitStandData.map(
+      (group: Array<{ frameNumber: number; sitStand: string }>) => {
+        let sitNum = 0,
+          standNum = 0,
+          errorNum = 0;
+
+        group.forEach((sitStandData) => {
+          switch (sitStandData.sitStand) {
+            case "sit":
+              sitNum++;
+              break;
+            case "stand":
+              standNum++;
+              break;
+            case "error":
+              errorNum++;
+              break;
+            default:
+              break;
+          }
+        });
+
+        return {
+          frameNumber: group[0].frameNumber,
+          sitNum: sitNum,
+          standNum: standNum,
+          errorNum: errorNum,
+        };
+      }
+    );
+  }, []);
+
+  // [
+  //   { name: "Page A", uv: 400, pv: 2400, amt: 2400 },
+  //   { name: "Page B", uv: 300, pv: 2400, amt: 2400 },
+  //   { name: "Page C", uv: 300, pv: 2400, amt: 2400 },
+  //   { name: "Page D", uv: 200, pv: 2400, amt: 2400 },
+  //   { name: "Page E", uv: 278, pv: 2400, amt: 2400 },
+  //   { name: "Page F", uv: 189, pv: 2400, amt: 2400 },
+  // ];
+
+  const toPercent = (decimal: number, fixed = 0) =>
+    `${(decimal * 100).toFixed(fixed)}%`;
+
+  const getPercent = (value: number, total: number) => {
+    const ratio = total > 0 ? value / total : 0;
+
+    return toPercent(ratio, 2);
+  };
+
   return (
     <div>
       <Dropdown overlay={menu}>
@@ -52,11 +148,50 @@ export function InstructorMovement(props: IInstructorMovementProps) {
         </a>
       </Dropdown>
       {selectedActivity === SelectedActivity.SitVsStand && (
-        <LineChart width={400} height={200} data={data}>
-          <Line type="monotone" dataKey="uv" stroke="#8884d8" />
+        <AreaChart
+          width={500}
+          height={400}
+          data={sitVsStandData}
+          stackOffset="expand"
+          margin={{
+            top: 10,
+            right: 30,
+            left: 0,
+            bottom: 0,
+          }}
+        >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="frameNumber" />
+          <YAxis tickFormatter={toPercent} />
+          <Area
+            type="monotone"
+            dataKey="a"
+            stackId="1"
+            stroke="#8884d8"
+            fill="#8884d8"
+          />
+          <Area
+            type="monotone"
+            dataKey="b"
+            stackId="1"
+            stroke="#82ca9d"
+            fill="#82ca9d"
+          />
+          <Area
+            type="monotone"
+            dataKey="c"
+            stackId="1"
+            stroke="#ffc658"
+            fill="#ffc658"
+          />
+        </AreaChart>
+      )}
+      {selectedActivity === SelectedActivity.MovementPatterns && (
+        <LineChart width={400} height={200} data={movementPatternsData}>
+          <Line type="monotone" dataKey="xPos" stroke="#8884d8" />
           <CartesianGrid stroke="#ccc" />
-          <XAxis dataKey="name" />
-          <YAxis />
+          <XAxis dataKey="frameNumber" />
+          <YAxis dataKey="xPos" />
           <Tooltip />
         </LineChart>
       )}
