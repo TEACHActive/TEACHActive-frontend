@@ -11,6 +11,7 @@ import {
   MetricPage,
   SettingsPage,
   GettingStartedPage,
+  SignInPage,
 } from "./pages";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Session } from "./pages/metric/metricPage.types";
@@ -23,6 +24,7 @@ export class ComponentRoute {
   link: (id?: string) => string;
   inSidebar: boolean;
   exact: boolean;
+  secure: boolean;
 
   constructor(data: any) {
     this.name = data.name;
@@ -32,6 +34,7 @@ export class ComponentRoute {
     this.link = data.link;
     this.inSidebar = data.inSidebar;
     this.exact = data.exact;
+    this.secure = data.secure;
   }
 }
 
@@ -43,6 +46,7 @@ export const BaseRoute: ComponentRoute = new ComponentRoute({
   link: () => "/",
   inSidebar: false,
   exact: true,
+  secure: false,
 });
 
 export const SessionRoute: ComponentRoute = new ComponentRoute({
@@ -53,6 +57,7 @@ export const SessionRoute: ComponentRoute = new ComponentRoute({
   link: () => "/session",
   inSidebar: false,
   exact: true,
+  secure: true,
 });
 
 export const MetricsRoute: ComponentRoute = new ComponentRoute({
@@ -63,6 +68,7 @@ export const MetricsRoute: ComponentRoute = new ComponentRoute({
   link: () => "/metrics",
   inSidebar: true,
   exact: true,
+  secure: true,
 });
 export const ProgressRoute: ComponentRoute = new ComponentRoute({
   name: "Progress",
@@ -72,6 +78,7 @@ export const ProgressRoute: ComponentRoute = new ComponentRoute({
   link: () => "/progress",
   inSidebar: true,
   exact: true,
+  secure: true,
 });
 export const GoalsRoute: ComponentRoute = new ComponentRoute({
   name: "Reflections & Goals",
@@ -81,6 +88,7 @@ export const GoalsRoute: ComponentRoute = new ComponentRoute({
   link: () => "/goals",
   inSidebar: true,
   exact: true,
+  secure: true,
 });
 export const SettingsRoute: ComponentRoute = new ComponentRoute({
   name: "Settings",
@@ -90,6 +98,17 @@ export const SettingsRoute: ComponentRoute = new ComponentRoute({
   link: () => "/settings",
   inSidebar: true,
   exact: true,
+  secure: true,
+});
+export const SignInRoute: ComponentRoute = new ComponentRoute({
+  name: "Sign In",
+  path: "/login",
+  component: <SignInPage />,
+  icon: <VideoCameraOutlined />,
+  link: () => "/login",
+  inSidebar: true,
+  exact: true,
+  secure: false,
 });
 
 export const routes: ComponentRoute[] = [
@@ -99,4 +118,5 @@ export const routes: ComponentRoute[] = [
   ProgressRoute,
   GoalsRoute,
   SettingsRoute,
+  SignInRoute,
 ];
