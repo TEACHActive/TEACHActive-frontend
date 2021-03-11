@@ -71,29 +71,29 @@ function App(props: any) {
   return (
     <div className="App">
       <Layout className="layout">
-        <Sidebar
-          history={history}
-          apiHandler={apiHandler}
-          refreshSessions={getSetSesssions}
-          sessions={sessions}
-          // selectedSession={selectedSession}
-        />
-        <Layout>
-          <Header
+        <Security
+          oktaAuth={new OktaAuth(OktaConfig.oktaAuthConfig)}
+          onAuthRequired={customAuthHandler}
+        >
+          <Sidebar
             history={history}
-            sessions={sessions}
             apiHandler={apiHandler}
             refreshSessions={getSetSesssions}
+            sessions={sessions}
             // selectedSession={selectedSession}
-            // updateSelectedSession={updateSelectedSession}
           />
-          <div
-            className="site-layout-background"
-            style={{ padding: 24, minHeight: 360 }}
-          >
-            <Security
-              oktaAuth={new OktaAuth(OktaConfig.oktaAuthConfig)}
-              onAuthRequired={customAuthHandler}
+          <Layout>
+            <Header
+              history={history}
+              sessions={sessions}
+              apiHandler={apiHandler}
+              refreshSessions={getSetSesssions}
+              // selectedSession={selectedSession}
+              // updateSelectedSession={updateSelectedSession}
+            />
+            <div
+              className="site-layout-background"
+              style={{ padding: 24, minHeight: "100%", height: "100%" }}
             >
               <Switch>
                 {routes.map((item: ComponentRoute, i: number) =>
@@ -112,10 +112,10 @@ function App(props: any) {
                   )
                 )}
               </Switch>
-            </Security>
-          </div>
-          <Footer style={{ textAlign: "center" }}></Footer>
-        </Layout>
+            </div>
+            <Footer style={{ textAlign: "center" }}></Footer>
+          </Layout>
+        </Security>
       </Layout>
     </div>
   );
