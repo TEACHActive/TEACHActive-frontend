@@ -17,6 +17,7 @@ const oktaSignInConfig = {
     // you will need to uncomment the below line
     // pkce: false
   },
+  features: { registration: true },
 };
 
 export { oktaAuthConfig, oktaSignInConfig };

@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Spin, Empty } from "antd";
-import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 import { Session } from "./metricPage.types";
@@ -9,12 +8,10 @@ import {
   MetricPageFakeAPIHandler,
 } from "./metricPage.handler";
 import { SessionPagePresentational } from "./metricPagePresentational";
-import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom";
 import { useOktaAuth } from "@okta/okta-react";
 
 import "./metricPage.css";
-import { faFontAwesomeLogoFull } from "@fortawesome/free-solid-svg-icons";
 
 export interface ISessionPageProps {
   // session: Session | null;
@@ -46,16 +43,6 @@ export default function MetricPage(props: ISessionPageProps) {
 
   const history = useHistory();
   const { oktaAuth, authState } = useOktaAuth();
-
-  const login = async () => history.push("/login");
-
-  const logout = async () => oktaAuth.signOut();
-
-  const button = authState.isAuthenticated ? (
-    <button onClick={logout}>Logout</button>
-  ) : (
-    <button onClick={login}>Login</button>
-  );
 
   const selectedSession: Session | null = useSelector(
     (state: any) => state.session.selectedSession

@@ -64,9 +64,9 @@ export function SessionPagePresentational(
                   help_text={item.help_text}
                   has_alert={item.has_alert}
                   icon={icon}
+                  key={i}
                 >
                   <MetricDisplay
-                    key={i}
                     metricType={item.metricType}
                     metric={item.metric}
                     denominator={item.denominator}

@@ -15,6 +15,9 @@ export interface IBlockContentProps {
   icon: any;
   children?: React.ReactNode;
   style?: any;
+  width?: string;
+  minWidth?: string;
+  height?: string;
 }
 
 const whiteColor = {
@@ -32,9 +35,9 @@ export default function BlockContent(props: IBlockContentProps) {
     <div style={props.style}>
       <Card
         style={{
-          width: "17em",
-          minWidth: "220px",
-          height: "10em",
+          width: props.width ?? "17em",
+          minWidth: props.minWidth ?? "220px",
+          height: props.height ?? "10em",
           display: "flex",
           flexDirection: "row",
           justifyContent: "center",

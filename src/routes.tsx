@@ -106,7 +106,7 @@ export const SignInRoute: ComponentRoute = new ComponentRoute({
   component: <SignInPage />,
   icon: <VideoCameraOutlined />,
   link: () => "/login",
-  inSidebar: true,
+  inSidebar: false,
   exact: true,
   secure: false,
 });
