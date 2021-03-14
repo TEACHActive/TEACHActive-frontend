@@ -1,11 +1,9 @@
 import axios from "axios";
+import { BASE_SERVER_URL, TEACHACTIVE_PORT } from "../../constants/api";
 import { APIResponse } from "../../types/types";
 
 import MetricJSON from "./metricPage.json";
 import { AvgGradeAssignmentResponse, Session } from "./metricPage.types";
-
-const TEACHACTIVE_PORT = 4000;
-const BASE_SERVER_URL = "http://teachactive-test.ece.iastate.edu";
 
 let jsonSessions = MetricJSON.data.sessions.map(
   (session: any, i: number) => new Session(session)
