@@ -62,8 +62,7 @@ function App(props: any) {
 
   async function getSetSesssions() {
     const allSessions = await (await apiHandler.getAllSessions()).data;
-
-    setSessions(allSessions);
+    if (allSessions) setSessions(allSessions);
   }
 
   // console.log(selectedSession);

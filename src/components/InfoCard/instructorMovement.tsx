@@ -62,7 +62,7 @@ export class InstructorMovement extends React.Component {
         { sit: 0, stand: 0, error: 0 }
       )
     );
-    console.log(test);
+    // console.log(test);
 
     this.setState({
       sitStandData: test,

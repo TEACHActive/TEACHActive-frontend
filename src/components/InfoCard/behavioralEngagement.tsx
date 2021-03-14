@@ -4,6 +4,7 @@ import { CheckboxValueType } from "antd/lib/checkbox/Group";
 import { LineChart, CartesianGrid, XAxis, YAxis, Legend, Line } from "recharts";
 
 import FramesJSON from "../../data/frames.json";
+import { chunkArray } from "../../util";
 
 export interface IBehavioralEngagementProps {}
 
@@ -28,10 +29,57 @@ const defaultOptions = [
   },
 ];
 
-export function BehavioralEngagement(props: IBehavioralEngagementProps) {
-  const [options, setOptions] = React.useState(defaultOptions);
+export class BehavioralEngagement extends React.Component
+  implements IBehavioralEngagementProps {
+  state = {
+    options: defaultOptions,
+    engagementData: [],
+  };
 
-  const onChange = (checkedValue: CheckboxValueType[]) => {
+  componentDidMount = () => {
+    const engagementData = FramesJSON.frames
+      .sort(
+        (frameA: any, frameB: any) => frameA.frameNumber - frameB.frameNumber
+      )
+      .map((frame: any) => {
+        const armPoseCntObj = frame.people
+          .map((person: any) => person.inference.posture.armPose)
+          .reduce(
+            (tally: { [x: string]: any }, armPose: string | number) => {
+              tally[armPose] = (tally[armPose] || 0) + 1;
+              return tally;
+            },
+            { handsRaised: 0, armsCrossed: 0, other: 0, error: 0 }
+          );
+
+        // console.log(armPoseCntObj);
+        // return armPoseCntObj;
+        return {
+          frameNumber: frame.frameNumber,
+          armPose: armPoseCntObj,
+        };
+      });
+
+    console.log(engagementData);
+    this.setState({
+      engagementData: engagementData,
+    });
+
+    // const test = chunkArray(engagementData, 10).map((chunk) =>
+    //   chunk.reduce(
+    //     (tally: { [x: string]: any }, armPose: string | number) => {
+    //       console.log(armPose);
+
+    //       tally[armPose] = (tally[armPose] || 0) + 1;
+    //       return tally;
+    //     },
+    //     { handsRaised: 0, armsCrossed: 0, other: 0, error: 0 }
+    //   )
+    // );
+    // console.log(test);
+  };
+
+  onChange = (checkedValue: CheckboxValueType[]) => {
     let newOptions = [...defaultOptions];
     const instructorSpeechOptionIndex = newOptions.findIndex(
       (option) => option.value === "instructorSpeech"
@@ -58,91 +106,74 @@ export function BehavioralEngagement(props: IBehavioralEngagementProps) {
     }
 
     if (checkedValue.includes("instructorSpeech")) {
-      newOptions[handRaisesOptionIndex].disabled = true;
-      newOptions[handRaisesOptionIndex].checked = false;
-
+      newOptions[instructorSpeechOptionIndex].disabled = false;
       newOptions[instructorSpeechOptionIndex].checked = true;
-    } else {
-      newOptions[handRaisesOptionIndex].disabled = false;
 
+      newOptions[studentSpeechOptionIndex].disabled = false;
+    } else {
       newOptions[instructorSpeechOptionIndex].checked = false;
     }
 
     if (checkedValue.includes("studentSpeech")) {
-      newOptions[handRaisesOptionIndex].disabled = true;
-      newOptions[handRaisesOptionIndex].checked = false;
-
+      newOptions[studentSpeechOptionIndex].disabled = false;
       newOptions[studentSpeechOptionIndex].checked = true;
-    } else {
-      newOptions[handRaisesOptionIndex].disabled = false;
 
+      newOptions[instructorSpeechOptionIndex].disabled = false;
+    } else {
       newOptions[studentSpeechOptionIndex].checked = false;
     }
 
-    setOptions(newOptions);
+    if (
+      checkedValue.includes("instructorSpeech") ||
+      checkedValue.includes("studentSpeech")
+    ) {
+      newOptions[handRaisesOptionIndex].disabled = true;
+      newOptions[handRaisesOptionIndex].checked = false;
+    }
+
+    if (
+      !checkedValue.includes("instructorSpeech") &&
+      !checkedValue.includes("studentSpeech")
+    ) {
+      newOptions[handRaisesOptionIndex].disabled = false;
+    }
+
+    this.setState({
+      options: newOptions,
+    });
   };
 
-  //   FramesJSON.frames.map((frame) => )
+  render() {
+    const { options } = this.state;
 
-  const data = [
-    {
-      time: 0,
-      uv: 4000,
-      amt: 2400,
-    },
-    {
-      time: 10,
-      uv: 4000,
-      amt: 2400,
-    },
-    {
-      time: 20,
-      uv: 3000,
-      amt: 2210,
-    },
-    {
-      time: 30,
-      uv: 2000,
-      amt: 2290,
-    },
-    {
-      time: 40,
-      uv: 2780,
-      amt: 2000,
-    },
-    {
-      time: 50,
-      uv: 1890,
-      amt: 2181,
-    },
-    {
-      time: 60,
-      uv: 2390,
-      amt: 2500,
-    },
-  ];
+    return (
+      <div>
+        <Checkbox.Group
+          options={options}
+          defaultValue={["handRaises"]}
+          value={options.map((option) => (option.checked ? option.value : ""))}
+          onChange={this.onChange}
+        />
 
-  return (
-    <div>
-      <Checkbox.Group
-        options={options}
-        defaultValue={["handRaises"]}
-        value={options.map((option) => (option.checked ? option.value : ""))}
-        onChange={onChange}
-      />
-
-      <LineChart
-        width={330}
-        height={250}
-        data={data}
-        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-      >
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="time" />
-        <YAxis />
-        <Legend />
-        <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
-      </LineChart>
-    </div>
-  );
+        <LineChart
+          width={430}
+          height={325}
+          data={this.state.engagementData}
+          margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+        >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="framenumber" />
+          <YAxis type="number" tickCount={1} />
+          <Legend />
+          {options.find((option) => option.value === "handRaises")?.checked && (
+            <Line
+              type="monotone"
+              dataKey="armPose.handsRaised"
+              stroke="#82ca9d"
+            />
+          )}
+        </LineChart>
+      </div>
+    );
+  }
 }
