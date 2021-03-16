@@ -11,15 +11,6 @@ import GoalsPagePresentational from "./goalsPagePresentational";
 export interface IGoalsPageProps {}
 
 export default function GoalsPage(props: IGoalsPageProps) {
-  const reflections = [
-    {
-      title: "Reflection1",
-      timestamp: "2021-01-20T18:27:44.117Z",
-      content: "This is the first reflection",
-      tags: ["tag1", "tag2"],
-    },
-  ];
-
   const history = useHistory();
   const { oktaAuth, authState } = useOktaAuth();
 
@@ -31,10 +22,5 @@ export default function GoalsPage(props: IGoalsPageProps) {
 
   if (!selectedSession) return <Empty />;
 
-  return (
-    <GoalsPagePresentational
-      session={selectedSession}
-      reflections={reflections}
-    />
-  );
+  return <GoalsPagePresentational session={selectedSession} />;
 }

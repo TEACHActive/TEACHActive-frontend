@@ -2,13 +2,13 @@ import * as React from "react";
 import { Typography, Collapse } from "antd";
 import { Session } from "../metric/metricPage.types";
 import HandRaisesForm from "./handRaisesForm";
+import InstructorSpeechForm from "./instructorSpeechForm";
 
 const { Title } = Typography;
 const { Panel } = Collapse;
 
 export interface IGoalsPagePresentationalProps {
   session: Session;
-  reflections: any[];
 }
 
 /**
@@ -20,11 +20,13 @@ export default function GoalsPagePresentational(
   props: IGoalsPagePresentationalProps
 ) {
   return (
-    <Collapse defaultActiveKey={["1"]}>
+    <Collapse accordion defaultActiveKey={["1"]} style={{ width: "50%" }}>
       <Panel header="Hand Raises" key="1">
         <HandRaisesForm session={props.session} />
       </Panel>
-      <Panel header="Hand" key="2"></Panel>
+      <Panel header="Instructor Speech" key="2">
+        <InstructorSpeechForm session={props.session} />
+      </Panel>
     </Collapse>
   );
 }

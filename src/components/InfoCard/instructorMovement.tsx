@@ -116,26 +116,27 @@ export class InstructorMovement extends React.Component {
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="frameNumber" />
             <YAxis tickFormatter={toPercent} />
+            <Tooltip />
             <Area
               type="monotone"
               dataKey="sit"
               stackId="1"
-              stroke="#6D64E2"
-              fill="#82ca9d"
+              stroke="#82caFF"
+              fill="#82caFF"
             />
             <Area
               type="monotone"
               dataKey="stand"
               stackId="1"
-              stroke="#ffc658"
-              fill="#64E288"
+              stroke="#64FF88"
+              fill="#64FF88"
             />
             <Area
               type="monotone"
               dataKey="error"
               stackId="1"
-              stroke="#8884d8"
-              fill="#E26464"
+              stroke="#E2FF64"
+              fill="#FF6464"
             />
           </AreaChart>
         )}
