@@ -98,7 +98,9 @@ function App(props: any) {
                 {routes.map((item: ComponentRoute, i: number) =>
                   item.secure ? (
                     <SecureRoute key={i} exact={item.exact} path={item.path}>
-                      <Content style={{ margin: "24px 16px 0" }}>
+                      <Content
+                        style={{ margin: "24px 16px 0", overflow: "auto" }}
+                      >
                         {item.component}
                       </Content>
                     </SecureRoute>

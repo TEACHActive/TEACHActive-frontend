@@ -101,6 +101,11 @@ export default function HandRaisesForm(props: IHandRaisesFormProps) {
     "yes" | "no" | ""
   >("");
 
+  const [
+    isMetricDescriptiveValue,
+    setIsMetricDescriptiveValue,
+  ] = React.useState<"yes" | "no" | "">("");
+
   const [handRaiseGoalOptions, setHandRaiseGoalOptions] = React.useState(
     defaultHandRaiseGoalOptions
   );
@@ -143,17 +148,21 @@ export default function HandRaisesForm(props: IHandRaisesFormProps) {
       handRaiseGoalOther: cleanedHandRaiseGoalOther,
     };
 
-    const response = await apiHandler.sumbitHandRaiseGoals(
-      props.session.id,
-      "1",
-      handRaiseGoalsAndReflections
-    );
+    try {
+      const response = await apiHandler.sumbitHandRaiseGoals(
+        props.session.id,
+        "1",
+        handRaiseGoalsAndReflections
+      );
 
-    if (response.statusCode === 200) {
-      console.log("Success:", values);
-    } else {
-      console.error(response.statusCode, response.data);
-      console.error("Failed to submit responses");
+      if (response.statusCode === 200) {
+        console.log("Success:", values);
+      } else {
+        console.error(response.statusCode, response.data);
+        console.error("Failed to submit responses");
+      }
+    } catch (e) {
+      console.error(e);
     }
   };
 
@@ -194,145 +203,172 @@ export default function HandRaisesForm(props: IHandRaisesFormProps) {
   };
 
   return (
-    <Form
-      {...layout}
-      name="reflectionsForm"
-      initialValues={{ remember: true }}
-      onFinish={onSave}
-      onFinishFailed={onSaveFailed}
-    >
-      {handRaisesMetric && (
-        <BlockContent
-          color={handRaisesMetric.color}
-          name={handRaisesMetric.name}
-          help_text={handRaisesMetric.help_text}
-          has_alert={handRaisesMetric.has_alert}
-          icon={"hand-paper"}
-        >
-          <MetricDisplay
-            metricType={handRaisesMetric.metricType}
-            metric={handRaisesMetric.metric}
-            denominator={handRaisesMetric.denominator}
-            hasDenominator={handRaisesMetric.hasDenominator}
-            unit={handRaisesMetric.unit}
-            trend={handRaisesMetric.trend}
-            trend_metric={handRaisesMetric.trend_metric}
-            trend_metric_unit={handRaisesMetric.trend_metric_unit}
-          />
-        </BlockContent>
-      )}
+    <div style={{ display: "flex", justifyContent: "center", padding: "2em" }}>
+      <Form
+        name="reflectionsForm"
+        initialValues={{ remember: true }}
+        onFinish={onSave}
+        onFinishFailed={onSaveFailed}
+        style={{
+          width: "100%",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "flex-start",
+          alignItems: "flex-start",
+        }}
+      >
+        {handRaisesMetric && (
+          <BlockContent
+            color={handRaisesMetric.color}
+            name={handRaisesMetric.name}
+            help_text={handRaisesMetric.help_text}
+            has_alert={handRaisesMetric.has_alert}
+            icon={"hand-paper"}
+          >
+            <MetricDisplay
+              metricType={handRaisesMetric.metricType}
+              metric={handRaisesMetric.metric}
+              denominator={handRaisesMetric.denominator}
+              hasDenominator={handRaisesMetric.hasDenominator}
+              unit={handRaisesMetric.unit}
+              trend={handRaisesMetric.trend}
+              trend_metric={handRaisesMetric.trend_metric}
+              trend_metric_unit={handRaisesMetric.trend_metric_unit}
+            />
+          </BlockContent>
+        )}
 
-      <Form.Item>
-        <p>
-          The number of hand raises in this session is{" "}
-          <strong>
-            {
-              props.session.metrics?.find(
-                (metric) => metric.metricType === SessionMetricType.HandRaises
-              )?.metric
-            }
-          </strong>
-        </p>
-      </Form.Item>
+        <br />
 
-      <Form.Item>
-        <p>Students mainly raised their hands during this session to...?</p>
-        <Checkbox.Group
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-start",
-          }}
-          options={defaultHandRaisesReasonOptions}
-          value={handRaisesReasonOptions.map((option) =>
-            option.checked ? option.value : ""
-          )}
-          onChange={onChangeHandRaisesReasons}
-        />
-      </Form.Item>
-
-      {handRaisesReasonOptions.find((reason) => reason.value === "other")
-        ?.checked && (
-        <Form.Item>
-          <Input
-            value={handRaiseReasonOther}
-            onChange={(event) => setHandRaiseReasonOther(event.target.value)}
-          />
-        </Form.Item>
-      )}
-
-      <Form.Item>
-        <p>Are you satisfied with students’ number of hand raises?</p>
-        <Radio.Group
-          optionType="button"
-          buttonStyle="solid"
-          options={defaultYesNoOptions}
-          value={satisifedWithHandRaisesValue}
-          onChange={(e: RadioChangeEvent) =>
-            setSatisifedWithHandRaisesValue(e.target.value)
-          }
-        />
-      </Form.Item>
-
-      {satisifedWithHandRaisesValue === "no" && (
         <Form.Item>
           <p>
-            Why are you dissatisfied with the number of student hand raises?
+            The number of hand raises in this session is{" "}
+            <strong>
+              {
+                props.session.metrics?.find(
+                  (metric) => metric.metricType === SessionMetricType.HandRaises
+                )?.metric
+              }
+            </strong>
           </p>
-          <Input
-            value={reasonDissatisfiedWithHandRaises}
-            onChange={(event) =>
-              setReasonDissatisfiedWithHandRaises(event.target.value)
-            }
-          />
         </Form.Item>
-      )}
 
-      <Form.Item>
-        <p>Would you like to set a goal for next session?</p>
-        <Radio.Group
-          optionType="button"
-          buttonStyle="solid"
-          options={defaultYesNoOptions}
-          value={goalNextSessionValue}
-          onChange={(e: RadioChangeEvent) =>
-            setGoalNextSessionValue(e.target.value)
-          }
-        />
-      </Form.Item>
-
-      {goalNextSessionValue === "yes" && (
         <Form.Item>
-          <p>Select Goals From below</p>
+          <p>Students mainly raised their hands during this session to...?</p>
           <Checkbox.Group
             style={{
               display: "flex",
               flexDirection: "column",
               alignItems: "flex-start",
             }}
-            options={defaultHandRaiseGoalOptions}
-            value={handRaiseGoalOptions.map((option) =>
+            options={defaultHandRaisesReasonOptions}
+            value={handRaisesReasonOptions.map((option) =>
               option.checked ? option.value : ""
             )}
-            onChange={onChangeHandRaiseGoals}
+            onChange={onChangeHandRaisesReasons}
           />
         </Form.Item>
-      )}
 
-      {handRaiseGoalOptions.find((reason) => reason.value === "other")
-        ?.checked && (
+        {handRaisesReasonOptions.find((reason) => reason.value === "other")
+          ?.checked && (
+          <Form.Item>
+            <Input
+              value={handRaiseReasonOther}
+              onChange={(event) => setHandRaiseReasonOther(event.target.value)}
+            />
+          </Form.Item>
+        )}
+
         <Form.Item>
-          <Input
-            value={handRaiseGoalOther}
-            onChange={(event) => setHandRaiseGoalOther(event.target.value)}
+          <p>Are you satisfied with students’ number of hand raises?</p>
+          <Radio.Group
+            optionType="button"
+            buttonStyle="solid"
+            options={defaultYesNoOptions}
+            value={satisifedWithHandRaisesValue}
+            onChange={(e: RadioChangeEvent) =>
+              setSatisifedWithHandRaisesValue(e.target.value)
+            }
           />
         </Form.Item>
-      )}
-      <Form.Item {...tailLayout}>
-        <Button type="primary" htmlType="submit">
-          Save
-        </Button>
-      </Form.Item>
-    </Form>
+
+        {satisifedWithHandRaisesValue === "no" && (
+          <Form.Item>
+            <p>
+              Why are you dissatisfied with the number of student hand raises?
+            </p>
+            <Input
+              value={reasonDissatisfiedWithHandRaises}
+              onChange={(event) =>
+                setReasonDissatisfiedWithHandRaises(event.target.value)
+              }
+            />
+          </Form.Item>
+        )}
+
+        <Form.Item>
+          <p>Would you like to set a goal for next session?</p>
+          <Radio.Group
+            optionType="button"
+            buttonStyle="solid"
+            options={defaultYesNoOptions}
+            value={goalNextSessionValue}
+            onChange={(e: RadioChangeEvent) =>
+              setGoalNextSessionValue(e.target.value)
+            }
+          />
+        </Form.Item>
+
+        {goalNextSessionValue === "yes" && (
+          <Form.Item>
+            <p>Select Goals From below</p>
+            <Checkbox.Group
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
+              }}
+              options={defaultHandRaiseGoalOptions}
+              value={handRaiseGoalOptions.map((option) =>
+                option.checked ? option.value : ""
+              )}
+              onChange={onChangeHandRaiseGoals}
+            />
+          </Form.Item>
+        )}
+
+        {handRaiseGoalOptions.find((reason) => reason.value === "other")
+          ?.checked && (
+          <Form.Item>
+            <Input
+              value={handRaiseGoalOther}
+              onChange={(event) => setHandRaiseGoalOther(event.target.value)}
+            />
+          </Form.Item>
+        )}
+
+        <Form.Item>
+          <p>
+            Is this metric descriptive/ indicative of what’s happening during
+            class time?
+          </p>
+          <Radio.Group
+            optionType="button"
+            buttonStyle="solid"
+            options={defaultYesNoOptions}
+            value={isMetricDescriptiveValue}
+            onChange={(e: RadioChangeEvent) =>
+              setIsMetricDescriptiveValue(e.target.value)
+            }
+          />
+        </Form.Item>
+
+        <Form.Item {...tailLayout}>
+          <Button type="primary" htmlType="submit">
+            Save
+          </Button>
+        </Form.Item>
+      </Form>
+    </div>
   );
 }

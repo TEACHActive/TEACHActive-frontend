@@ -118,15 +118,6 @@ export function Sidebar(props: ISidebarProps) {
                 </Menu.Item>
               )
             )}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              marginTop: "2em",
-            }}
-          >
-            <Button type="primary">New Session</Button>
-          </div>
         </Menu>
       </Sider>
     </>
