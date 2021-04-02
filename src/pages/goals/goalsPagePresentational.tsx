@@ -3,6 +3,7 @@ import { Typography, Collapse } from "antd";
 import { Session } from "../metric/metricPage.types";
 import HandRaisesForm from "./handRaisesForm";
 import InstructorSpeechForm from "./instructorSpeechForm";
+import StudentSpeechForm from "./studentSpeechForm";
 
 const { Title } = Typography;
 const { Panel } = Collapse;
@@ -26,6 +27,9 @@ export default function GoalsPagePresentational(
       </Panel>
       <Panel header="Instructor Speech" key="2">
         <InstructorSpeechForm session={props.session} />
+      </Panel>
+      <Panel header="Student Speech" key="3">
+        <StudentSpeechForm session={props.session} />
       </Panel>
     </Collapse>
   );

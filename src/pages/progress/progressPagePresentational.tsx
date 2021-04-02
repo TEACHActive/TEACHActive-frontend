@@ -23,13 +23,13 @@ export function ProgressPagePresentational(
   };
 
   const blockProperties = [
-    {
-      color: color,
-      name: "In-Class Activity",
-      help_text: "",
-      has_alert: false,
-      icon: null,
-    },
+    // {
+    //   color: color,
+    //   name: "In-Class Activity",
+    //   help_text: "",
+    //   has_alert: false,
+    //   icon: null,
+    // },
     {
       color: color,
       name: "Behavorial Engagement",

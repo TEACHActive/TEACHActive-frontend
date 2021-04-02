@@ -39,7 +39,7 @@ export function InfoCard(props: IInfoCardProps) {
         >
           {props.icon}
         </div>
-        <p className="InfoCard--title">{props.title}</p>
+        <p className="InfoCard--title"><strong>{props.title}</strong></p>
       </div>
       {props.children}
     </Card>

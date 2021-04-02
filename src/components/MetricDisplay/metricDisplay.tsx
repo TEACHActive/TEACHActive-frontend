@@ -24,6 +24,8 @@ export interface IMetricDisplayProps {
 }
 
 export default function MetricDisplay(props: IMetricDisplayProps) {
+  console.log(props);
+  
   return (
     <div className="MetricDisplay--bottom">
       <div

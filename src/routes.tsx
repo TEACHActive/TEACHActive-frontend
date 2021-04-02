@@ -96,7 +96,7 @@ export const SettingsRoute: ComponentRoute = new ComponentRoute({
   component: <SettingsPage />,
   icon: <VideoCameraOutlined />,
   link: () => "/settings",
-  inSidebar: true,
+  inSidebar: false,
   exact: true,
   secure: true,
 });

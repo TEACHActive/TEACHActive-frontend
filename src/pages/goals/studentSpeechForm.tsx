@@ -21,7 +21,7 @@ import { HandRaiseGoalsAndReflections } from "./goalsPage.types";
 
 const { Panel } = Collapse;
 
-export interface IInstructorSpeechFormProps {
+export interface IStudentSpeechFormProps {
   session: Session;
 }
 
@@ -46,7 +46,7 @@ const defaultLectureTypeOptions = [
   },
 ];
 
-const defaultInstructorSpeechGoalOptions = (speakingTime: any) => [
+const defaultStudentSpeechGoalOptions = (speakingTime: any) => [
   {
     label: `Talk less than ${speakingTime} minutes`,
     value: "talk_less",
@@ -76,9 +76,7 @@ const defaultYesNoOptions = [
   },
 ];
 
-export default function InstructorSpeechForm(
-  props: IInstructorSpeechFormProps
-) {
+export default function StudentSpeechForm(props: IStudentSpeechFormProps) {
   const apiHandler: IGoalsPageAPIHandler = new GoalsPageAPIHandler();
 
   const { oktaAuth, authState } = useOktaAuth();
@@ -108,7 +106,7 @@ export default function InstructorSpeechForm(
   const [
     instructorSpeechGoalOptions,
     setInstructorSpeechGoalOptions,
-  ] = React.useState(defaultInstructorSpeechGoalOptions(0));
+  ] = React.useState(defaultStudentSpeechGoalOptions(0));
 
   const [
     instructorSpeechGoalOther,
@@ -186,7 +184,7 @@ export default function InstructorSpeechForm(
     checkedValue: CheckboxValueType[],
     speakingTime: any
   ) => {
-    const updatedGoals = defaultInstructorSpeechGoalOptions(speakingTime).map(
+    const updatedGoals = defaultStudentSpeechGoalOptions(speakingTime).map(
       (goal) => {
         let updatedGoal = { ...goal };
         updatedGoal.checked = checkedValue.includes(goal.value) ? true : false;
@@ -196,8 +194,8 @@ export default function InstructorSpeechForm(
     setInstructorSpeechGoalOptions(updatedGoals);
   };
 
-  const instructorSpeechMetric = props.session.metrics?.find(
-    (metric) => metric.metricType === SessionMetricType.InstructorSpeech
+  const studentSpeechMetric = props.session.metrics?.find(
+    (metric) => metric.metricType === SessionMetricType.StudentSpeech
   );
 
   const layout = {
@@ -207,10 +205,6 @@ export default function InstructorSpeechForm(
   const tailLayout = {
     wrapperCol: { offset: 8, span: 16 },
   };
-
-  //   const sessionMetric = props.session.metrics?.find(
-  //     (metric) => metric.metricType === SessionMetricType.HandRaises
-  //   );
 
   return (
     <div style={{ display: "flex", justifyContent: "center", padding: "2em" }}>
@@ -227,23 +221,23 @@ export default function InstructorSpeechForm(
           alignItems: "flex-start",
         }}
       >
-        {instructorSpeechMetric && (
+        {studentSpeechMetric && (
           <BlockContent
-            color={instructorSpeechMetric.color}
-            name={instructorSpeechMetric.name}
-            help_text={instructorSpeechMetric.help_text}
-            has_alert={instructorSpeechMetric.has_alert}
+            color={studentSpeechMetric.color}
+            name={studentSpeechMetric.name}
+            help_text={studentSpeechMetric.help_text}
+            has_alert={studentSpeechMetric.has_alert}
             icon={"comment"}
           >
             <MetricDisplay
-              metricType={instructorSpeechMetric.metricType}
-              metric={instructorSpeechMetric.metric}
-              denominator={instructorSpeechMetric.denominator}
-              hasDenominator={instructorSpeechMetric.hasDenominator}
-              unit={instructorSpeechMetric.unit}
-              trend={instructorSpeechMetric.trend}
-              trend_metric={instructorSpeechMetric.trend_metric}
-              trend_metric_unit={instructorSpeechMetric.trend_metric_unit}
+              metricType={studentSpeechMetric.metricType}
+              metric={studentSpeechMetric.metric}
+              denominator={studentSpeechMetric.denominator}
+              hasDenominator={studentSpeechMetric.hasDenominator}
+              unit={studentSpeechMetric.unit}
+              trend={studentSpeechMetric.trend}
+              trend_metric={studentSpeechMetric.trend_metric}
+              trend_metric_unit={studentSpeechMetric.trend_metric_unit}
             />
           </BlockContent>
         )}
@@ -252,14 +246,14 @@ export default function InstructorSpeechForm(
 
         <Form.Item>
           <p>
-            You spoke for <strong>{instructorSpeechMetric?.metric}</strong>{" "}
+            Students spoke for <strong>{studentSpeechMetric?.metric}</strong>{" "}
             minutes during this session
           </p>
         </Form.Item>
 
         <Form.Item>
           <p>
-            Did you expect that you will be speaking for this amount of time?
+            Did you expect that they will be speaking for this amount of time?
           </p>
           <Radio.Group
             optionType="button"
@@ -289,7 +283,7 @@ export default function InstructorSpeechForm(
         </Form.Item>
 
         <Form.Item>
-          <p>Are you satisfied with the number of minutes you spoke?</p>
+          <p>Are you satisfied with the number of minutes they spoke?</p>
           <Radio.Group
             optionType="button"
             buttonStyle="solid"
@@ -334,8 +328,8 @@ export default function InstructorSpeechForm(
                 flexDirection: "column",
                 alignItems: "flex-start",
               }}
-              options={defaultInstructorSpeechGoalOptions(
-                instructorSpeechMetric?.metric
+              options={defaultStudentSpeechGoalOptions(
+                studentSpeechMetric?.metric
               )}
               value={instructorSpeechGoalOptions.map((option) =>
                 option.checked ? option.value : ""
@@ -343,7 +337,7 @@ export default function InstructorSpeechForm(
               onChange={(checkedValue: CheckboxValueType[]) =>
                 onChangeInstructorSpeechGoals(
                   checkedValue,
-                  instructorSpeechMetric?.metric
+                  studentSpeechMetric?.metric
                 )
               }
             />
@@ -362,7 +356,7 @@ export default function InstructorSpeechForm(
           </Form.Item>
         )}
 
-        <Form.Item>
+        {/* <Form.Item>
           <p>
             Is this metric descriptive/ indicative of what’s happening during
             class time?
@@ -376,7 +370,7 @@ export default function InstructorSpeechForm(
               setIsMetricDescriptiveValue(e.target.value)
             }
           />
-        </Form.Item>
+        </Form.Item> */}
 
         <Form.Item {...tailLayout}>
           <Button type="primary" htmlType="submit">
