@@ -64,7 +64,7 @@ export default function BlockContent(props: IBlockContentProps) {
               width: "40%",
             }}
           >
-            {props.name}
+            <strong>{props.name}</strong>
           </p>
         </div>
         {props.children}
