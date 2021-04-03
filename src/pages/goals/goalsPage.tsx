@@ -1,4 +1,3 @@
-import { useOktaAuth } from "@okta/okta-react";
 import { Empty } from "antd";
 import * as React from "react";
 import { useSelector } from "react-redux";
@@ -12,13 +11,10 @@ export interface IGoalsPageProps {}
 
 export default function GoalsPage(props: IGoalsPageProps) {
   const history = useHistory();
-  const { oktaAuth, authState } = useOktaAuth();
 
   const selectedSession: Session | null = useSelector(
     (state: any) => state.session.selectedSession
   );
-
-  if (authState.isPending) return null;
 
   if (!selectedSession) return <Empty />;
 

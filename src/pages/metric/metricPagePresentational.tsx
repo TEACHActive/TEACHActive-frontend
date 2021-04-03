@@ -18,7 +18,12 @@ export function SessionPagePresentational(
   props: ISessionPagePresentationalProps
 ) {
   if (!props.session) {
-    return <Empty />;
+    return <div><Empty
+    description={
+      <span>
+        Select a session from the dropdown near the top of the screen
+      </span>
+    }></Empty><h3>Please Select </h3></div>;
   }
 
   return (

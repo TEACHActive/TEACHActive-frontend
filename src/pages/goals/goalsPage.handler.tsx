@@ -6,11 +6,11 @@ import { HandRaiseGoalsAndReflections } from "./goalsPage.types";
 export interface IGoalsPageAPIHandler {
   getHandRaiseGoals(
     sessionID: string,
-    oktaID: string //Could also be userID?
+    userID: string //Could also be userID?
   ): Promise<APIResponse<HandRaiseGoalsAndReflections>>;
   sumbitHandRaiseGoals(
     sessionID: string,
-    oktaID: string,
+    userID: string,
     goals: any
   ): Promise<APIResponse<HandRaiseGoalsAndReflections>>;
 }
@@ -20,7 +20,7 @@ const BASE_ENDPOINT = "/goals";
 export class GoalsPageAPIHandler implements IGoalsPageAPIHandler {
   async getHandRaiseGoals(
     sessionID: string,
-    oktaID: string
+    userID: string
   ): Promise<APIResponse<HandRaiseGoalsAndReflections>> {
     // const response = await axios.get<any>();
 
@@ -41,7 +41,7 @@ export class GoalsPageAPIHandler implements IGoalsPageAPIHandler {
 
   async sumbitHandRaiseGoals(
     sessionID: string,
-    oktaID: string,
+    userID: string,
     goals: any
   ): Promise<APIResponse<HandRaiseGoalsAndReflections>> {
     const response = await axios.post<any>(
@@ -51,7 +51,7 @@ export class GoalsPageAPIHandler implements IGoalsPageAPIHandler {
       {
         params: {
           sessionID: sessionID,
-          oktaID: oktaID,
+          userID: userID,
         },
         body: goals,
       }
