@@ -9,7 +9,6 @@ import {
 } from "./metricPage.handler";
 import { SessionPagePresentational } from "./metricPagePresentational";
 import { useHistory } from "react-router-dom";
-import { useOktaAuth } from "@okta/okta-react";
 
 import "./metricPage.css";
 
@@ -42,13 +41,10 @@ export default function MetricPage(props: ISessionPageProps) {
   // if (props.loading) return <Spin />;
 
   const history = useHistory();
-  const { oktaAuth, authState } = useOktaAuth();
 
   const selectedSession: Session | null = useSelector(
     (state: any) => state.session.selectedSession
   );
-
-  if (authState.isPending) return null;
 
   if (!selectedSession) return <Empty />;
 

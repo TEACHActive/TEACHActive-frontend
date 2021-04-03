@@ -1,5 +1,4 @@
 import * as React from "react";
-import { useOktaAuth } from "@okta/okta-react";
 import {
   Typography,
   Tag,
@@ -78,8 +77,6 @@ const defaultYesNoOptions = [
 
 export default function StudentSpeechForm(props: IStudentSpeechFormProps) {
   const apiHandler: IGoalsPageAPIHandler = new GoalsPageAPIHandler();
-
-  const { oktaAuth, authState } = useOktaAuth();
 
   const [expectSpeakingTimeValue, setExpectSpeakingTimeValue] = React.useState<
     "yes" | "no" | ""

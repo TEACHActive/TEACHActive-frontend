@@ -7,12 +7,23 @@ import "antd/dist/antd.css";
 import { BrowserRouter as Router } from "react-router-dom";
 import { Provider } from "react-redux";
 import store from "./redux/store";
+import firebase from "firebase/app";
+import "firebase/auth";
+import {
+  FirebaseAuthProvider
+} from "@react-firebase/auth";
+import {firebaseConfig} from "./config/firebaseConfig" 
 
 ReactDOM.render(
   <Provider store={store}>
-    <Router>
-      <App />
-    </Router>
+    <FirebaseAuthProvider firebase={firebase} {...firebaseConfig}>
+      {
+        <Router>
+          <App />
+        </Router>
+      }
+    </FirebaseAuthProvider>
+    
   </Provider>,
   document.getElementById("root")
 );
