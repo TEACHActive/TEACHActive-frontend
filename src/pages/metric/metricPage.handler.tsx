@@ -101,7 +101,7 @@ export class MetricPageFakeAPIHandler implements IMetricPageAPIHandler {
       return jsonSession;
     });
     jsonSessions = newSessions;
-    console.log(newSessions);
+    // console.log(newSessions);
 
     return Promise.resolve(
       new APIResponse<Session>({

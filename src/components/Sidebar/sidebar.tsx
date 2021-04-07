@@ -9,7 +9,7 @@ import {
   IMetricPageAPIHandler,
   MetricPageFakeAPIHandler,
 } from "../../pages/metric/metricPage.handler";
-import * as ReducerActionType from "../../redux/actionTypes";
+import { FirebaseAuthConsumer } from "@react-firebase/auth";
 
 const { SubMenu } = Menu;
 const { Header, Content, Footer, Sider } = Layout;
@@ -18,7 +18,6 @@ export interface ISidebarProps {
   history: any;
   apiHandler: IMetricPageAPIHandler;
   refreshSessions: () => Promise<void>;
-  sessions: Session[];
   // selectedSession: Session | null;
 }
 
@@ -40,86 +39,60 @@ export function Sidebar(props: ISidebarProps) {
     //Todo
     // setEditingSessionIndexBool(new Array(allSessions.length).fill(false));
   }
-
   return (
-    <>
-      <Sider breakpoint="lg" collapsedWidth="0">
-        <div className="logo" />
+    <FirebaseAuthConsumer>
+      {({
+        isSignedIn,
+        user,
+        providerId,
+      }: {
+        isSignedIn: boolean;
+        user: any;
+        providerId: any;
+      }) => {
+        return (
+          <>
+            <Sider breakpoint="lg" collapsedWidth="0" style={{ flexGrow: 4 }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  height: "100%",
+                }}
+              >
+                <div style={{ flexGrow: 10 }}>
+                  <div className="logo" />
 
-        <Menu theme="dark" mode="inline">
-          {routes
-            .filter((item: ComponentRoute) => item.inSidebar)
-            .map((item: ComponentRoute, i: number) =>
-              item.name.toLowerCase() === "session" ? (
-                <SubMenu key="sessionSub" icon={item.icon} title={item.name}>
-                  {props.sessions.map((session: Session, i: number) => {
-                    const date = session.createdAt?.toLocaleString();
-                    if (editingSessionIndexBool[i]) {
-                      return (
-                        <div>
-                          <Input
-                            placeholder={date}
-                            value={newSessionName}
-                            onChange={(event) => {
-                              setNewSessionName(event.target.value);
-                            }}
-                          />{" "}
-                          <Button
-                            type="primary"
-                            onClick={() => {
-                              setSessionName(session, newSessionName);
-                              setNewSessionName("");
-                              let items = [...editingSessionIndexBool];
-                              items[i] = false;
-                              setEditingSessionIndexBool(items);
-                            }}
-                          >
-                            Save
-                          </Button>
-                        </div>
-                      );
-                    }
-                    return (
-                      <Menu.Item
-                        key={session.id}
-                        title={date}
-                        onClick={() => {
-                          // props.history.push(item.link(session.id))
-                          dispatch({
-                            type: ReducerActionType.SET_SELECTED_SESSION,
-                            payload: { selectedSession: session },
-                          });
-                        }}
-                      >
-                        {session.name ? session.name : date}{" "}
-                        <FontAwesomeIcon
-                          icon="edit"
-                          className="sessionNameEditIcon"
-                          onClick={() => {
-                            let items = [...editingSessionIndexBool].fill(
-                              false
-                            );
-                            items[i] = true;
-                            setEditingSessionIndexBool(items);
-                          }}
-                        />
-                      </Menu.Item>
-                    );
-                  })}
-                </SubMenu>
-              ) : (
-                <Menu.Item
-                  key={i}
-                  icon={item.icon}
-                  title={item.name}
-                  onClick={() => props.history.push(item.link())}
+                  <Menu theme="dark" mode="inline">
+                    {routes
+                      .filter((item: ComponentRoute) => item.inSidebar)
+                      .map((item: ComponentRoute, i: number) => (
+                        <Menu.Item
+                          key={i}
+                          icon={item.icon}
+                          title={item.name}
+                          onClick={() => props.history.push(item.link())}
+                        >
+                          {item.name}
+                        </Menu.Item>
+                      ))}
+                  </Menu>
+                </div>
+                <p
+                  style={{
+                    flexShrink: 1,
+                    color: "white",
+                    alignSelf: "center",
+                    fontSize: 10,
+                  }}
                 >
-                  {item.name}
-                </Menu.Item>
-              )
-            )}
-        </Menu>
-      </Sider>
-    </>
+                  Version: {process.env.REACT_APP_VERSION}
+                </p>
+              </div>
+            </Sider>
+          </>
+        );
+      }}
+    </FirebaseAuthConsumer>
   );
 }

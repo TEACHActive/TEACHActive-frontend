@@ -1,5 +1,4 @@
-export const ADD_TODO = "ADD_TODO";
-export const TOGGLE_TODO = "TOGGLE_TODO";
-export const SET_FILTER = "SET_FILTER";
-
 export const SET_SELECTED_SESSION = "SET_SELECTED_SESSION";
+export const SET_SESSIONS = "SET_SESSIONS";
+
+export const SET_USER_UID = "SET_USER_UID";

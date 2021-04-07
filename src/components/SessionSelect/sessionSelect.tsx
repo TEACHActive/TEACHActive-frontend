@@ -4,29 +4,25 @@ import { useSelector, useDispatch } from "react-redux";
 
 import * as ReducerActionType from "../../redux/actionTypes";
 import { SessionTreeNodeTitle } from "../Header/sessionTreeNodeTitle";
-import { Session } from "../../pages/metric/metricPage.types";
-import { IMetricPageAPIHandler } from "../../pages/metric/metricPage.handler";
+import { BaseSession } from "../../api/types";
+import { IAPIHandler } from "../../api/handler";
 
 export interface ISessionSelectProps {
-  sessions: Session[];
-  apiHandler: IMetricPageAPIHandler;
+  sessions: BaseSession[];
+  apiHandler: IAPIHandler;
   refreshSessions: () => Promise<void>;
 }
 
 export default function SessionSelect(props: ISessionSelectProps) {
   const dispatch = useDispatch();
-  const selectedSession = useSelector((state: any) => state.selectedSession);
-
-  async function setSessionName(session: Session, newName: string) {
-    const response = await props.apiHandler.setSessionName(session, newName);
-
-    await props.refreshSessions();
-    //Todo
-    // setEditingSessionIndexBool(new Array(allSessions.length).fill(false));
-  }
+  const selectedSession: BaseSession | null = useSelector(
+    (state: any) => state.session.selectedSession,
+    BaseSession.equal
+  );
 
   const sessionTreeData: any[] = [];
-  props.sessions.forEach((session: Session, i: number) => {
+
+  props.sessions.forEach((session: BaseSession, i: number) => {
     let matchingIndexYear = sessionTreeData.findIndex(
       (yearLevel: any) => yearLevel.title === session.createdAt.year
     );
@@ -58,8 +54,7 @@ export default function SessionSelect(props: ISessionSelectProps) {
         }) - 1;
     }
 
-    const sessionNameOrDate =
-      session.name ?? session.createdAt.toLocaleString();
+    const sessionNameOrDate = session.id ?? session.createdAt.toLocaleString();
     sessionTreeData[matchingIndexYear].children[
       matchingIndexMonth
     ].children.push({
@@ -76,10 +71,17 @@ export default function SessionSelect(props: ISessionSelectProps) {
     });
   });
 
+  async function setSessionName(session: BaseSession, newName: string) {
+    // const response = await props.apiHandler.setSessionName(session, newName);//Todo
+    // await props.refreshSessions();
+    //Todo
+    // setEditingSessionIndexBool(new Array(allSessions.length).fill(false));
+  }
+
   return (
     <TreeSelect
       style={{ width: "15em", margin: "1em" }}
-      value={selectedSession}
+      value={selectedSession ? selectedSession.id : undefined}
       dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
       treeData={sessionTreeData}
       allowClear

@@ -161,11 +161,11 @@ export default function StudentSpeechForm(props: IStudentSpeechFormProps) {
   };
 
   const onSaveFailed = (errorInfo: any) => {
-    console.log("Failed:", errorInfo);
+    console.error("Failed:", errorInfo);
   };
 
   const onChangeLectureTypeReasons = (checkedValue: CheckboxValueType[]) => {
-    console.log(checkedValue);
+    // console.log(checkedValue);
 
     const updatedReasons = defaultLectureTypeOptions.map((resason) => {
       let updatedReason = { ...resason };
