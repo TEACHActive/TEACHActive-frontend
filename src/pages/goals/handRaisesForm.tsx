@@ -153,7 +153,7 @@ export default function HandRaisesForm(props: IHandRaisesFormProps) {
       );
 
       if (response.statusCode === 200) {
-        console.log("Success:", values);
+        // console.log("Success:", values);
       } else {
         console.error(response.statusCode, response.data);
         console.error("Failed to submit responses");

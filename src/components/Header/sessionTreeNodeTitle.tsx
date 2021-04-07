@@ -2,15 +2,18 @@ import * as React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Input, Button } from "antd";
 import { Session } from "../../pages/metric/metricPage.types";
+import { BaseSession } from "../../api/types";
 
 export interface ISessionTreeNodeTitle {
   sessionNameOrDate: string;
-  setSessionName: (session: Session, newSessionName: string) => Promise<void>;
-  session: Session;
+  setSessionName: (
+    session: BaseSession,
+    newSessionName: string
+  ) => Promise<void>;
+  session: BaseSession;
 }
 
 export function SessionTreeNodeTitle(props: ISessionTreeNodeTitle) {
-  
   const [editing, setEditing] = React.useState(false);
   const [newSessionName, setNewSessionName] = React.useState("");
 

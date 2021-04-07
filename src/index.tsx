@@ -9,21 +9,23 @@ import { Provider } from "react-redux";
 import store from "./redux/store";
 import firebase from "firebase/app";
 import "firebase/auth";
-import {
-  FirebaseAuthProvider
-} from "@react-firebase/auth";
-import {firebaseConfig} from "./config/firebaseConfig" 
+import { FirebaseAuthProvider } from "@react-firebase/auth";
+import { firebaseConfig } from "./firebase/firebaseConfig";
+import { PersistGate } from "redux-persist/integration/react";
+
+const { providerStore, persistor } = store();
 
 ReactDOM.render(
-  <Provider store={store}>
-    <FirebaseAuthProvider firebase={firebase} {...firebaseConfig}>
-      {
-        <Router>
-          <App />
-        </Router>
-      }
-    </FirebaseAuthProvider>
-    
+  <Provider store={providerStore}>
+    <PersistGate loading={null} persistor={persistor}>
+      <FirebaseAuthProvider firebase={firebase} {...firebaseConfig}>
+        {
+          <Router>
+            <App />
+          </Router>
+        }
+      </FirebaseAuthProvider>
+    </PersistGate>
   </Provider>,
   document.getElementById("root")
 );

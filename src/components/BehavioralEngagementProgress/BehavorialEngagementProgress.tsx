@@ -98,7 +98,7 @@ export class BehavioralEngagementProgress extends React.Component implements IBe
         { handsRaised: 0, armsCrossed: 0, other: 0, error: 0 }
       );
       engagementData["date"] = "10/2/2002"
-    console.log(engagementData);
+    // console.log(engagementData);
     this.setState({
       engagementData: engagementData,
     });

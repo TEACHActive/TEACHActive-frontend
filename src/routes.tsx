@@ -14,7 +14,7 @@ import {
   SignInPage,
 } from "./pages";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Session } from "./pages/metric/metricPage.types";
+import apiHandler, { APIHandler, IAPIHandler } from "./api/handler";
 
 export class ComponentRoute {
   name: string;
@@ -103,7 +103,7 @@ export const SettingsRoute: ComponentRoute = new ComponentRoute({
 export const SignInRoute: ComponentRoute = new ComponentRoute({
   name: "Sign In",
   path: "/login",
-  component: <SignInPage />,
+  component: <SignInPage apiHandler={apiHandler} />,
   icon: <VideoCameraOutlined />,
   link: () => "/login",
   inSidebar: false,

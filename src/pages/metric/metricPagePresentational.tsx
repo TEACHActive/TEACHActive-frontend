@@ -9,26 +9,34 @@ import BlockContent from "../../components/BlockContent/blockContent";
 import { BehavioralEngagement } from "../../components/InfoCard/behavioralEngagement";
 
 import "./metricPage.css";
+import { BaseSession } from "../../api/types";
 
 export interface ISessionPagePresentationalProps {
-  session: Session | undefined;
+  session: BaseSession | undefined;
+  metrics: SessionMetric[];
 }
 
 export function SessionPagePresentational(
   props: ISessionPagePresentationalProps
 ) {
   if (!props.session) {
-    return <div><Empty
-    description={
-      <span>
-        Select a session from the dropdown near the top of the screen
-      </span>
-    }></Empty><h3>Please Select </h3></div>;
+    return (
+      <div>
+        <Empty
+          description={
+            <span>
+              Select a session from the dropdown near the top of the screen
+            </span>
+          }
+        ></Empty>
+        <h3>Please Select </h3>
+      </div>
+    );
   }
 
   return (
-    <div>
-      <h1 style={{ marginBottom: "3em" }}>{props.session.className}</h1>
+    <div className="metricPagePresentational">
+      {/* <h1 style={{ marginBottom: "3em" }}>{props.session.className}</h1> */}
       <div
         style={{
           width: "100%",
@@ -45,8 +53,8 @@ export function SessionPagePresentational(
             width: "100%",
           }}
         >
-          {props.session.metrics &&
-            props.session.metrics.map((item: SessionMetric, i: number) => {
+          {props.metrics &&
+            props.metrics.map((item: SessionMetric, i: number) => {
               let icon: any = "";
               switch (item.metricType) {
                 case SessionMetricType.HandRaises:
@@ -105,9 +113,9 @@ export function SessionPagePresentational(
               borderRadius: "3px",
             }}
           >
-            
+
           </BlockContent> */}
-          <InfoCard
+          {/* <InfoCard
             color={{ light: "#ED80A2", dark: "#D1728F" }}
             icon=""
             title="Instructor Movement"
@@ -126,7 +134,7 @@ export function SessionPagePresentational(
             <div className="infoCardContent">
               <BehavioralEngagement />
             </div>
-          </InfoCard>
+          </InfoCard> */}
         </div>
       </div>
     </div>

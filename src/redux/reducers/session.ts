@@ -1,12 +1,14 @@
-import { Session } from "../../pages/metric/metricPage.types";
-import { SET_SELECTED_SESSION } from "../actionTypes";
+import { BaseSession } from "../../api/types";
+import { SET_SELECTED_SESSION, SET_SESSIONS } from "../actionTypes";
 
 interface StateShape {
-  selectedSession: null | Session;
+  selectedSession: BaseSession | null;
+  sessions: BaseSession[];
 }
 
-const initialState = {
+const initialState: StateShape = {
   selectedSession: null,
+  sessions: [],
 };
 
 export default function (state = initialState, action: any) {
@@ -17,6 +19,13 @@ export default function (state = initialState, action: any) {
       return {
         ...state,
         selectedSession: selectedSession,
+      };
+    }
+    case SET_SESSIONS: {
+      const { sessions } = action.payload;
+
+      return {
+        sessions: sessions,
       };
     }
     default:
