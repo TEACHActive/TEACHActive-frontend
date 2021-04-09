@@ -1,7 +1,6 @@
 import * as React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Input, Button } from "antd";
-import { Session } from "../../pages/metric/metricPage.types";
 import { BaseSession } from "../../api/types";
 
 export interface ISessionTreeNodeTitle {

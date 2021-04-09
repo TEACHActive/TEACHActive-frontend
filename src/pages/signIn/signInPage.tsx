@@ -9,6 +9,7 @@ import { BaseSession } from "../../api/types";
 import * as ReducerActionType from "../../redux/actionTypes";
 import { useDispatch, useSelector } from "react-redux";
 import { getUser } from "../../redux/selectors";
+import * as COOKIE from "../../constants/cookies";
 
 export interface ISignInPageProps {
   apiHandler: IAPIHandler;
@@ -35,12 +36,17 @@ export default function SignInPage(props: ISignInPageProps) {
     const sessions: BaseSession[] = await props.apiHandler.getSessionsByUID(
       uid
     );
-    console.log(sessions);
+    // console.log(sessions);
 
-    dispatch({
-      type: ReducerActionType.SET_SESSIONS,
-      payload: { sessions: sessions },
-    });
+    try {
+      dispatch({
+        type: ReducerActionType.SET_SESSIONS,
+        payload: { sessions: sessions },
+      });
+    } catch (error) {
+      message.error(error)
+    }
+    
     const videoFrames = await props.apiHandler.getFramesBySessionID(
       sessions[0].id,
       "student"
@@ -52,13 +58,17 @@ export default function SignInPage(props: ISignInPageProps) {
     const user = await loginWithEmailAndPassword(values.email, values.password);
     if (user) {
       history.push(routes.BaseRoute.link());
-      console.log(user.uid);
+      // console.log(user.uid);
 
-      dispatch({
-        action: ReducerActionType.SET_USER_UID,
-        payload: { uid: user.uid },
-      });
-      initSessions(userUID); //user.uid
+      try {
+        dispatch({
+          action: ReducerActionType.SET_USER_UID,
+          payload: { uid: user.uid },
+        });
+      } catch (error) {
+        message.error(error)
+      }
+      initSessions(userUID);
     } else {
       message.error("Failed to log in, check email and password");
     }
@@ -77,7 +87,7 @@ export default function SignInPage(props: ISignInPageProps) {
   };
 
   const rememberEmail = (email: string) => {
-    if (cookies) cookies.set("email", email, { path: "/", sameSite: "strict" });
+    if (cookies) cookies.set(COOKIE.EMAIL, email, { path: "/", sameSite: "strict" });
   };
 
   if (!cookies) return <Spin />;
@@ -95,7 +105,7 @@ export default function SignInPage(props: ISignInPageProps) {
       <Form<ILoginValues>
         {...layout}
         name="basic"
-        initialValues={{ remember: true, email: cookies.get("email") }}
+        initialValues={{ remember: true, email: cookies.get(COOKIE.EMAIL) }}
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}
       >
