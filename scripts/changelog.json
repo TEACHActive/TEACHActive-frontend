@@ -1,0 +1,15 @@
+{
+  "releases": [
+    {
+      "version": "0.1.0",
+      "isReleased": "false",
+      "date": "2021-04-12",
+      "added": [],
+      "changed": [],
+      "deprecated": [],
+      "removed": [],
+      "fixed": [],
+      "security": []
+    }
+  ]
+}

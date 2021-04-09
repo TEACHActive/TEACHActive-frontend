@@ -118,7 +118,7 @@ export function SessionPagePresentational(
           {/* <InfoCard
             color={{ light: "#ED80A2", dark: "#D1728F" }}
             icon=""
-            title="Instructor Movement"
+            title="Movement Patterns"
             helpWindowText="This is help text"
           >
             <div className="infoCardContent">

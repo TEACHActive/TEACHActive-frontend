@@ -12,8 +12,8 @@ import {
   faComments,
   faIdCard,
   faBookReader,
+  faBell
 } from "@fortawesome/free-solid-svg-icons";
-import { FirebaseAuthConsumer } from "@react-firebase/auth";
 
 import "./App.css";
 import { ComponentRoute, routes } from "./routes";
@@ -21,11 +21,10 @@ import {
   IMetricPageAPIHandler,
   MetricPageFakeAPIHandler,
 } from "./pages/metric/metricPage.handler";
-import { Session } from "./pages/metric/metricPage.types";
 
 import { Sidebar } from "./components/Sidebar/sidebar";
 import { Header } from "./components/Header/header";
-import apiHandler, { IAPIHandler, APIHandler } from "./api/handler";
+import apiHandler from "./api/handler";
 import { PrivateRoute } from "./hocs/withAuth";
 
 const { Content, Footer } = Layout;
@@ -38,11 +37,13 @@ library.add(
   faComment,
   faComments,
   faIdCard,
-  faBookReader
+  faBookReader,
+  faBell
 );
 
 function App(props: any) {
   const history = useHistory();
+  
 
   // const [sessions, setSessions] = React.useState<Session[]>([]);
   // const [selectedSession, setSelectedSession] = React.useState<Session | null>(
@@ -51,9 +52,14 @@ function App(props: any) {
 
   React.useEffect(() => {
     getSetSesssions();
+    checkForUpdates();
   }, []);
 
-  async function getSetSesssions() {
+  const checkForUpdates = () => {
+    //REACT_APP_VERSION
+  }
+
+  const getSetSesssions = async() => {
     // const allSessions = await (await apiHandler.getAllSessions()).data;
     // if (allSessions) setSessions(allSessions);
     // const allIDs = await newAPIHandler.getAllSessionIDs();

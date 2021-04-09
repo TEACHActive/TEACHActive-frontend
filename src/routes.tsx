@@ -84,7 +84,11 @@ export const GoalsRoute: ComponentRoute = new ComponentRoute({
   name: "Reflections & Goals",
   path: "/goals",
   component: <GoalsPage />,
-  icon: <FontAwesomeIcon icon="book-reader" />,
+  icon: (
+    <>
+      <FontAwesomeIcon icon="book-reader" />{" "}
+    </>
+  ),
   link: () => "/goals",
   inSidebar: true,
   exact: true,

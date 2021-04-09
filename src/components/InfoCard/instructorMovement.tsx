@@ -159,7 +159,7 @@ export class InstructorMovement extends React.Component {
             })
           }
         >
-          Movement Patterns
+          Instructor Movement
         </Menu.Item>
       </Menu>
     );
@@ -260,7 +260,7 @@ export class InstructorMovement extends React.Component {
 //       <Menu.Item
 //         onClick={() => setSelectedActivity(SelectedActivity.MovementPatterns)}
 //       >
-//         Movement Patterns
+//         Instructor Movement
 //       </Menu.Item>
 //     </Menu>
 //   );
