@@ -10,18 +10,19 @@ import {
   Collapse,
 } from "antd";
 import { stringToHexColor } from "../../util";
-import { Session, SessionMetricType } from "../metric/metricPage.types";
+import { SessionMetricType } from "../metric/metricPage.types";
 import { CheckboxValueType } from "antd/lib/checkbox/Group";
 import { RadioChangeEvent } from "antd/lib/radio";
 import MetricDisplay from "../../components/MetricDisplay/metricDisplay";
 import BlockContent from "../../components/BlockContent/blockContent";
 import { IGoalsPageAPIHandler, GoalsPageAPIHandler } from "./goalsPage.handler";
 import { HandRaiseGoalsAndReflections } from "./goalsPage.types";
+import { BaseSession } from "../../api/types";
 
 const { Panel } = Collapse;
 
 export interface IHandRaisesFormProps {
-  session: Session;
+  session: BaseSession;
 }
 
 const defaultHandRaisesReasonOptions = [
@@ -187,9 +188,9 @@ export default function HandRaisesForm(props: IHandRaisesFormProps) {
     setHandRaiseGoalOptions(updatedGoals);
   };
 
-  const handRaisesMetric = props.session.metrics?.find(
-    (metric) => metric.metricType === SessionMetricType.HandRaises
-  );
+  // const handRaisesMetric = props.session.metrics?.find(
+  //   (metric) => metric.metricType === SessionMetricType.HandRaises
+  // );//Todo
 
   const layout = {
     labelCol: { span: 8 },
@@ -201,7 +202,7 @@ export default function HandRaisesForm(props: IHandRaisesFormProps) {
 
   return (
     <div style={{ display: "flex", justifyContent: "center", padding: "2em" }}>
-      <Form
+      {/* <Form
         name="reflectionsForm"
         initialValues={{ remember: true }}
         onFinish={onSave}
@@ -365,7 +366,7 @@ export default function HandRaisesForm(props: IHandRaisesFormProps) {
             Save
           </Button>
         </Form.Item>
-      </Form>
+      </Form> */}
     </div>
   );
 }

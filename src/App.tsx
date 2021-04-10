@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Layout, TreeSelect } from "antd";
+import { Layout } from "antd";
 import { Switch, Route } from "react-router-dom";
 import { useHistory } from "react-router-dom";
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -12,20 +12,18 @@ import {
   faComments,
   faIdCard,
   faBookReader,
-  faBell
+  faBell,
+  faSync,
 } from "@fortawesome/free-solid-svg-icons";
 
 import "./App.css";
 import { ComponentRoute, routes } from "./routes";
-import {
-  IMetricPageAPIHandler,
-  MetricPageFakeAPIHandler,
-} from "./pages/metric/metricPage.handler";
 
 import { Sidebar } from "./components/Sidebar/sidebar";
 import { Header } from "./components/Header/header";
 import apiHandler from "./api/handler";
 import { PrivateRoute } from "./hocs/withAuth";
+import { getSessions } from "./redux/selectors";
 
 const { Content, Footer } = Layout;
 
@@ -38,12 +36,12 @@ library.add(
   faComments,
   faIdCard,
   faBookReader,
-  faBell
+  faBell,
+  faSync
 );
 
 function App(props: any) {
   const history = useHistory();
-  
 
   // const [sessions, setSessions] = React.useState<Session[]>([]);
   // const [selectedSession, setSelectedSession] = React.useState<Session | null>(
@@ -57,14 +55,14 @@ function App(props: any) {
 
   const checkForUpdates = () => {
     //REACT_APP_VERSION
-  }
+  };
 
-  const getSetSesssions = async() => {
+  const getSetSesssions = async () => {
     // const allSessions = await (await apiHandler.getAllSessions()).data;
     // if (allSessions) setSessions(allSessions);
     // const allIDs = await newAPIHandler.getAllSessionIDs();
     // console.log(videoFrames);
-  }
+  };
 
   // console.log(selectedSession);
 
@@ -75,7 +73,7 @@ function App(props: any) {
               </pre> */}
       <Sidebar
         history={history}
-        apiHandler={new MetricPageFakeAPIHandler()} //Todo
+        apiHandler={apiHandler}
         refreshSessions={getSetSesssions}
         // selectedSession={selectedSession}
       />
@@ -83,7 +81,6 @@ function App(props: any) {
         <Header
           history={history}
           apiHandler={apiHandler}
-          refreshSessions={getSetSesssions}
           // selectedSession={selectedSession}
           // updateSelectedSession={updateSelectedSession}
         />

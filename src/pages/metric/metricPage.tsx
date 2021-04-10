@@ -8,6 +8,7 @@ import "./metricPage.css";
 import { BaseSession, VideoFrame, Person } from "../../api/types";
 import apiHandler from "../../api/handler";
 import { SessionMetric } from "./metricPage.types";
+// import { SessionMetric } from "./metricPage.types";
 
 export interface IMetricPageProps {}
 
@@ -53,8 +54,8 @@ export default function MetricPage(props: IMetricPageProps) {
     //     if (person.armpose === "handRaised") console.log(person.armpose);
     //   });
     // });
-
-    const studentArmPoseFrames = results[0][0].videoFrames.reduce(
+    const videoFrames = results[0][0].videoFrames;
+    const studentArmPoseFrames = videoFrames.reduce(
       (accumulator1: typeof InitArmPoseObj, frame: VideoFrame) => {
         const armPoses = frame.people.reduce(
           (accumulator2: typeof InitArmPoseObj, person: Person) => {
@@ -87,8 +88,85 @@ export default function MetricPage(props: IMetricPageProps) {
 
     setTotalArmPoseFrames(studentArmPoseFrames);
 
+    const avgNumStudentsDetected = videoFrames.reduce(
+      (acc: number, frame: VideoFrame, i: number, arr: VideoFrame[]) => {
+        return acc + frame.people.length / arr.length;
+      },
+      0
+    );
+
+    console.log("Avg Students", avgNumStudentsDetected);
+
+    const numberOfConcecutiveFramesToBeHandRaised = 10;
+    const numberOfConcecutiveFramesToBeHandDown = 10;
+    let peopleHandRaiseTracker: {
+      concecutiveFramesHandRaised: number;
+      concecutiveFramesHandDown: number;
+      numberHandRaises: number;
+      //Could also track length of each hand raise
+    }[] = [];
+    for (let frameNumber = 1; frameNumber < videoFrames.length; frameNumber++) {
+      //Assuming at least one frame
+      const videoFrame = videoFrames[frameNumber];
+      const people = videoFrame.people;
+      for (let personIndex = 0; personIndex < people.length; personIndex++) {
+        const person = people[personIndex];
+        const handRaised = person.armpose === "handRaised";
+
+        let personHandTracker = getDefaultObjectAt(
+          peopleHandRaiseTracker,
+          personIndex
+        );
+        // console.log(person.armpose);
+
+        if (handRaised) {
+          //Frame with hand raise
+          console.log(1);
+
+          if (
+            personHandTracker.concecutiveFramesHandRaised >=
+            numberOfConcecutiveFramesToBeHandRaised
+          ) {
+            getDefaultObjectAt(peopleHandRaiseTracker, personIndex)
+              .numberHandRaises++;
+            getDefaultObjectAt(
+              peopleHandRaiseTracker,
+              personIndex
+            ).concecutiveFramesHandDown = 0;
+          } else {
+            getDefaultObjectAt(
+              peopleHandRaiseTracker,
+              personIndex
+            ).concecutiveFramesHandRaised += 1;
+          }
+        } else {
+          //Frame without hand raise
+          if (
+            personHandTracker.concecutiveFramesHandDown >=
+            numberOfConcecutiveFramesToBeHandDown
+          ) {
+            getDefaultObjectAt(
+              peopleHandRaiseTracker,
+              personIndex
+            ).concecutiveFramesHandRaised = 0;
+          } else {
+            getDefaultObjectAt(
+              peopleHandRaiseTracker,
+              personIndex
+            ).concecutiveFramesHandDown += 1;
+          }
+        }
+      }
+    }
+
+    console.log(peopleHandRaiseTracker);
+
     setLoading(false);
   };
+
+  function getDefaultObjectAt(array: any[], index: number) {
+    return (array[index] = array[index] || {});
+  }
 
   if (!selectedSession) return <Empty />;
 

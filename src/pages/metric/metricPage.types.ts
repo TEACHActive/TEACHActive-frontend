@@ -1,47 +1,49 @@
 import { DateTime } from "luxon";
 import COLOR from "../../constants/colors";
 
-export class AvgGradeAssignmentResponse {
-  name: string;
-  due: DateTime;
-  averageGrade: number;
+// export class AvgGradeAssignmentResponse {
+//   name: string;
+//   due: DateTime;
+//   averageGrade: number;
 
-  constructor(data: any) {
-    this.name = data.name;
-    this.due = DateTime.fromISO(data.due);
-    this.averageGrade = data.averageGrade;
-  }
-}
+//   constructor(data: any) {
+//     this.name = data.name;
+//     this.due = DateTime.fromISO(data.due);
+//     this.averageGrade = data.averageGrade;
+//   }
+// }
 
-export class Session {
-  id: string;
-  createdAt: DateTime;
-  metrics?: SessionMetric[];
-  className: string;
-  name: string;
-  sessionHandRaiseData?: SessionHandRaiseData[];
+// export class Session {
+//   id: string;
+//   createdAt: DateTime;
+//   metrics?: SessionMetric[];
+//   className: string;
+//   name: string;
+//   sessionHandRaiseData?: SessionHandRaiseData[];
 
-  constructor(data: any) {
-    this.id = data.id;
-    this.createdAt = DateTime.fromISO(data.createdAt);
+//   constructor(data: any) {
+//     console.log("here", data);
 
-    if (data.metrics)
-      this.metrics = data.metrics.map(
-        (metric: any) => new SessionMetric(metric)
-      );
-    this.className = data.className;
-    this.name = data.name;
-    if (data.sessionHandRaiseData) {
-      this.sessionHandRaiseData = data.sessionHandRaiseData.map(
-        (sessionHandRaiseData: SessionHandRaiseData) =>
-          new SessionHandRaiseData(sessionHandRaiseData)
-      );
-    }
-  }
-}
+//     this.id = data.id;
+//     this.createdAt = DateTime.fromISO(data.createdAt);
 
-type ColorKeys = keyof typeof COLOR;
-type ColorValues = typeof COLOR[ColorKeys];
+//     if (data.metrics)
+//       this.metrics = data.metrics.map(
+//         (metric: any) => new SessionMetric(metric)
+//       );
+//     this.className = data.className;
+//     this.name = data.name;
+//     if (data.sessionHandRaiseData) {
+//       this.sessionHandRaiseData = data.sessionHandRaiseData.map(
+//         (sessionHandRaiseData: SessionHandRaiseData) =>
+//           new SessionHandRaiseData(sessionHandRaiseData)
+//       );
+//     }
+//   }
+// }
+
+// type ColorKeys = keyof typeof COLOR;
+// type ColorValues = typeof COLOR[ColorKeys];
 
 export class SessionMetric {
   name: string;
@@ -87,19 +89,19 @@ export enum SessionMetricType {
   ClassPerformance,
 }
 
-export class SessionHandRaiseData {
-  frame: number;
-  totalHandsRaised: number;
-  totalArmsCrosses: number;
-  totalHandsOnFace: number;
-  totalOther: number;
-  totalError: number;
-  constructor(data: any) {
-    this.frame = data.frame;
-    this.totalHandsRaised = data.totalHandsRaised;
-    this.totalArmsCrosses = data.totalArmsCrosses;
-    this.totalHandsOnFace = data.totalHandsOnFace;
-    this.totalOther = data.totalOther;
-    this.totalError = data.totalError;
-  }
-}
+// export class SessionHandRaiseData {
+//   frame: number;
+//   totalHandsRaised: number;
+//   totalArmsCrosses: number;
+//   totalHandsOnFace: number;
+//   totalOther: number;
+//   totalError: number;
+//   constructor(data: any) {
+//     this.frame = data.frame;
+//     this.totalHandsRaised = data.totalHandsRaised;
+//     this.totalArmsCrosses = data.totalArmsCrosses;
+//     this.totalHandsOnFace = data.totalHandsOnFace;
+//     this.totalOther = data.totalOther;
+//     this.totalError = data.totalError;
+//   }
+// }

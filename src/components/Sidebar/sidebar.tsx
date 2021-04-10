@@ -3,20 +3,17 @@ import { Menu, Layout, Input, Button } from "antd";
 import { useSelector, useDispatch } from "react-redux";
 
 import { ComponentRoute, routes } from "../../routes";
-import { Session } from "../../pages/metric/metricPage.types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  IMetricPageAPIHandler,
-  MetricPageFakeAPIHandler,
-} from "../../pages/metric/metricPage.handler";
 import { FirebaseAuthConsumer } from "@react-firebase/auth";
+import { BaseSession } from "../../api/types";
+import { IAPIHandler } from "../../api/handler";
 
 const { SubMenu } = Menu;
 const { Header, Content, Footer, Sider } = Layout;
 
 export interface ISidebarProps {
   history: any;
-  apiHandler: IMetricPageAPIHandler;
+  apiHandler: IAPIHandler;
   refreshSessions: () => Promise<void>;
   // selectedSession: Session | null;
 }
@@ -26,13 +23,13 @@ export function Sidebar(props: ISidebarProps) {
     new Array()
   );
   const [newSessionName, setNewSessionName] = React.useState("");
-  const selectedSession: Session | null = useSelector(
+  const selectedSession: BaseSession | null = useSelector(
     (state: any) => state.selectedSession
   );
   const dispatch = useDispatch();
 
-  async function setSessionName(session: Session, newName: string) {
-    const response = await props.apiHandler.setSessionName(session, newName);
+  async function setSessionName(session: BaseSession, newName: string) {
+    // const response = await props.apiHandler.setSessionName(session, newName);
     // console.log(response);
 
     await props.refreshSessions();

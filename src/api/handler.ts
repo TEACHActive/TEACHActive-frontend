@@ -80,7 +80,7 @@ export class APIHandler implements IAPIHandler {
       return baseSessionResponse.sessions;
     } catch (e) {
       console.error(e);
-      message.error(e);
+      message.error("There was an error");
       return [];
     }
   };
@@ -89,6 +89,7 @@ export class APIHandler implements IAPIHandler {
     sessionID: string,
     channel: "student" | "instructor"
   ): Promise<VideoFrameSession[]> => {
+    console.log("getFramesBySessionID");
     var data = JSON.stringify({
       query: `{
               sessions(sessionId: "${sessionID}") { 
