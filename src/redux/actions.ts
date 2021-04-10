@@ -7,6 +7,11 @@ export const setSelectedSession = (selectedSession: BaseSession | null) => ({
   payload: { selectedSession },
 });
 
+export const setSelectedSessionById = (id: string) => ({
+  type: ReducerActionType.SET_SELECTED_SESSION_BY_ID,
+  payload: { id },
+});
+
 export const setSessions = (sessions: BaseSession[]) => ({
   type: ReducerActionType.SET_SESSIONS,
   payload: { sessions },

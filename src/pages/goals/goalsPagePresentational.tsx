@@ -1,15 +1,15 @@
 import * as React from "react";
 import { Typography, Collapse } from "antd";
-import { Session } from "../metric/metricPage.types";
 import HandRaisesForm from "./handRaisesForm";
 import InstructorSpeechForm from "./instructorSpeechForm";
 import StudentSpeechForm from "./studentSpeechForm";
+import { BaseSession } from "../../api/types";
 
 const { Title } = Typography;
 const { Panel } = Collapse;
 
 export interface IGoalsPagePresentationalProps {
-  session: Session;
+  session: BaseSession;
 }
 
 /**

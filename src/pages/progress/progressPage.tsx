@@ -3,14 +3,14 @@ import { useSelector } from "react-redux";
 import { Empty } from "antd";
 
 import { ProgressPagePresentational } from "./progressPagePresentational";
-import { Session } from "../../pages/metric/metricPage.types";
 
 import "./progressPage.css";
+import { BaseSession } from "../../api/types";
 
 export interface IProgressPageProps {}
 
 export default function ProgressPage(props: IProgressPageProps) {
-  const selectedSession: Session | null = useSelector(
+  const selectedSession: BaseSession | null = useSelector(
     (state: any) => state.session.selectedSession
   );
 

@@ -22,13 +22,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ChangelogJSON from "../../changelog.json";
 import Modal from "antd/lib/modal/Modal";
 import { generateChangelog } from "../../generateChangelog";
+import { SessionTreeNodeTitle } from "../Header/sessionTreeNodeTitle";
 
 const { Header: AntHeader } = Layout;
 
 export interface IHeaderProps {
   history: any;
   apiHandler: IAPIHandler;
-  refreshSessions: () => Promise<void>;
 }
 
 export function Header(props: IHeaderProps) {
@@ -40,6 +40,7 @@ export function Header(props: IHeaderProps) {
   const [prevAppVersion, setPrevAppVersion] = React.useState("");
   const [notificationsOpen, setNotificationsOpen] = React.useState(false);
   const [markedRead, setMarkedRead] = React.useState(false);
+  const [sessionTreeData, setSessionTreeData] = React.useState<any[]>([]);
   const history = useHistory();
   const dispatch = useDispatch();
 
@@ -47,19 +48,24 @@ export function Header(props: IHeaderProps) {
     const cookieObj = new Cookies();
     setCookies(cookieObj);
     const prevAppVersion = cookieObj.get(COOKIE.APP_VERSION);
-    console.log(prevAppVersion);
-
     setPrevAppVersion(prevAppVersion);
 
-    const secondsBetweenRefreshingSesions = 60;
-    refreshSessions(userUID);
-    const refreshSessionsIntervalId = setInterval(
-      () => refreshSessions(userUID),
-      secondsBetweenRefreshingSesions * 1000
-    );
+    rebuildSessions();
 
-    return () => clearInterval(refreshSessionsIntervalId);
+    const secondsBetweenRefreshingSesions = 5;
+
+    // const refreshSessionsIntervalId = setInterval(
+    //   () => refreshSessions(userUID),
+    //   secondsBetweenRefreshingSesions * 1000
+    // );
+
+    // return () => clearInterval(refreshSessionsIntervalId);
   }, []);
+
+  const rebuildSessions = async () => {
+    const newSessions = await refreshSessions(userUID);
+    buildSessionTreeData(newSessions);
+  };
 
   const setAppVersion = (version: string | undefined) => {
     if (undefined) return;
@@ -76,6 +82,9 @@ export function Header(props: IHeaderProps) {
 
   const logout = async () => {
     logoutOfFirebase();
+    dispatch({
+      type: ReducerActionType.USER_LOGOUT,
+    });
     history.push(routes.SignInRoute.link());
   };
 
@@ -88,6 +97,67 @@ export function Header(props: IHeaderProps) {
       type: ReducerActionType.SET_SESSIONS,
       payload: { sessions: sessions },
     });
+    return sessions;
+  };
+
+  async function setSessionName(session: BaseSession, newName: string) {
+    // const response = await props.apiHandler.setSessionName(session, newName);//Todo
+    // await props.refreshSessions();
+    //Todo
+    // setEditingSessionIndexBool(new Array(allSessions.length).fill(false));
+  }
+
+  const buildSessionTreeData = (sessions: BaseSession[]) => {
+    // sessions = sessions.map((session) => new BaseSession(session));
+
+    const data: any[] = [];
+    sessions.forEach((session: BaseSession, i: number) => {
+      let matchingIndexYear = data.findIndex(
+        (yearLevel: any) => yearLevel.title === session.createdAt.year
+      );
+      if (matchingIndexYear === -1) {
+        //Insert a new year into list
+        matchingIndexYear =
+          data.push({
+            title: session.createdAt.year,
+            value: session.createdAt.year,
+            key: session.createdAt.year,
+            selectable: false,
+            children: [],
+          }) - 1;
+      }
+      let matchingIndexMonth = data[matchingIndexYear].children.findIndex(
+        (monthLevel: any) => monthLevel.title === session.createdAt.monthLong
+      );
+      if (matchingIndexMonth === -1) {
+        //Insert a new month into list of children of correct year
+        matchingIndexMonth =
+          data[matchingIndexYear].children.push({
+            title: session.createdAt.monthLong,
+            value: session.createdAt.monthLong,
+            key: session.createdAt.monthLong,
+            selectable: false,
+            children: [],
+          }) - 1;
+      }
+
+      const sessionNameOrDate = session.createdAt
+        ? session.createdAt.toLocaleString()
+        : session.id;
+      data[matchingIndexYear].children[matchingIndexMonth].children.push({
+        title: (
+          <SessionTreeNodeTitle
+            session={session}
+            sessionNameOrDate={sessionNameOrDate}
+            setSessionName={setSessionName}
+          />
+        ),
+        value: session.id,
+        selectable: true,
+      });
+    });
+
+    setSessionTreeData(data);
   };
 
   if (!cookies) return <Spin />;
@@ -129,13 +199,14 @@ export function Header(props: IHeaderProps) {
                   <SessionSelect
                     sessions={sessions}
                     apiHandler={props.apiHandler}
-                    refreshSessions={props.refreshSessions}
+                    sessionTreeData={sessionTreeData}
                   />
                   <Button
-                    type="default"
+                    type="link"
+                    style={{ padding: "0px" }}
                     onClick={() => refreshSessions(userUID)}
                   >
-                    Refresh
+                    <FontAwesomeIcon icon="sync" color="white" />
                   </Button>
                 </div>
                 <div
@@ -154,7 +225,7 @@ export function Header(props: IHeaderProps) {
                       type="link"
                       onClick={() => setNotificationsOpen(true)}
                     >
-                      <FontAwesomeIcon icon="bell" size="lg" />
+                      <FontAwesomeIcon icon="bell" size="lg" color="white" />
                     </Button>
                   </Badge>
                   <hr style={{ width: "5px", margin: "0px 28px 0px 15px" }} />

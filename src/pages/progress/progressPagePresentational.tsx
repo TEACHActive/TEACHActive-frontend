@@ -1,14 +1,14 @@
 import { Empty } from "antd";
 import * as React from "react";
+import { BaseSession } from "../../api/types";
 import { BehavioralEngagementProgress } from "../../components/BehavioralEngagementProgress/BehavorialEngagementProgress";
 
 import BlockContent from "../../components/BlockContent/blockContent";
-import { Session, SessionMetric } from "../metric/metricPage.types";
 
 import "./progressPage.css";
 
 export interface IProgressPagePresentationalProps {
-  session: Session | null;
+  session: BaseSession | null;
 }
 
 export function ProgressPagePresentational(

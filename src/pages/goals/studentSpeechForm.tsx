@@ -10,18 +10,19 @@ import {
   Collapse,
 } from "antd";
 import { stringToHexColor } from "../../util";
-import { Session, SessionMetricType } from "../metric/metricPage.types";
+import { SessionMetricType } from "../metric/metricPage.types";
 import { CheckboxValueType } from "antd/lib/checkbox/Group";
 import { RadioChangeEvent } from "antd/lib/radio";
 import MetricDisplay from "../../components/MetricDisplay/metricDisplay";
 import BlockContent from "../../components/BlockContent/blockContent";
 import { IGoalsPageAPIHandler, GoalsPageAPIHandler } from "./goalsPage.handler";
 import { HandRaiseGoalsAndReflections } from "./goalsPage.types";
+import { BaseSession } from "../../api/types";
 
 const { Panel } = Collapse;
 
 export interface IStudentSpeechFormProps {
-  session: Session;
+  session: BaseSession;
 }
 
 const defaultLectureTypeOptions = [
@@ -191,9 +192,9 @@ export default function StudentSpeechForm(props: IStudentSpeechFormProps) {
     setInstructorSpeechGoalOptions(updatedGoals);
   };
 
-  const studentSpeechMetric = props.session.metrics?.find(
-    (metric) => metric.metricType === SessionMetricType.StudentSpeech
-  );
+  // const studentSpeechMetric = props.session.metrics?.find(
+  //   (metric) => metric.metricType === SessionMetricType.StudentSpeech
+  // );//Todo
 
   const layout = {
     labelCol: { span: 8 },
@@ -205,7 +206,7 @@ export default function StudentSpeechForm(props: IStudentSpeechFormProps) {
 
   return (
     <div style={{ display: "flex", justifyContent: "center", padding: "2em" }}>
-      <Form
+      {/* <Form
         name="reflectionsForm"
         initialValues={{ remember: true }}
         onFinish={onSave}
@@ -353,7 +354,7 @@ export default function StudentSpeechForm(props: IStudentSpeechFormProps) {
           </Form.Item>
         )}
 
-        {/* <Form.Item>
+        <Form.Item>
           <p>
             Is this metric descriptive/ indicative of what’s happening during
             class time?
@@ -367,14 +368,14 @@ export default function StudentSpeechForm(props: IStudentSpeechFormProps) {
               setIsMetricDescriptiveValue(e.target.value)
             }
           />
-        </Form.Item> */}
+        </Form.Item>
 
         <Form.Item {...tailLayout}>
           <Button type="primary" htmlType="submit">
             Save
           </Button>
         </Form.Item>
-      </Form>
+      </Form> */}
     </div>
   );
 }

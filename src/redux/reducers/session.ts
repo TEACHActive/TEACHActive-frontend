@@ -1,5 +1,9 @@
 import { BaseSession } from "../../api/types";
-import { SET_SELECTED_SESSION, SET_SESSIONS } from "../actionTypes";
+import {
+  SET_SELECTED_SESSION,
+  SET_SELECTED_SESSION_BY_ID,
+  SET_SESSIONS,
+} from "../actionTypes";
 
 interface StateShape {
   selectedSession: BaseSession | null;
@@ -19,6 +23,19 @@ export default function (state = initialState, action: any) {
       return {
         ...state,
         selectedSession: selectedSession,
+      };
+    }
+    case SET_SELECTED_SESSION_BY_ID: {
+      const { id } = action.payload;
+
+      const matchingSession = state.sessions.find(
+        (session: BaseSession) => session.id === id
+      );
+      if (!matchingSession) console.error("unable to find matching session");
+
+      return {
+        ...state,
+        selectedSession: matchingSession ?? state.selectedSession,
       };
     }
     case SET_SESSIONS: {

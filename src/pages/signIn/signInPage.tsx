@@ -36,21 +36,21 @@ export default function SignInPage(props: ISignInPageProps) {
     const sessions: BaseSession[] = await props.apiHandler.getSessionsByUID(
       uid
     );
-    // console.log(sessions);
 
     try {
+      //Todo: move to api
       dispatch({
         type: ReducerActionType.SET_SESSIONS,
         payload: { sessions: sessions },
       });
     } catch (error) {
-      message.error(error)
+      message.error(error);
     }
-    
-    const videoFrames = await props.apiHandler.getFramesBySessionID(
-      sessions[0].id,
-      "student"
-    );
+
+    // const videoFrames = await props.apiHandler.getFramesBySessionID(
+    //   sessions[0].id,
+    //   "student"
+    // );
   };
 
   const onFinish = async (values: ILoginValues) => {
@@ -62,13 +62,14 @@ export default function SignInPage(props: ISignInPageProps) {
 
       try {
         dispatch({
-          action: ReducerActionType.SET_USER_UID,
+          type: ReducerActionType.SET_USER_UID,
           payload: { uid: user.uid },
         });
+        initSessions(userUID);
       } catch (error) {
-        message.error(error)
+        message.error("There was an error");
+        console.error(error);
       }
-      initSessions(userUID);
     } else {
       message.error("Failed to log in, check email and password");
     }
@@ -87,7 +88,8 @@ export default function SignInPage(props: ISignInPageProps) {
   };
 
   const rememberEmail = (email: string) => {
-    if (cookies) cookies.set(COOKIE.EMAIL, email, { path: "/", sameSite: "strict" });
+    if (cookies)
+      cookies.set(COOKIE.EMAIL, email, { path: "/", sameSite: "strict" });
   };
 
   if (!cookies) return <Spin />;
