@@ -1,6 +1,5 @@
 import * as React from "react";
-import firbase from "firebase";
-import { Layout, Button, Spin, Badge } from "antd";
+import { Layout, Button, Spin, Badge, message } from "antd";
 import { useHistory } from "react-router-dom";
 import { FirebaseAuthConsumer } from "@react-firebase/auth";
 import "firebase/auth";
@@ -12,7 +11,7 @@ import { logoutOfFirebase } from "../../firebase/auth";
 import * as routes from "../../routes";
 import { useSelector } from "react-redux";
 import { BaseSession } from "../../api/types";
-import { IAPIHandler } from "../../api/handler";
+import apiHandler, { IAPIHandler } from "../../api/handler";
 import * as ReducerActionType from "../../redux/actionTypes";
 import { useDispatch } from "react-redux";
 import { getUser, getSessions } from "../../redux/selectors";
@@ -21,8 +20,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import ChangelogJSON from "../../changelog.json";
 import Modal from "antd/lib/modal/Modal";
-import { generateChangelog } from "../../generateChangelog";
+import generateChangelog from "../../generateChangelog";
 import { SessionTreeNodeTitle } from "../Header/sessionTreeNodeTitle";
+
+import "./header.css";
 
 const { Header: AntHeader } = Layout;
 
@@ -41,6 +42,7 @@ export function Header(props: IHeaderProps) {
   const [notificationsOpen, setNotificationsOpen] = React.useState(false);
   const [markedRead, setMarkedRead] = React.useState(false);
   const [sessionTreeData, setSessionTreeData] = React.useState<any[]>([]);
+  const [refreshingSessions, setRefreshingSessions] = React.useState(false);
   const history = useHistory();
   const dispatch = useDispatch();
 
@@ -60,11 +62,11 @@ export function Header(props: IHeaderProps) {
     // );
 
     // return () => clearInterval(refreshSessionsIntervalId);
-  }, []);
+  }, [sessions]);
 
   const rebuildSessions = async () => {
-    const newSessions = await refreshSessions(userUID);
-    buildSessionTreeData(newSessions);
+    // const newSessions = await refreshSessions(userUID);
+    buildSessionTreeData(sessions);
   };
 
   const setAppVersion = (version: string | undefined) => {
@@ -89,21 +91,43 @@ export function Header(props: IHeaderProps) {
   };
 
   const refreshSessions = async (uid: string) => {
+    setRefreshingSessions(true);
     const sessions: BaseSession[] = await props.apiHandler.getSessionsByUID(
       uid
     );
 
+    const namedSessionsPromises = sessions.map((session) => {
+      return new Promise(async (resolve, reject) => {
+        const sessionName = await apiHandler.getSessionName(session.id);
+        resolve(
+          new BaseSession({
+            ...session,
+            name: sessionName,
+          })
+        );
+      });
+    });
+
+    const namedSessions = await Promise.all(namedSessionsPromises);
+
     dispatch({
       type: ReducerActionType.SET_SESSIONS,
-      payload: { sessions: sessions },
+      payload: { sessions: namedSessions },
     });
+    setRefreshingSessions(false);
     return sessions;
   };
 
   async function setSessionName(session: BaseSession, newName: string) {
-    // const response = await props.apiHandler.setSessionName(session, newName);//Todo
-    // await props.refreshSessions();
-    //Todo
+    const success = await props.apiHandler.updateSessionName(
+      session.id,
+      newName
+    );
+    if (!success) {
+      message.error("Failed to update session name");
+      return;
+    }
+    refreshSessions(userUID);
     // setEditingSessionIndexBool(new Array(allSessions.length).fill(false));
   }
 
@@ -141,14 +165,10 @@ export function Header(props: IHeaderProps) {
           }) - 1;
       }
 
-      const sessionNameOrDate = session.createdAt
-        ? session.createdAt.toLocaleString()
-        : session.id;
       data[matchingIndexYear].children[matchingIndexMonth].children.push({
         title: (
           <SessionTreeNodeTitle
             session={session}
-            sessionNameOrDate={sessionNameOrDate}
             setSessionName={setSessionName}
           />
         ),
@@ -206,7 +226,11 @@ export function Header(props: IHeaderProps) {
                     style={{ padding: "0px" }}
                     onClick={() => refreshSessions(userUID)}
                   >
-                    <FontAwesomeIcon icon="sync" color="white" />
+                    <FontAwesomeIcon
+                      icon="sync"
+                      color="white"
+                      className={refreshingSessions ? "sync--spin" : ""}
+                    />
                   </Button>
                 </div>
                 <div

@@ -14,6 +14,9 @@ import {
   faBookReader,
   faBell,
   faSync,
+  faCheck,
+  faBan,
+  faUsers,
 } from "@fortawesome/free-solid-svg-icons";
 
 import "./App.css";
@@ -37,7 +40,10 @@ library.add(
   faIdCard,
   faBookReader,
   faBell,
-  faSync
+  faSync,
+  faCheck,
+  faBan,
+  faUsers
 );
 
 function App(props: any) {

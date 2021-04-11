@@ -23,9 +23,7 @@ export default function SessionSelect(props: ISessionSelectProps) {
   return (
     <TreeSelect
       style={{ width: "15em", margin: "1em" }}
-      value={
-        selectedSession ? selectedSession.createdAt.toLocaleString() : undefined
-      }
+      value={selectedSession ? selectedSession.name : undefined}
       dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
       treeData={props.sessionTreeData}
       allowClear

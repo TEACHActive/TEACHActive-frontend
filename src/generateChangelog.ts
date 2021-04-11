@@ -1,4 +1,4 @@
-function generateChangelog(changelogJSON) {
+export default function generateChangelog(changelogJSON: { releases: any[] }) {
   let lines = [
     "# Changelog",
     "",
@@ -10,7 +10,7 @@ function generateChangelog(changelogJSON) {
   ];
 
   const releaseLines = changelogJSON.releases
-    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     .map((release) => {
       let releaseLines = [];
       if (release.isReleased === "false") {
@@ -22,14 +22,16 @@ function generateChangelog(changelogJSON) {
       if (release.added && release.added.length > 0) {
         releaseLines.push("### Added");
         releaseLines.push("");
-        releaseLines.push(release.added.map((add) => "- " + add).join("\n"));
+        releaseLines.push(
+          release.added.map((add: string) => "- " + add).join("\n")
+        );
         releaseLines.push("");
       }
       if (release.changed && release.changed.length > 0) {
         releaseLines.push("### Changed");
         releaseLines.push("");
         releaseLines.push(
-          release.changed.map((change) => "- " + change).join("\n")
+          release.changed.map((change: string) => "- " + change).join("\n")
         );
         releaseLines.push("");
       }
@@ -37,26 +39,32 @@ function generateChangelog(changelogJSON) {
         releaseLines.push("### Deprecated");
         releaseLines.push("");
         releaseLines.push(
-          release.deprecated.map((dep) => "- " + dep).join("\n")
+          release.deprecated.map((dep: string) => "- " + dep).join("\n")
         );
         releaseLines.push("");
       }
       if (release.removed && release.removed.length > 0) {
         releaseLines.push("### Removed");
         releaseLines.push("");
-        releaseLines.push(release.removed.map((rm) => "- " + rm).join("\n"));
+        releaseLines.push(
+          release.removed.map((rm: string) => "- " + rm).join("\n")
+        );
         releaseLines.push("");
       }
       if (release.fixed && release.fixed.length > 0) {
         releaseLines.push("### Fixed");
         releaseLines.push("");
-        releaseLines.push(release.fixed.map((fix) => "- " + fix).join("\n"));
+        releaseLines.push(
+          release.fixed.map((fix: string) => "- " + fix).join("\n")
+        );
         releaseLines.push("");
       }
       if (release.security && release.security.length > 0) {
         releaseLines.push("### Security");
         releaseLines.push("");
-        releaseLines.push(release.security.map((sec) => "- " + sec).join("\n"));
+        releaseLines.push(
+          release.security.map((sec: string) => "- " + sec).join("\n")
+        );
         releaseLines.push("");
       }
       return releaseLines.join("\n");
@@ -67,7 +75,7 @@ function generateChangelog(changelogJSON) {
   const base_url = "https://github.com/TEACHActive/TEACHActive";
 
   const releaseLinks = changelogJSON.releases
-    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     .map((release, i, arr) => {
       const versionName =
         release.isReleased === "false"
@@ -89,5 +97,3 @@ function generateChangelog(changelogJSON) {
   lines.push(...releaseLinks);
   return lines.join("\n");
 }
-
-module.exports = { generateChangelog };

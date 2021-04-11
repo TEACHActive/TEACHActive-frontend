@@ -7,7 +7,7 @@ import { SessionPagePresentational } from "./metricPagePresentational";
 import "./metricPage.css";
 import { BaseSession, VideoFrame, Person } from "../../api/types";
 import apiHandler from "../../api/handler";
-import { SessionMetric } from "./metricPage.types";
+import { SessionMetric, SessionMetricType } from "./metricPage.types";
 // import { SessionMetric } from "./metricPage.types";
 
 export interface IMetricPageProps {}
@@ -29,6 +29,7 @@ export default function MetricPage(props: IMetricPageProps) {
   const [totalArmPoseFrames, setTotalArmPoseFrames] = React.useState(
     InitArmPoseObj
   );
+  const [avgNumberStudents, setAvgNumberStudents] = React.useState(0);
 
   React.useEffect(() => {
     if (selectedSession) analyzeFrames(selectedSession);
@@ -96,6 +97,7 @@ export default function MetricPage(props: IMetricPageProps) {
     );
 
     console.log("Avg Students", avgNumStudentsDetected);
+    setAvgNumberStudents(avgNumStudentsDetected);
 
     const numberOfConcecutiveFramesToBeHandRaised = 10;
     const numberOfConcecutiveFramesToBeHandDown = 10;
@@ -173,13 +175,14 @@ export default function MetricPage(props: IMetricPageProps) {
   if (loading) return <Spin />;
 
   const handRaiseSessionMetric = new SessionMetric({
-    metricType: "HandRaises",
+    metricType: SessionMetricType.HandRaises,
     name: "Hand Raises",
     color: {
       dark: "#E6AE05",
       light: "#FFC107",
     },
     metric: totalArmPoseFrames.handRaised,
+    metricPrepend: "",
     hasDenominator: false,
     denominator: 0,
     unit: "",
@@ -189,16 +192,19 @@ export default function MetricPage(props: IMetricPageProps) {
     help_text:
       "The total frequency of detected hand raises during the class session",
     has_alert: false,
+    icon: "hand-paper",
+    canEdit: false,
   });
 
   // const studentSpeechSessionMetric = new SessionMetric({
-  //   metricType: "StudentSpeech",
+  //   metricType: SessionMetricType.StudentSpeech,
   //   name: "Student Speech",
   //   color: {
   //     dark: "#CB1859",
   //     light: "#D81B60",
   //   },
   //   metric: 10,
+  // metricPrepend: "",
   //   hasDenominator: true,
   //   denominator: 50,
   //   unit: "min",
@@ -208,9 +214,11 @@ export default function MetricPage(props: IMetricPageProps) {
   //   help_text:
   //     "The total frequency of student talk (in minutes) during the class session",
   //   has_alert: false,
+  // icon: "comments",
+  // canEdit: false
   // });
   // const instructorSpeechSessionMetric = new SessionMetric({
-  //   metricType: "InstructorSpeech",
+  //   metricType: SessionMetricType.InstructorSpeech,
   //   name: "Instructor Speech",
   //   color: {
   //     dark: "#01332A",
@@ -226,15 +234,18 @@ export default function MetricPage(props: IMetricPageProps) {
   //   help_text:
   //     "The total frequency of instructor talk (in minutes) during the class session",
   //   has_alert: false,
+  // icon: "comment",
+  // canEdit: false
   // });
   const classPreformanceSessionMetric = new SessionMetric({
-    metricType: "ClassPerformance",
+    metricType: SessionMetricType.ClassPerformance,
     name: "Class Performance",
     color: {
       dark: "#1E7FD4",
       light: "#1E88E5",
     },
     metric: 0,
+    metricPrepend: "",
     hasDenominator: false,
     denominator: 0,
     unit: "%",
@@ -244,15 +255,42 @@ export default function MetricPage(props: IMetricPageProps) {
     help_text:
       "Did you do any graded activity in this class session? You may enter manually the average class performance and compare them with future sessions!",
     has_alert: false,
+    icon: "id-card",
+    canEdit: true,
+  });
+  const attendanceSessionMetric = new SessionMetric({
+    metricType: SessionMetricType.Attendance,
+    name: "Attendence",
+    color: {
+      dark: "#842ed1",
+      light: "#9534eb",
+    },
+    metric: Math.round(avgNumberStudents),
+    metricPrepend: "~",
+    hasDenominator: false,
+    denominator: 0,
+    unit: "",
+    trend: 0,
+    trend_metric: 0,
+    trend_metric_unit: "",
+    help_text: "Average number of students detected during the session",
+    has_alert: false,
+    icon: "users",
+    canEdit: false,
   });
   const metrics: SessionMetric[] = [
     handRaiseSessionMetric,
     // studentSpeechSessionMetric,
     // instructorSpeechSessionMetric,
     classPreformanceSessionMetric,
+    attendanceSessionMetric,
   ];
 
   return (
-    <SessionPagePresentational session={selectedSession} metrics={metrics} />
+    <SessionPagePresentational
+      session={selectedSession}
+      metrics={metrics}
+      setSessionName={() => Promise.resolve()}
+    />
   );
 }

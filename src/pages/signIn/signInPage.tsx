@@ -32,40 +32,16 @@ export default function SignInPage(props: ISignInPageProps) {
     setCookies(new Cookies());
   }, []);
 
-  const initSessions = async (uid: string) => {
-    const sessions: BaseSession[] = await props.apiHandler.getSessionsByUID(
-      uid
-    );
-
-    try {
-      //Todo: move to api
-      dispatch({
-        type: ReducerActionType.SET_SESSIONS,
-        payload: { sessions: sessions },
-      });
-    } catch (error) {
-      message.error(error);
-    }
-
-    // const videoFrames = await props.apiHandler.getFramesBySessionID(
-    //   sessions[0].id,
-    //   "student"
-    // );
-  };
-
   const onFinish = async (values: ILoginValues) => {
     if (values.remember) rememberEmail(values.email);
     const user = await loginWithEmailAndPassword(values.email, values.password);
     if (user) {
       history.push(routes.BaseRoute.link());
-      // console.log(user.uid);
-
       try {
         dispatch({
           type: ReducerActionType.SET_USER_UID,
           payload: { uid: user.uid },
         });
-        initSessions(userUID);
       } catch (error) {
         message.error("There was an error");
         console.error(error);
