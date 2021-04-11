@@ -8,7 +8,7 @@ import { InstructorMovement } from "../../components/InfoCard/instructorMovement
 import BlockContent from "../../components/BlockContent/blockContent";
 import { BehavioralEngagement } from "../../components/InfoCard/behavioralEngagement";
 
-import { BaseSession } from "../../api/types";
+import { BaseSession, VideoFrameSession } from "../../api/types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import "./metricPage.css";
@@ -22,6 +22,12 @@ export interface ISessionPagePresentationalProps {
     session: BaseSession,
     newSessionName: string
   ) => Promise<void>;
+  videoFrames:
+    | {
+        instructor: VideoFrameSession[];
+        student: VideoFrameSession[];
+      }
+    | undefined;
 }
 
 export function SessionPagePresentational(
@@ -140,6 +146,11 @@ export function SessionPagePresentational(
                     trend_metric={item.trend_metric}
                     trend_metric_unit={item.trend_metric_unit}
                     canEdit={item.canEdit}
+                    updateMetric={(newMetric: string) =>
+                      item.updateMetric(
+                        item.constructMetricUpdateObject(newMetric)
+                      )
+                    }
                   />
                 </BlockContent>
               );
@@ -164,29 +175,27 @@ export function SessionPagePresentational(
               color: "white",
               borderRadius: "3px",
             }}
-          >
-
-          </BlockContent> */}
-          {/* <InfoCard
+          ></BlockContent> */}
+          <InfoCard
             color={{ light: "#ED80A2", dark: "#D1728F" }}
             icon=""
             title="Movement Patterns"
-            helpWindowText="This is help text"
+            helpWindowText="Movement Patterns during class //Todo"
           >
             <div className="infoCardContent">
-              <InstructorMovement />
+              <InstructorMovement videoFrames={props.videoFrames} />
             </div>
           </InfoCard>
           <InfoCard
             color={{ light: "#FAB558", dark: "#E09F4B" }}
             icon=""
             title="Behavioral Engagement"
-            helpWindowText="This is help text"
+            helpWindowText="Behavioral Engagement during class //todo"
           >
             <div className="infoCardContent">
-              <BehavioralEngagement />
+              <BehavioralEngagement videoFrames={props.videoFrames} />
             </div>
-          </InfoCard> */}
+          </InfoCard>
         </div>
       </div>
     </div>

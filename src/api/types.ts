@@ -16,28 +16,26 @@ export class BaseSession {
   id: string;
   createdAt: DateTime;
   name: string;
+  performance: number;
 
   constructor(data: any) {
     this.id = data.id;
     this.createdAt = this.getCreatedAtFromData(data);
     this.name = this.getNameFromData(data);
+    this.performance = data.performance ?? null;
   }
 
   private getCreatedAtFromData(data: any): DateTime {
-    switch (typeof data.createdAt) {
-      case typeof Number:
-        return DateTime.fromSeconds(data.createdAt.unixSeconds);
-      case typeof String:
-        return DateTime.fromISO(data.createdAt);
-      case typeof Object:
-        if (data.createdAt.isLuxonDateTime) {
-          return data.createdAt;
-        } else if (data.createdAt.unixSeconds) {
-          return DateTime.fromSeconds(data.createdAt.unixSeconds);
-        }
-      //else fallthrough
-      default:
-        return DateTime.fromJSDate(new Date()); //Currently some issue with DateTime.now()?
+    if (!data.createdAt) {
+      return DateTime.fromJSDate(new Date()); //Currently some issue with DateTime.now()?
+    } else if (data.createdAt.isLuxonDateTime) {
+      return data.createdAt;
+    } else if (data.createdAt.unixSeconds) {
+      return DateTime.fromSeconds(data.createdAt.unixSeconds);
+    } else if (DateTime.fromISO(data.createdAt).isValid) {
+      return DateTime.fromISO(data.createdAt);
+    } else {
+      return DateTime.fromJSDate(new Date()); //Currently some issue with DateTime.now()?
     }
   }
 
@@ -86,11 +84,13 @@ export class Person {
   trackingId: number;
   armpose: "other" | "handRaised" | "armsCrossed" | "handsOnFace" | "error";
   sitStand: "sit" | "stand" | "error" | "other";
+  body: number[];
 
   constructor(data: any) {
     this.openposeId = data.openposeId;
     this.trackingId = data.inference ? data.inference.trackingId : -1;
     this.armpose = data.inference ? data.inference.posture.armPose : "error";
     this.sitStand = data.inference ? data.inference.posture.sitStand : "error";
+    this.body = data.body;
   }
 }

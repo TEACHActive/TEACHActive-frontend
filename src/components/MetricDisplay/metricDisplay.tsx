@@ -24,11 +24,15 @@ export interface IMetricDisplayProps {
   trend_metric_unit: string;
   metricPrepend: string;
   canEdit: boolean;
+  updateMetric: (newMetric: string) => Promise<boolean>;
 }
 
 export default function MetricDisplay(props: IMetricDisplayProps) {
   const [editingMetric, setEditingMetric] = React.useState(false);
   const [newMetric, setNewMetric] = React.useState("");
+  const [processing, setProcessing] = React.useState(false);
+
+  // const dispatch = useDispatch();
 
   return (
     <div className="MetricDisplay--bottom">
@@ -64,21 +68,29 @@ export default function MetricDisplay(props: IMetricDisplayProps) {
             <Input
               placeholder={props.metric.toString()}
               onChange={(event) => setNewMetric(event.target.value)}
+              disabled={processing}
             />
             <div style={{ display: "flex" }}>
-              <Button type="primary" size="small">
+              <Button type="primary" size="small" disabled={processing}>
                 <FontAwesomeIcon
                   icon="check"
                   size="1x"
                   color="blue"
-                  onClick={(event) => {
+                  onClick={async (event) => {
+                    console.log(323);
+
+                    setProcessing(true);
                     setEditingMetric(false);
-                    // props.setSessionName(props.session, newSessionName);
-                    setNewMetric("");
+                    const success = await props.updateMetric(newMetric);
+                    if (success) {
+                      setNewMetric("");
+                    }
+                    setProcessing(false);
+                    console.log(32343);
                   }}
                 />
               </Button>
-              <Button type="default" size="small" danger>
+              <Button type="default" size="small" danger disabled={processing}>
                 <FontAwesomeIcon
                   icon="ban"
                   size="1x"
@@ -94,7 +106,7 @@ export default function MetricDisplay(props: IMetricDisplayProps) {
         ) : (
           <h1 className="metric-text">
             {props.metricPrepend}
-            {props.metric}
+            {props.metric || "-"}
           </h1>
         )}
 
