@@ -5,8 +5,16 @@ import { LineChart, CartesianGrid, XAxis, YAxis, Legend, Line } from "recharts";
 
 import FramesJSON from "../../data/frames.json";
 import { chunkArray } from "../../util";
+import { VideoFrameSession } from "../../api/types";
 
-export interface IBehavioralEngagementProps {}
+export interface IBehavioralEngagementProps {
+  videoFrames:
+    | {
+        instructor: VideoFrameSession[];
+        student: VideoFrameSession[];
+      }
+    | undefined;
+}
 
 const defaultOptions = [
   {
@@ -29,21 +37,23 @@ const defaultOptions = [
   },
 ];
 
-export class BehavioralEngagement extends React.Component
-  implements IBehavioralEngagementProps {
-  state = {
-    options: defaultOptions,
-    engagementData: [],
-  };
+export function BehavioralEngagement(props: IBehavioralEngagementProps) {
+  const [options, setOptions] = React.useState(defaultOptions);
+  const [engagementData, setEngagementData] = React.useState<
+    { frameNumber: number; armPose: any }[]
+  >([]);
 
-  componentDidMount = () => {
-    const engagementData = FramesJSON.frames
-      .sort(
-        (frameA: any, frameB: any) => frameA.frameNumber - frameB.frameNumber
-      )
-      .map((frame: any) => {
+  React.useEffect(() => {
+    if (!props.videoFrames) {
+      console.error("error here");
+      return;
+    }
+
+    const engagementData = props.videoFrames.student[0].videoFrames
+      .sort((a, b) => a.frameNumber - b.frameNumber)
+      .map((frame) => {
         const armPoseCntObj = frame.people
-          .map((person: any) => person.inference.posture.armPose)
+          .map((person) => person.armpose)
           .reduce(
             (tally: { [x: string]: any }, armPose: string | number) => {
               tally[armPose] = (tally[armPose] || 0) + 1;
@@ -61,9 +71,7 @@ export class BehavioralEngagement extends React.Component
       });
 
     console.log(engagementData);
-    this.setState({
-      engagementData: engagementData,
-    });
+    setEngagementData(engagementData);
 
     // const test = chunkArray(engagementData, 10).map((chunk) =>
     //   chunk.reduce(
@@ -77,9 +85,9 @@ export class BehavioralEngagement extends React.Component
     //   )
     // );
     // console.log(test);
-  };
+  }, []);
 
-  onChange = (checkedValue: CheckboxValueType[]) => {
+  const onChange = (checkedValue: CheckboxValueType[]) => {
     let newOptions = [...defaultOptions];
     const instructorSpeechOptionIndex = newOptions.findIndex(
       (option) => option.value === "instructorSpeech"
@@ -138,42 +146,36 @@ export class BehavioralEngagement extends React.Component
       newOptions[handRaisesOptionIndex].disabled = false;
     }
 
-    this.setState({
-      options: newOptions,
-    });
+    setOptions(newOptions);
   };
 
-  render() {
-    const { options } = this.state;
+  return (
+    <div>
+      <Checkbox.Group
+        options={options}
+        defaultValue={["handRaises"]}
+        value={options.map((option) => (option.checked ? option.value : ""))}
+        onChange={onChange}
+      />
 
-    return (
-      <div>
-        <Checkbox.Group
-          options={options}
-          defaultValue={["handRaises"]}
-          value={options.map((option) => (option.checked ? option.value : ""))}
-          onChange={this.onChange}
-        />
-
-        <LineChart
-          width={430}
-          height={325}
-          data={this.state.engagementData}
-          margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="framenumber" />
-          <YAxis type="number" tickCount={1} />
-          <Legend />
-          {options.find((option) => option.value === "handRaises")?.checked && (
-            <Line
-              type="monotone"
-              dataKey="armPose.handsRaised"
-              stroke="#82ca9d"
-            />
-          )}
-        </LineChart>
-      </div>
-    );
-  }
+      <LineChart
+        width={430}
+        height={325}
+        data={engagementData}
+        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+      >
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="framenumber" />
+        <YAxis type="number" tickCount={1} />
+        <Legend />
+        {options.find((option) => option.value === "handRaises")?.checked && (
+          <Line
+            type="monotone"
+            dataKey="armPose.handsRaised"
+            stroke="#82ca9d"
+          />
+        )}
+      </LineChart>
+    </div>
+  );
 }

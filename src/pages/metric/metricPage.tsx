@@ -5,9 +5,15 @@ import { useSelector } from "react-redux";
 import { SessionPagePresentational } from "./metricPagePresentational";
 
 import "./metricPage.css";
-import { BaseSession, VideoFrame, Person } from "../../api/types";
+import {
+  BaseSession,
+  VideoFrame,
+  Person,
+  VideoFrameSession,
+} from "../../api/types";
 import apiHandler from "../../api/handler";
 import { SessionMetric, SessionMetricType } from "./metricPage.types";
+import { getSelectedSession, getSessions } from "../../redux/selectors";
 // import { SessionMetric } from "./metricPage.types";
 
 export interface IMetricPageProps {}
@@ -22,22 +28,77 @@ const InitArmPoseObj = {
 
 export default function MetricPage(props: IMetricPageProps) {
   const selectedSession: BaseSession | null = useSelector(
-    (state: any) => state.session.selectedSession,
+    (state: any) => getSelectedSession(state),
     BaseSession.equal
+  );
+  const sessions: BaseSession[] = useSelector((state: any) =>
+    getSessions(state)
   );
   const [loading, setLoading] = React.useState(true);
   const [totalArmPoseFrames, setTotalArmPoseFrames] = React.useState(
     InitArmPoseObj
   );
   const [avgNumberStudents, setAvgNumberStudents] = React.useState(0);
+  const [videoFrames, setVideoFrames] = React.useState<{
+    instructor: VideoFrameSession[];
+    student: VideoFrameSession[];
+  }>();
+  const [
+    sessionPreformanceMetric,
+    setSessionPreformanceMetric,
+  ] = React.useState<number>(0);
+
+  const [prevFrameResults, setPrevFrameResults] = React.useState<any>();
 
   React.useEffect(() => {
-    if (selectedSession) analyzeFrames(selectedSession);
+    getAndAnalyzeFrames(selectedSession);
   }, [selectedSession]);
 
-  const analyzeFrames = async (selectedSession: BaseSession) => {
-    console.log("analyzeFrames");
+  const getAndAnalyzeFrames = async (selectedSession: BaseSession) => {
+    setLoading(true);
+    if (selectedSession) {
+      setSessionPreformanceMetric(selectedSession.performance * 100);
 
+      const sortedSessions: BaseSession[] = sessions.sort(
+        (a, b) => a.createdAt.toMillis() - b.createdAt.toMillis()
+      );
+      const currSessionIndex = sortedSessions.findIndex(
+        (session) => session.id === selectedSession.id
+      );
+      const prevSession =
+        currSessionIndex > 0 ? sortedSessions[currSessionIndex - 1] : null;
+
+      // if (prevSession) console.log(selectedSession.id, prevSession.id);
+
+      let prevFrames = null;
+      if (prevSession) {
+        prevFrames = await getFrames(prevSession);
+      }
+      const frames = await getFrames(selectedSession);
+      setVideoFrames(frames);
+      const framesResults = await analyzeFrames(frames);
+      // console.log(54321, framesResults);
+
+      setTotalArmPoseFrames(framesResults.studentArmPoseFrames);
+      setAvgNumberStudents(framesResults.avgNumStudentsDetected);
+      if (prevFrames) {
+        const prevFrameResults = await analyzeFrames(prevFrames);
+        setPrevFrameResults({
+          ...prevFrameResults,
+          performance: prevSession?.performance,
+        });
+        // console.log(12345, prevFrameResults);
+      }
+    }
+    setLoading(false);
+  };
+
+  const getFrames = async (
+    selectedSession: BaseSession
+  ): Promise<{
+    instructor: VideoFrameSession[];
+    student: VideoFrameSession[];
+  }> => {
     const studentFrames = apiHandler.getFramesBySessionID(
       selectedSession.id,
       "student"
@@ -48,14 +109,25 @@ export default function MetricPage(props: IMetricPageProps) {
     );
 
     const results = await Promise.all([studentFrames, instructorFrames]);
-    console.log(results[0][0]);
+    return {
+      student: results[0],
+      instructor: results[1],
+    };
+  };
 
+  const analyzeFrames = async (frames: {
+    instructor: VideoFrameSession[];
+    student: VideoFrameSession[];
+  }): Promise<{
+    studentArmPoseFrames: any;
+    avgNumStudentsDetected: number;
+  }> => {
     // results[0][0].videoFrames.forEach((frame: VideoFrame) => {
     //   frame.people.forEach((person: Person) => {
     //     if (person.armpose === "handRaised") console.log(person.armpose);
     //   });
     // });
-    const videoFrames = results[0][0].videoFrames;
+    const videoFrames = frames.student[0].videoFrames;
     const studentArmPoseFrames = videoFrames.reduce(
       (accumulator1: typeof InitArmPoseObj, frame: VideoFrame) => {
         const armPoses = frame.people.reduce(
@@ -87,7 +159,7 @@ export default function MetricPage(props: IMetricPageProps) {
       InitArmPoseObj
     );
 
-    setTotalArmPoseFrames(studentArmPoseFrames);
+    // setTotalArmPoseFrames(studentArmPoseFrames);
 
     const avgNumStudentsDetected = videoFrames.reduce(
       (acc: number, frame: VideoFrame, i: number, arr: VideoFrame[]) => {
@@ -96,8 +168,7 @@ export default function MetricPage(props: IMetricPageProps) {
       0
     );
 
-    console.log("Avg Students", avgNumStudentsDetected);
-    setAvgNumberStudents(avgNumStudentsDetected);
+    // setAvgNumberStudents(avgNumStudentsDetected);
 
     const numberOfConcecutiveFramesToBeHandRaised = 10;
     const numberOfConcecutiveFramesToBeHandDown = 10;
@@ -161,9 +232,12 @@ export default function MetricPage(props: IMetricPageProps) {
       }
     }
 
-    console.log(peopleHandRaiseTracker);
+    // console.log(peopleHandRaiseTracker);
 
-    setLoading(false);
+    return {
+      studentArmPoseFrames: studentArmPoseFrames,
+      avgNumStudentsDetected: avgNumStudentsDetected,
+    };
   };
 
   function getDefaultObjectAt(array: any[], index: number) {
@@ -174,6 +248,10 @@ export default function MetricPage(props: IMetricPageProps) {
 
   if (loading) return <Spin />;
 
+  const handRaiseDiff = prevFrameResults
+    ? totalArmPoseFrames.handRaised -
+      prevFrameResults.studentArmPoseFrames.handRaised
+    : totalArmPoseFrames.handRaised;
   const handRaiseSessionMetric = new SessionMetric({
     metricType: SessionMetricType.HandRaises,
     name: "Hand Raises",
@@ -186,14 +264,25 @@ export default function MetricPage(props: IMetricPageProps) {
     hasDenominator: false,
     denominator: 0,
     unit: "",
-    trend: 1,
-    trend_metric: 0,
+    trend: handRaiseDiff > 0 ? 0 : 1,
+    trend_metric: handRaiseDiff,
     trend_metric_unit: "",
     help_text:
       "The total frequency of detected hand raises during the class session",
     has_alert: false,
     icon: "hand-paper",
     canEdit: false,
+    updateMetric: async (metricUpdateObject: object) => {
+      const success = await apiHandler.updateMetric(
+        selectedSession.id,
+        "handRaise",
+        metricUpdateObject
+      );
+      return success;
+    },
+    constructMetricUpdateObject: (newMetric: string) => {
+      return { handRaise: newMetric };
+    },
   });
 
   // const studentSpeechSessionMetric = new SessionMetric({
@@ -215,7 +304,11 @@ export default function MetricPage(props: IMetricPageProps) {
   //     "The total frequency of student talk (in minutes) during the class session",
   //   has_alert: false,
   // icon: "comments",
-  // canEdit: false
+  // canEdit: false,
+  // updateMetric: (metricUpdateObject: object) => {
+  //   return apiHandler.updateMetric(selectedSession.id, "handRaise", metricUpdateObject);
+  // },
+  // constructMetricUpdateObject: (newMetric: string) => { return {handRaises: newMetric} }
   // });
   // const instructorSpeechSessionMetric = new SessionMetric({
   //   metricType: SessionMetricType.InstructorSpeech,
@@ -235,8 +328,16 @@ export default function MetricPage(props: IMetricPageProps) {
   //     "The total frequency of instructor talk (in minutes) during the class session",
   //   has_alert: false,
   // icon: "comment",
-  // canEdit: false
+  // canEdit: false,
+  // updateMetric: (metricUpdateObject: object) => {
+  //   return apiHandler.updateMetric(selectedSession.id, "handRaise", metricUpdateObject);
+  // },
+  // constructMetricUpdateObject: (newMetric: string) => { return {handRaises: newMetric} }
   // });
+
+  const classPreformanceDiff = prevFrameResults
+    ? sessionPreformanceMetric - prevFrameResults.performance
+    : sessionPreformanceMetric;
   const classPreformanceSessionMetric = new SessionMetric({
     metricType: SessionMetricType.ClassPerformance,
     name: "Class Performance",
@@ -244,20 +345,38 @@ export default function MetricPage(props: IMetricPageProps) {
       dark: "#1E7FD4",
       light: "#1E88E5",
     },
-    metric: 0,
+    metric: sessionPreformanceMetric,
     metricPrepend: "",
     hasDenominator: false,
     denominator: 0,
     unit: "%",
-    trend: 0,
-    trend_metric: 0,
+    trend: classPreformanceDiff > 0 ? 0 : 1,
+    trend_metric: classPreformanceDiff,
     trend_metric_unit: "%",
     help_text:
       "Did you do any graded activity in this class session? You may enter manually the average class performance and compare them with future sessions!",
     has_alert: false,
     icon: "id-card",
     canEdit: true,
+    updateMetric: (metricUpdateObject: { performance: number }) => {
+      const result = apiHandler.updateMetric(
+        selectedSession.id,
+        "performance",
+        metricUpdateObject
+      );
+
+      setSessionPreformanceMetric(metricUpdateObject.performance * 100);
+      return result;
+    },
+    constructMetricUpdateObject: (newMetric: string) => {
+      return { performance: parseFloat(newMetric) / 100.0 };
+    },
   });
+
+  const attendanceDiff = prevFrameResults
+    ? Math.round(avgNumberStudents) -
+      Math.round(prevFrameResults.avgNumStudentsDetected)
+    : Math.round(avgNumberStudents);
   const attendanceSessionMetric = new SessionMetric({
     metricType: SessionMetricType.Attendance,
     name: "Attendence",
@@ -270,13 +389,25 @@ export default function MetricPage(props: IMetricPageProps) {
     hasDenominator: false,
     denominator: 0,
     unit: "",
-    trend: 0,
-    trend_metric: 0,
+    trend: attendanceDiff > 0 ? 0 : 1,
+    trend_metric: attendanceDiff,
     trend_metric_unit: "",
     help_text: "Average number of students detected during the session",
     has_alert: false,
     icon: "users",
     canEdit: false,
+    updateMetric: (metricUpdateObject: object) => {
+      const result = apiHandler.updateMetric(
+        selectedSession.id,
+        "attendance",
+        metricUpdateObject
+      );
+
+      return result;
+    },
+    constructMetricUpdateObject: (newMetric: string) => {
+      return { attendance: newMetric };
+    },
   });
   const metrics: SessionMetric[] = [
     handRaiseSessionMetric,
@@ -291,6 +422,7 @@ export default function MetricPage(props: IMetricPageProps) {
       session={selectedSession}
       metrics={metrics}
       setSessionName={() => Promise.resolve()}
+      videoFrames={videoFrames}
     />
   );
 }

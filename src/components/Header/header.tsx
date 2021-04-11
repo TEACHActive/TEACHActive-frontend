@@ -66,7 +66,9 @@ export function Header(props: IHeaderProps) {
 
   const rebuildSessions = async () => {
     // const newSessions = await refreshSessions(userUID);
-    buildSessionTreeData(sessions);
+    buildSessionTreeData(
+      sessions.sort((a, b) => a.createdAt.toMillis() - b.createdAt.toMillis())
+    );
   };
 
   const setAppVersion = (version: string | undefined) => {
@@ -98,11 +100,12 @@ export function Header(props: IHeaderProps) {
 
     const namedSessionsPromises = sessions.map((session) => {
       return new Promise(async (resolve, reject) => {
-        const sessionName = await apiHandler.getSessionName(session.id);
+        const sessionExtras = await apiHandler.getSessionExtras(session.id);
+
         resolve(
           new BaseSession({
             ...session,
-            name: sessionName,
+            ...sessionExtras,
           })
         );
       });
@@ -119,10 +122,9 @@ export function Header(props: IHeaderProps) {
   };
 
   async function setSessionName(session: BaseSession, newName: string) {
-    const success = await props.apiHandler.updateSessionName(
-      session.id,
-      newName
-    );
+    const success = await props.apiHandler.updateMetric(session.id, "name", {
+      name: newName,
+    });
     if (!success) {
       message.error("Failed to update session name");
       return;

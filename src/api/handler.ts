@@ -10,8 +10,17 @@ export interface IAPIHandler {
     sessionID: string,
     channel: "student" | "instructor"
   ): Promise<VideoFrameSession[]>;
-  updateSessionName(sessionId: string, newName: string): Promise<boolean>;
-  getSessionName(sessionId: string): Promise<string>;
+  // updateSessionName(sessionId: string, newName: string): Promise<boolean>;
+  // updateSessionPerformance(
+  //   sessionId: string,
+  //   newPerformance: number
+  // ): Promise<boolean>;
+  updateMetric(
+    sessionId: string,
+    metricName: string,
+    newMetricObj: object
+  ): Promise<boolean>;
+  getSessionExtras(sessionId: string): Promise<object>;
 }
 
 export class APIHandler implements IAPIHandler {
@@ -91,7 +100,6 @@ export class APIHandler implements IAPIHandler {
     sessionID: string,
     channel: "student" | "instructor"
   ): Promise<VideoFrameSession[]> => {
-    console.log("getFramesBySessionID");
     var data = JSON.stringify({
       query: `{
               sessions(sessionId: "${sessionID}") { 
@@ -106,6 +114,7 @@ export class APIHandler implements IAPIHandler {
                       }
                       people { 
                           openposeId 
+                          body
                           inference { 
                               trackingId 
                               posture { 
@@ -144,15 +153,16 @@ export class APIHandler implements IAPIHandler {
     }
   };
 
-  updateSessionName = async (
+  updateMetric = async (
     sessionId: string,
-    newName: string
+    metricName: string,
+    newMetricObj: object
   ): Promise<boolean> => {
     const config = getAxiosConfig(
       "put",
-      `/edusense/sessions/${sessionId}/name`,
+      `/edusense/sessions/${sessionId}/${metricName}`,
       "teachactive",
-      { name: newName }
+      newMetricObj
     );
 
     try {
@@ -173,10 +183,10 @@ export class APIHandler implements IAPIHandler {
     }
   };
 
-  getSessionName = async (sessionId: string): Promise<string> => {
+  getSessionExtras = async (sessionId: string): Promise<object> => {
     const config = getAxiosConfig(
       "get",
-      `/edusense/sessions/${sessionId}/name`,
+      `/edusense/sessions/${sessionId}`,
       "teachactive"
     );
 
@@ -189,7 +199,10 @@ export class APIHandler implements IAPIHandler {
         return Promise.reject(response.data.error);
       }
 
-      return response.data.name;
+      return {
+        name: response.data.name,
+        performance: response.data.performance,
+      };
     } catch (e) {
       console.error(e);
       message.error("There was an error");
