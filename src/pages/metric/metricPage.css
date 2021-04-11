@@ -1,3 +1,13 @@
 .infoCardContent {
   padding-top: 2em;
 }
+
+.sessionTitleEdit {
+  margin-left: 5px;
+  color: darkgray;
+  cursor: pointer;
+}
+
+.sessionTitleEdit:hover {
+  color: gray;
+}

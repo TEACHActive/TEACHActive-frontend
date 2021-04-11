@@ -10,6 +10,8 @@ export interface IAPIHandler {
     sessionID: string,
     channel: "student" | "instructor"
   ): Promise<VideoFrameSession[]>;
+  updateSessionName(sessionId: string, newName: string): Promise<boolean>;
+  getSessionName(sessionId: string): Promise<string>;
 }
 
 export class APIHandler implements IAPIHandler {
@@ -26,7 +28,7 @@ export class APIHandler implements IAPIHandler {
       variables: {},
     });
 
-    const config = getAxiosConfig("post", "/query", data);
+    const config = getAxiosConfig("post", "/query", "edusense", data);
 
     try {
       const response = await axios.request(config);
@@ -62,7 +64,7 @@ export class APIHandler implements IAPIHandler {
       variables: {},
     });
 
-    const config = getAxiosConfig("post", "/query", data);
+    const config = getAxiosConfig("post", "/query", "edusense", data);
 
     try {
       const response = await axios.request(config);
@@ -118,7 +120,7 @@ export class APIHandler implements IAPIHandler {
       variables: {},
     });
 
-    const config = getAxiosConfig("post", "/query", data);
+    const config = getAxiosConfig("post", "/query", "edusense", data);
 
     try {
       const response = await axios.request(config);
@@ -139,6 +141,59 @@ export class APIHandler implements IAPIHandler {
       console.error(e);
       message.error(e);
       return [];
+    }
+  };
+
+  updateSessionName = async (
+    sessionId: string,
+    newName: string
+  ): Promise<boolean> => {
+    const config = getAxiosConfig(
+      "put",
+      `/edusense/sessions/${sessionId}/name`,
+      "teachactive",
+      { name: newName }
+    );
+
+    try {
+      const response = await axios.request(config);
+      console.log(response);
+
+      if (response.data.error) {
+        message.error("An error occured");
+        console.error(response.data.detail);
+        return false;
+      }
+
+      return true;
+    } catch (e) {
+      console.error(e);
+      message.error("There was an error");
+      return false;
+    }
+  };
+
+  getSessionName = async (sessionId: string): Promise<string> => {
+    const config = getAxiosConfig(
+      "get",
+      `/edusense/sessions/${sessionId}/name`,
+      "teachactive"
+    );
+
+    try {
+      const response = await axios.request(config);
+
+      if (response.data.error) {
+        message.error("An error occured");
+        console.error(response.data.detail);
+        return Promise.reject(response.data.error);
+      }
+
+      return response.data.name;
+    } catch (e) {
+      console.error(e);
+      message.error("There was an error");
+      return Promise.reject(e);
     }
   };
 }

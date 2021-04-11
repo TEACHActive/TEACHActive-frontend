@@ -15,10 +15,42 @@ export class SessionResponse<T extends BaseSession> {
 export class BaseSession {
   id: string;
   createdAt: DateTime;
+  name: string;
 
   constructor(data: any) {
     this.id = data.id;
-    this.createdAt = DateTime.fromSeconds(data.createdAt.unixSeconds);
+    this.createdAt = this.getCreatedAtFromData(data);
+    this.name = this.getNameFromData(data);
+  }
+
+  private getCreatedAtFromData(data: any): DateTime {
+    switch (typeof data.createdAt) {
+      case typeof Number:
+        return DateTime.fromSeconds(data.createdAt.unixSeconds);
+      case typeof String:
+        return DateTime.fromISO(data.createdAt);
+      case typeof Object:
+        if (data.createdAt.isLuxonDateTime) {
+          return data.createdAt;
+        } else if (data.createdAt.unixSeconds) {
+          return DateTime.fromSeconds(data.createdAt.unixSeconds);
+        }
+      //else fallthrough
+      default:
+        return DateTime.fromJSDate(new Date()); //Currently some issue with DateTime.now()?
+    }
+  }
+
+  private getNameFromData(data: any): string {
+    if (data.name) {
+      return data.name;
+    } else if (data.createdAt.isLuxonDateTime) {
+      return data.createdAt.toLocaleString();
+    } else if (data.createdAt.unixSeconds) {
+      return DateTime.fromSeconds(data.createdAt.unixSeconds).toLocaleString();
+    } else {
+      return data.id;
+    }
   }
 
   static equal(left: BaseSession, right: BaseSession): boolean {

@@ -45,7 +45,7 @@ import COLOR from "../../constants/colors";
 // type ColorKeys = keyof typeof COLOR;
 // type ColorValues = typeof COLOR[ColorKeys];
 
-export class SessionMetric {
+export interface ISessionMetric {
   name: string;
   metricType: SessionMetricType;
   color?: {
@@ -53,6 +53,7 @@ export class SessionMetric {
     light: string;
   };
   metric: number;
+  metricPrepend: string;
   hasDenominator: boolean;
   denominator: number;
   unit: string;
@@ -61,16 +62,40 @@ export class SessionMetric {
   trend_metric_unit: string;
   help_text: string;
   has_alert: boolean;
+  icon: string;
+  canEdit: boolean;
+}
 
-  constructor(data: any) {
+export class SessionMetric implements ISessionMetric {
+  name: string;
+  metricType: SessionMetricType;
+  color?: {
+    dark: string;
+    light: string;
+  };
+  metric: number;
+  metricPrepend: string;
+  hasDenominator: boolean;
+  denominator: number;
+  unit: string;
+  trend: number; //Oneof(0,1)
+  trend_metric: number; //oneof
+  trend_metric_unit: string;
+  help_text: string;
+  has_alert: boolean;
+  icon: string;
+  canEdit: boolean;
+
+  constructor(data: ISessionMetric) {
     this.name = data.name;
-    this.metricType =
-      SessionMetricType[data.metricType as keyof typeof SessionMetricType];
+
+    this.metricType = data.metricType;
 
     if (data.color) {
       this.color = { light: data.color.light, dark: data.color.dark };
     }
     this.metric = data.metric;
+    this.metricPrepend = data.metricPrepend;
     this.denominator = data.denominator;
     this.hasDenominator = data.hasDenominator;
     this.unit = data.unit;
@@ -79,6 +104,8 @@ export class SessionMetric {
     this.trend_metric_unit = data.trend_metric_unit;
     this.help_text = data.help_text;
     this.has_alert = data.has_alert;
+    this.icon = data.icon;
+    this.canEdit = data.canEdit;
   }
 }
 
@@ -87,6 +114,7 @@ export enum SessionMetricType {
   StudentSpeech,
   InstructorSpeech,
   ClassPerformance,
+  Attendance,
 }
 
 // export class SessionHandRaiseData {

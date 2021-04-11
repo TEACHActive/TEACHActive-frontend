@@ -2,9 +2,9 @@ import * as React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Input, Button } from "antd";
 import { BaseSession } from "../../api/types";
+import { DateTime } from "luxon";
 
 export interface ISessionTreeNodeTitle {
-  sessionNameOrDate: string;
   setSessionName: (
     session: BaseSession,
     newSessionName: string
@@ -16,10 +16,12 @@ export function SessionTreeNodeTitle(props: ISessionTreeNodeTitle) {
   const [editing, setEditing] = React.useState(false);
   const [newSessionName, setNewSessionName] = React.useState("");
 
+  const sessionName = props.session.name;
+
   return editing ? (
     <div>
       <Input
-        placeholder={props.sessionNameOrDate}
+        placeholder={sessionName}
         value={newSessionName}
         onChange={(event) => setNewSessionName(event.target.value)}
         onClick={(event) => {
@@ -44,7 +46,7 @@ export function SessionTreeNodeTitle(props: ISessionTreeNodeTitle) {
     </div>
   ) : (
     <div>
-      {props.sessionNameOrDate}{" "}
+      {sessionName}{" "}
       <FontAwesomeIcon
         icon="edit"
         onClick={(event) => {

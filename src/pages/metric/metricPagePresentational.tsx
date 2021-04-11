@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Empty } from "antd";
+import { Button, Empty, Input, Typography } from "antd";
 
 import { SessionMetric, SessionMetricType } from "./metricPage.types";
 import { InfoCard } from "../../components/InfoCard/infoCard";
@@ -8,17 +8,28 @@ import { InstructorMovement } from "../../components/InfoCard/instructorMovement
 import BlockContent from "../../components/BlockContent/blockContent";
 import { BehavioralEngagement } from "../../components/InfoCard/behavioralEngagement";
 
-import "./metricPage.css";
 import { BaseSession } from "../../api/types";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+import "./metricPage.css";
+
+const { Title } = Typography;
 
 export interface ISessionPagePresentationalProps {
-  session: BaseSession | undefined;
+  session: BaseSession;
   metrics: SessionMetric[];
+  setSessionName: (
+    session: BaseSession,
+    newSessionName: string
+  ) => Promise<void>;
 }
 
 export function SessionPagePresentational(
   props: ISessionPagePresentationalProps
 ) {
+  const [editingSessionName, setEditingSessionName] = React.useState(false);
+  const [newSessionName, setNewSessionName] = React.useState("");
+
   if (!props.session) {
     return (
       <div>
@@ -36,7 +47,61 @@ export function SessionPagePresentational(
 
   return (
     <div className="metricPagePresentational">
-      {/* <h1 style={{ marginBottom: "3em" }}>{props.session.className}</h1> */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          marginBottom: "3em",
+          minHeight: "5em",
+        }}
+      >
+        {editingSessionName ? (
+          <div style={{ display: "flex" }}>
+            <Input
+              placeholder={props.session.name}
+              onChange={(event) => setNewSessionName(event.target.value)}
+            />
+            <Button type="primary" size="small">
+              <FontAwesomeIcon
+                icon="check"
+                size="1x"
+                color="blue"
+                onClick={(event) => {
+                  setEditingSessionName(false);
+                  props.setSessionName(props.session, newSessionName);
+                  setNewSessionName("");
+                }}
+              />
+            </Button>
+            <Button type="default" size="small" danger>
+              <FontAwesomeIcon
+                icon="ban"
+                size="1x"
+                color="red"
+                onClick={(event) => {
+                  setEditingSessionName(false);
+                  setNewSessionName("");
+                }}
+              />
+            </Button>
+          </div>
+        ) : (
+          <>
+            <Title>{props.session.name}</Title>
+            {/* <FontAwesomeIcon
+              icon="edit"
+              size="1x"
+              onClick={(event) => {
+                event.stopPropagation();
+                setEditingSessionName(true);
+              }}
+              className="sessionTitleEdit"
+            /> */}
+          </>
+        )}
+      </div>
+
       <div
         style={{
           width: "100%",
@@ -55,39 +120,26 @@ export function SessionPagePresentational(
         >
           {props.metrics &&
             props.metrics.map((item: SessionMetric, i: number) => {
-              let icon: any = "";
-              switch (item.metricType) {
-                case SessionMetricType.HandRaises:
-                  icon = "hand-paper";
-                  break;
-                case SessionMetricType.StudentSpeech:
-                  icon = "comments";
-                  break;
-                case SessionMetricType.InstructorSpeech:
-                  icon = "comment";
-                  break;
-                case SessionMetricType.ClassPerformance:
-                  icon = "id-card";
-                  break;
-              }
               return (
                 <BlockContent
                   color={item.color}
                   name={item.name}
                   help_text={item.help_text}
                   has_alert={item.has_alert}
-                  icon={icon}
+                  icon={item.icon}
                   key={i}
                 >
                   <MetricDisplay
                     metricType={item.metricType}
                     metric={item.metric}
+                    metricPrepend={item.metricPrepend}
                     denominator={item.denominator}
                     hasDenominator={item.hasDenominator}
                     unit={item.unit}
                     trend={item.trend}
                     trend_metric={item.trend_metric}
                     trend_metric_unit={item.trend_metric_unit}
+                    canEdit={item.canEdit}
                   />
                 </BlockContent>
               );
