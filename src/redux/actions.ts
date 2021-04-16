@@ -21,3 +21,8 @@ export const setUserUID = (userUID: string) => ({
   type: ReducerActionType.SET_USER_UID,
   payload: { userUID },
 });
+
+export const getSetReflections = (userUID: string, sessionId: string) => ({
+  type: ReducerActionType.GET_SET_REFLECTIONS,
+  payload: { userUID, sessionId },
+});

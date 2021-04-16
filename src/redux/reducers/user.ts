@@ -12,10 +12,10 @@ const initialState: StateShape = {
 export default function (state = initialState, action: any) {
   switch (action.type) {
     case SET_USER_UID: {
-      const { uid } = action.payload;
-
+      const { uid, userUID } = action.payload;
+      let userUIDReal = uid ?? userUID;
       return {
-        currentUserUID: uid,
+        currentUserUID: userUIDReal,
       };
     }
     default:

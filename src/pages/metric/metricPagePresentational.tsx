@@ -1,21 +1,26 @@
 import * as React from "react";
-import { Button, Empty, Input, Typography } from "antd";
+import { Button, Empty, Input, Spin, Typography } from "antd";
 
-import { SessionMetric, SessionMetricType } from "./metricPage.types";
+import { SessionMetric } from "./metricPage.types";
 import { InfoCard } from "../../components/InfoCard/infoCard";
 import MetricDisplay from "../../components/MetricDisplay/metricDisplay";
-import { InstructorMovement } from "../../components/InfoCard/instructorMovement";
+import { MovementPatterns } from "../../components/MovementPatterns/movementPatterns";
 import BlockContent from "../../components/BlockContent/blockContent";
-import { BehavioralEngagement } from "../../components/InfoCard/behavioralEngagement";
+import { BehavioralEngagement } from "../../components/BehavioralEngagement/behavioralEngagement";
 
-import { BaseSession, VideoFrameSession } from "../../api/types";
+import {
+  ArmPose,
+  BaseSession,
+  Person,
+  VideoFrameSession,
+} from "../../api/types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import "./metricPage.css";
 
 const { Title } = Typography;
 
-export interface ISessionPagePresentationalProps {
+export interface IMetricPagePresentationalProps {
   session: BaseSession;
   metrics: SessionMetric[];
   setSessionName: (
@@ -28,10 +33,27 @@ export interface ISessionPagePresentationalProps {
         student: VideoFrameSession[];
       }
     | undefined;
+  engagementData:
+    | {
+        frameNumber: number;
+        timestamp: number;
+        armPoseCount: {
+          handsRaised: {
+            pose: ArmPose;
+            id: number;
+          }[];
+          armsCrossed: number;
+          error: number;
+          handsOnFace: number;
+          other: number;
+        };
+        people: Person[];
+      }[]
+    | undefined;
 }
 
-export function SessionPagePresentational(
-  props: ISessionPagePresentationalProps
+export function MetricPagePresentational(
+  props: IMetricPagePresentationalProps
 ) {
   const [editingSessionName, setEditingSessionName] = React.useState(false);
   const [newSessionName, setNewSessionName] = React.useState("");
@@ -151,7 +173,9 @@ export function SessionPagePresentational(
                         item.constructMetricUpdateObject(newMetric)
                       )
                     }
-                  />
+                  >
+                    {item.children}
+                  </MetricDisplay>
                 </BlockContent>
               );
             })}
@@ -183,7 +207,7 @@ export function SessionPagePresentational(
             helpWindowText="Movement Patterns during class //Todo"
           >
             <div className="infoCardContent">
-              <InstructorMovement videoFrames={props.videoFrames} />
+              <MovementPatterns videoFrames={props.videoFrames} />
             </div>
           </InfoCard>
           <InfoCard
@@ -193,7 +217,11 @@ export function SessionPagePresentational(
             helpWindowText="Behavioral Engagement during class //todo"
           >
             <div className="infoCardContent">
-              <BehavioralEngagement videoFrames={props.videoFrames} />
+              {props.engagementData ? (
+                <BehavioralEngagement engagementData={props.engagementData} />
+              ) : (
+                <Spin />
+              )}
             </div>
           </InfoCard>
         </div>

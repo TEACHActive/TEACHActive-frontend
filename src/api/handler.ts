@@ -10,17 +10,18 @@ export interface IAPIHandler {
     sessionID: string,
     channel: "student" | "instructor"
   ): Promise<VideoFrameSession[]>;
-  // updateSessionName(sessionId: string, newName: string): Promise<boolean>;
-  // updateSessionPerformance(
-  //   sessionId: string,
-  //   newPerformance: number
-  // ): Promise<boolean>;
   updateMetric(
     sessionId: string,
     metricName: string,
     newMetricObj: object
   ): Promise<boolean>;
   getSessionExtras(sessionId: string): Promise<object>;
+  getSessionReflections(sessionID: string, uid: string): Promise<any | null>;
+  updateSessionReflections(
+    sessionID: string,
+    uid: string,
+    userSessionReflections?: any[]
+  ): Promise<boolean>;
 }
 
 export class APIHandler implements IAPIHandler {
@@ -55,12 +56,14 @@ export class APIHandler implements IAPIHandler {
       return baseSessionResponse.sessions;
     } catch (e) {
       console.error(e);
-      message.error(e);
       return [];
     }
   };
 
   getSessionsByUID = async (uid: string): Promise<BaseSession[]> => {
+    console.log("getSessionsByUID");
+    console.log(uid);
+
     const data = JSON.stringify({
       query: `{
                 sessions(keyword: "${uid}") { 
@@ -74,9 +77,11 @@ export class APIHandler implements IAPIHandler {
     });
 
     const config = getAxiosConfig("post", "/query", "edusense", data);
+    console.log(config);
 
     try {
       const response = await axios.request(config);
+      console.log(response);
 
       const baseSessionResponse = new SessionResponse<BaseSession>(
         {
@@ -134,9 +139,14 @@ export class APIHandler implements IAPIHandler {
     try {
       const response = await axios.request(config);
 
+      const edusenseResponse = JSON.parse(response.data.response);
+
       const videoFrameSessionResponse = new SessionResponse<VideoFrameSession>(
         {
-          sessions: JSON.parse(response.data.response).data.sessions,
+          sessions:
+            edusenseResponse && edusenseResponse.data
+              ? edusenseResponse.data.sessions
+              : [],
           success: response.data.success,
         },
         VideoFrameSession
@@ -145,10 +155,11 @@ export class APIHandler implements IAPIHandler {
         message.error("An error occured");
       }
 
+      console.log(videoFrameSessionResponse.sessions);
+
       return videoFrameSessionResponse.sessions;
     } catch (e) {
       console.error(e);
-      message.error(e);
       return [];
     }
   };
@@ -164,6 +175,8 @@ export class APIHandler implements IAPIHandler {
       "teachactive",
       newMetricObj
     );
+
+    console.log(newMetricObj);
 
     try {
       const response = await axios.request(config);
@@ -209,6 +222,65 @@ export class APIHandler implements IAPIHandler {
       return Promise.reject(e);
     }
   };
+  async getSessionReflections(
+    sessionId: string,
+    uid: string
+  ): Promise<object | null> {
+    const config = getAxiosConfig(
+      "get",
+      `/reflections/${uid}/${sessionId}`,
+      "teachactive"
+    );
+
+    try {
+      const response = await axios.request(config);
+      console.log(response);
+
+      if (response.data.error) {
+        // message.error("An error occured");
+        console.error(response.data.detail);
+        return null;
+      }
+
+      return response.data;
+    } catch (e) {
+      console.error(e);
+      // message.error("There was an error");
+      return null;
+    }
+  }
+  async updateSessionReflections(
+    sessionId: string,
+    uid: string,
+    userSessionReflections: any[] = []
+  ): Promise<boolean> {
+    const config = getAxiosConfig(
+      "put",
+      `/reflections/${uid}/${sessionId}`,
+      "teachactive",
+      {
+        userId: uid,
+        sessionId: sessionId,
+        reflections: userSessionReflections,
+      }
+    );
+
+    try {
+      const response = await axios.request(config);
+
+      if (response.data.error) {
+        message.error("An error occured");
+        console.error(response.data.detail);
+        return false;
+      }
+
+      return true;
+    } catch (e) {
+      console.error(e);
+      message.error("There was an error");
+      return false;
+    }
+  }
 }
 
 const apiHandler: IAPIHandler = new APIHandler();

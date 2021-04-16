@@ -1,10 +1,15 @@
-import { Checkbox, Spin, Tooltip } from "antd";
+import { Checkbox, Select, Spin, Tooltip } from "antd";
 import { CheckboxValueType } from "antd/lib/checkbox/Group";
 import * as React from "react";
+import { useSelector } from "react-redux";
 import { BarChart, CartesianGrid, XAxis, YAxis, Legend, Bar } from "recharts";
-import { BaseSession } from "../../api/types";
+import apiHandler from "../../api/handler";
+import { ArmPose, BaseSession } from "../../api/types";
 
 import FramesJSON from "../../data/frames.json";
+import { getSelectedSession, getSessions } from "../../redux/selectors";
+
+const { Option } = Select;
 
 export interface IBehavioralEngagementProgressProps {}
 export interface IBehavioralEngagementProgressState {
@@ -69,46 +74,73 @@ const defaultOptions = [
     checked: false,
   },
 ];
+// const selectedSession: BaseSession | null = useSelector(
+//   (state: any) => getSelectedSession(state),
+//   BaseSession.equal
+// );
+// const sessions: BaseSession[] = useSelector((state: any) =>
+//   getSessions(state)
+// );
 
-export class BehavioralEngagementProgress extends React.Component
-  implements IBehavioralEngagementProgressProps {
-  state: IBehavioralEngagementProgressState = {
-    selectedSessions: [],
-    options: defaultOptions,
-    engagementData: undefined,
-  };
+export function BehavioralEngagementProgress(
+  props: IBehavioralEngagementProgressProps
+) {
+  // state: IBehavioralEngagementProgressState = {
+  //   selectedSessions: [],
+  //   options: defaultOptions,
+  //   engagementData: undefined,
+  // };
+  const sessions: BaseSession[] = useSelector((store: any) =>
+    getSessions(store)
+  );
+  const selectedSession: BaseSession | null = useSelector(
+    (state: any) => getSelectedSession(state),
+    BaseSession.equal
+  );
 
-  componentDidMount = () => {
-    const engagementData = FramesJSON.frames
-      .sort(
-        (frameA: any, frameB: any) => frameA.frameNumber - frameB.frameNumber
-      )
-      .map((frame: any) => {
-        const armPoseCntObj = frame.people.map(
-          (person: any) => person.inference.posture.armPose
-        );
+  const [engagementData, setEngagementData] = React.useState();
+  const [options, setOptions] = React.useState<
+    {
+      label: string;
+      value: string;
+      disabled: boolean;
+      checked: boolean;
+    }[]
+  >([]);
+  const [matchingSessions, setMatchingSessions] = React.useState<BaseSession[]>(
+    []
+  );
 
-        return {
-          frameNumber: frame.frameNumber,
-          armPose: armPoseCntObj,
-        };
-      })
-      .reduce(
-        (tally: { [x: string]: any }, armPoseandFrame: any) => {
-          tally[armPoseandFrame.armPose] =
-            (tally[armPoseandFrame.armPose] || 0) + 1;
-          return tally;
-        },
-        { handsRaised: 0, armsCrossed: 0, other: 0, error: 0 }
-      );
-    engagementData["date"] = "10/2/2002";
-    // console.log(engagementData);
-    this.setState({
-      engagementData: engagementData,
-    });
-  };
+  const [loading, setLoading] = React.useState(false);
 
-  onChange = (checkedValue: CheckboxValueType[]) => {
+  React.useEffect(() => {
+    // const engagementData = FramesJSON.frames
+    //   .sort(
+    //     (frameA: any, frameB: any) => frameA.frameNumber - frameB.frameNumber
+    //   )
+    //   .map((frame: any) => {
+    //     const armPoseCntObj = frame.people.map(
+    //       (person: any) => person.inference.posture.armPose
+    //     );
+    //     return {
+    //       frameNumber: frame.frameNumber,
+    //       armPose: armPoseCntObj,
+    //     };
+    //   })
+    //   .reduce(
+    //     (tally: { [x: string]: any }, armPoseandFrame: any) => {
+    //       tally[armPoseandFrame.armPose] =
+    //         (tally[armPoseandFrame.armPose] || 0) + 1;
+    //       return tally;
+    //     },
+    //     { handsRaised: 0, armsCrossed: 0, other: 0, error: 0 }
+    //   );
+    // engagementData["date"] = "10/2/2002";
+    // // console.log(engagementData);
+    // setEngagementData(engagementData);
+  }, []);
+
+  const updateOptions = (checkedValue: CheckboxValueType[]) => {
     let newOptions = [...defaultOptions];
     const instructorSpeechOptionIndex = newOptions.findIndex(
       (option) => option.value === "instructorSpeech"
@@ -167,35 +199,68 @@ export class BehavioralEngagementProgress extends React.Component
       newOptions[handRaisesOptionIndex].disabled = false;
     }
 
-    this.setState({
-      options: newOptions,
-    });
+    setOptions(newOptions);
   };
 
-  render() {
-    const { options, engagementData } = this.state;
+  const handleSelectSessionChange = async (value: string[]) => {
+    let matchingSessions: BaseSession[] = [];
+    setLoading(true);
 
-    if (!engagementData) {
-      return <Spin />;
-    }
-    let engagementData2 = { ...engagementData };
-    let engagementData3 = { ...engagementData };
-    engagementData.date = "9/1/20";
-    engagementData2.date = "9/3/20";
-    engagementData2.handsRaised = 38;
-    engagementData3.date = "9/5/20";
-    engagementData3.handsRaised = 18;
+    value.forEach((value) => {
+      const matchingSession = sessions.find((session) => session.id === value);
+      if (matchingSession) matchingSessions.push(matchingSession);
+    });
+    setMatchingSessions(matchingSessions);
 
-    const fakeData = [engagementData, engagementData2, engagementData3];
+    const promises = matchingSessions.map((session) =>
+      apiHandler.getFramesBySessionID(session.id, "student")
+    );
+    const sessionFrames = await Promise.all(promises);
 
-    return (
-      <div style={{ padding: "1em", margin: "1em" }}>
-        <Checkbox.Group
-          options={options}
-          defaultValue={["handRaises"]}
-          value={options.map((option) => (option.checked ? option.value : ""))}
-          onChange={this.onChange}
-        />
+    // const somethign = sessionFrames.map((sessionFrame) =>
+    //   sessionFrame.reduce((acc, frame) => {
+    //     console.log(frame.videoFrames);
+    //     return frame.videoFrames;
+    //   })
+    // );
+
+    // console.log("sessionFrames", somethign);
+    setLoading(false);
+  };
+
+  // let engagementData2 = { ...engagementData };
+  // let engagementData3 = { ...engagementData };
+  // engagementData.date = "9/1/20";
+  // engagementData2.date = "9/3/20";
+  // engagementData2.handsRaised = 38;
+  // engagementData3.date = "9/5/20";
+  // engagementData3.handsRaised = 18;
+
+  // const fakeData = [engagementData, engagementData2, engagementData3];
+
+  return (
+    <div style={{ padding: "1em", margin: "1em" }}>
+      <Select
+        mode="multiple"
+        allowClear
+        style={{ width: "100%" }}
+        placeholder="Please select"
+        defaultValue={[]}
+        onChange={handleSelectSessionChange}
+      >
+        {sessions.map((session) => (
+          <Option key={session.id} value={session.id}>
+            {session.name}
+          </Option>
+        ))}
+      </Select>
+      <Checkbox.Group
+        options={options}
+        defaultValue={["handRaises"]}
+        value={options.map((option) => (option.checked ? option.value : ""))}
+        onChange={updateOptions}
+      />
+      {!loading && (
         <BarChart
           width={730}
           height={150}
@@ -203,7 +268,7 @@ export class BehavioralEngagementProgress extends React.Component
             options.findIndex(
               (obj) => obj.value === "handRaises" && obj.checked
             ) != -1
-              ? fakeData
+              ? []
               : []
           }
           style={{ marginTop: "1em" }}
@@ -212,9 +277,14 @@ export class BehavioralEngagementProgress extends React.Component
           <XAxis dataKey="date" />
           <YAxis />
           <Legend />
-          <Bar dataKey="handsRaised" fill="#8884d8" label={<div>test</div>} />
+          <Bar
+            dataKey={ArmPose.HandsRaised}
+            fill="#8884d8"
+            label={<div>test</div>}
+          />
         </BarChart>
-      </div>
-    );
-  }
+      )}
+      {loading && <Spin></Spin>}
+    </div>
+  );
 }

@@ -9,6 +9,7 @@ import "./progressPage.css";
 
 export interface IProgressPagePresentationalProps {
   session: BaseSession | null;
+  sessions: BaseSession[];
 }
 
 export function ProgressPagePresentational(
@@ -33,7 +34,7 @@ export function ProgressPagePresentational(
     {
       color: color,
       name: "Behavorial Engagement",
-      help_text: "",
+      help_text: "Track your progress from class selected class sessions",
       has_alert: false,
       icon: null,
       content: <BehavioralEngagementProgress />,

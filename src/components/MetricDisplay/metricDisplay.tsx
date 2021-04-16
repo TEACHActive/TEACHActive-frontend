@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { TREND } from "../../constants/constants";
@@ -25,6 +25,7 @@ export interface IMetricDisplayProps {
   metricPrepend: string;
   canEdit: boolean;
   updateMetric: (newMetric: string) => Promise<boolean>;
+  children: ReactNode;
 }
 
 export default function MetricDisplay(props: IMetricDisplayProps) {
@@ -122,6 +123,7 @@ export default function MetricDisplay(props: IMetricDisplayProps) {
           {props.trend_metric} {props.trend_metric_unit}
         </span>
       </div>
+      {props.children}
     </div>
   );
 }

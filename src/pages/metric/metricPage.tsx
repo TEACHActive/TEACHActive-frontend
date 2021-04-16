@@ -1,8 +1,8 @@
 import * as React from "react";
-import { Empty, Spin } from "antd";
+import { Empty, message, Spin } from "antd";
 import { useSelector } from "react-redux";
 
-import { SessionPagePresentational } from "./metricPagePresentational";
+import { MetricPagePresentational } from "./metricPagePresentational";
 
 import "./metricPage.css";
 import {
@@ -10,17 +10,19 @@ import {
   VideoFrame,
   Person,
   VideoFrameSession,
+  ArmPose,
 } from "../../api/types";
 import apiHandler from "../../api/handler";
 import { SessionMetric, SessionMetricType } from "./metricPage.types";
 import { getSelectedSession, getSessions } from "../../redux/selectors";
+import { chunkArray } from "../../util";
 // import { SessionMetric } from "./metricPage.types";
 
 export interface IMetricPageProps {}
 
 const InitArmPoseObj = {
   handsOnFace: 0,
-  handRaised: 0,
+  handsRaised: 0,
   armsCrossed: 0,
   error: 0,
   other: 0,
@@ -34,10 +36,7 @@ export default function MetricPage(props: IMetricPageProps) {
   const sessions: BaseSession[] = useSelector((state: any) =>
     getSessions(state)
   );
-  const [loading, setLoading] = React.useState(true);
-  const [totalArmPoseFrames, setTotalArmPoseFrames] = React.useState(
-    InitArmPoseObj
-  );
+  const [loading, setLoading] = React.useState(false);
   const [avgNumberStudents, setAvgNumberStudents] = React.useState(0);
   const [videoFrames, setVideoFrames] = React.useState<{
     instructor: VideoFrameSession[];
@@ -50,12 +49,39 @@ export default function MetricPage(props: IMetricPageProps) {
 
   const [prevFrameResults, setPrevFrameResults] = React.useState<any>();
 
+  const [totaledArmPoses, setTotaledArmPoses] = React.useState<
+    typeof InitArmPoseObj
+  >(InitArmPoseObj);
+
+  const [engagementData, setEngagementData] = React.useState<
+    {
+      frameNumber: number;
+      timestamp: number;
+      armPoseCount: {
+        handsRaised: {
+          pose: ArmPose;
+          id: number;
+        }[];
+        armsCrossed: number;
+        error: number;
+        handsOnFace: number;
+        other: number;
+      };
+      people: Person[];
+    }[]
+  >();
+
+  const [prevSession, setPrevSession] = React.useState<BaseSession>();
+
   React.useEffect(() => {
+    if (prevSession?.id !== selectedSession.id) setLoading(true);
+
     getAndAnalyzeFrames(selectedSession);
+    setLoading(false);
+    setPrevSession(selectedSession);
   }, [selectedSession]);
 
   const getAndAnalyzeFrames = async (selectedSession: BaseSession) => {
-    setLoading(true);
     if (selectedSession) {
       setSessionPreformanceMetric(selectedSession.performance * 100);
 
@@ -68,29 +94,32 @@ export default function MetricPage(props: IMetricPageProps) {
       const prevSession =
         currSessionIndex > 0 ? sortedSessions[currSessionIndex - 1] : null;
 
-      // if (prevSession) console.log(selectedSession.id, prevSession.id);
-
       let prevFrames = null;
       if (prevSession) {
         prevFrames = await getFrames(prevSession);
       }
       const frames = await getFrames(selectedSession);
+      console.log(23, frames);
+      if (frames.instructor.length === 0 || frames.student.length === 0) {
+        message.error("No frames");
+        return;
+      }
+
       setVideoFrames(frames);
       const framesResults = await analyzeFrames(frames);
-      // console.log(54321, framesResults);
 
-      setTotalArmPoseFrames(framesResults.studentArmPoseFrames);
       setAvgNumberStudents(framesResults.avgNumStudentsDetected);
+
+      setEngagementData(framesResults.engagementData);
+      setTotaledArmPoses(framesResults.totaledArmPoses);
       if (prevFrames) {
         const prevFrameResults = await analyzeFrames(prevFrames);
         setPrevFrameResults({
           ...prevFrameResults,
           performance: prevSession?.performance,
         });
-        // console.log(12345, prevFrameResults);
       }
     }
-    setLoading(false);
   };
 
   const getFrames = async (
@@ -118,140 +147,85 @@ export default function MetricPage(props: IMetricPageProps) {
   const analyzeFrames = async (frames: {
     instructor: VideoFrameSession[];
     student: VideoFrameSession[];
-  }): Promise<{
-    studentArmPoseFrames: any;
-    avgNumStudentsDetected: number;
-  }> => {
-    // results[0][0].videoFrames.forEach((frame: VideoFrame) => {
-    //   frame.people.forEach((person: Person) => {
-    //     if (person.armpose === "handRaised") console.log(person.armpose);
-    //   });
-    // });
-    const videoFrames = frames.student[0].videoFrames;
-    const studentArmPoseFrames = videoFrames.reduce(
-      (accumulator1: typeof InitArmPoseObj, frame: VideoFrame) => {
-        const armPoses = frame.people.reduce(
-          (accumulator2: typeof InitArmPoseObj, person: Person) => {
-            return {
-              handsOnFace:
-                accumulator2.handsOnFace +
-                (person.armpose === "handsOnFace" ? 0 : 1),
-              handRaised:
-                accumulator2.handRaised +
-                (person.armpose === "handRaised" ? 0 : 1),
-              armsCrossed:
-                accumulator2.armsCrossed +
-                (person.armpose === "armsCrossed" ? 0 : 1),
-              error: accumulator2.error + (person.armpose === "error" ? 0 : 1),
-              other: accumulator2.other + (person.armpose === "other" ? 0 : 1),
-            };
-          },
-          InitArmPoseObj
-        );
-        return {
-          handsOnFace: accumulator1.handsOnFace + armPoses.handsOnFace,
-          handRaised: accumulator1.handRaised + armPoses.handRaised,
-          armsCrossed: accumulator1.armsCrossed + armPoses.armsCrossed,
-          error: accumulator1.error + armPoses.error,
-          other: accumulator1.other + armPoses.other,
-        };
-      },
-      InitArmPoseObj
-    );
+  }) => {
+    const studentVideoFrames = frames.student[0].getArmPoseCount();
 
-    // setTotalArmPoseFrames(studentArmPoseFrames);
-
-    const avgNumStudentsDetected = videoFrames.reduce(
-      (acc: number, frame: VideoFrame, i: number, arr: VideoFrame[]) => {
-        return acc + frame.people.length / arr.length;
+    const avgNumStudentsDetected = studentVideoFrames.reduce(
+      (acc: number, frame, i, arr) => {
+        //return acc + frame.people.length / arr.length;//This does avg, we actually want max, rename things later
+        return Math.max(acc, frame.people.length);
       },
       0
     );
 
-    // setAvgNumberStudents(avgNumStudentsDetected);
-
-    const numberOfConcecutiveFramesToBeHandRaised = 10;
+    const numberOfConcecutiveFramesToBeHandsRaised = 10;
     const numberOfConcecutiveFramesToBeHandDown = 10;
-    let peopleHandRaiseTracker: {
-      concecutiveFramesHandRaised: number;
+    type peopleArmPoseTracker = {
+      concecutiveFramesHandsRaised: number;
       concecutiveFramesHandDown: number;
       numberHandRaises: number;
       //Could also track length of each hand raise
-    }[] = [];
-    for (let frameNumber = 1; frameNumber < videoFrames.length; frameNumber++) {
-      //Assuming at least one frame
-      const videoFrame = videoFrames[frameNumber];
-      const people = videoFrame.people;
-      for (let personIndex = 0; personIndex < people.length; personIndex++) {
-        const person = people[personIndex];
-        const handRaised = person.armpose === "handRaised";
+    };
 
-        let personHandTracker = getDefaultObjectAt(
-          peopleHandRaiseTracker,
-          personIndex
-        );
-        // console.log(person.armpose);
+    const initialDateTime = frames.student[0].videoFrames[0].timestamp;
 
-        if (handRaised) {
-          //Frame with hand raise
-          console.log(1);
+    const engagementData = frames.student[0].getArmPoseCount();
 
-          if (
-            personHandTracker.concecutiveFramesHandRaised >=
-            numberOfConcecutiveFramesToBeHandRaised
-          ) {
-            getDefaultObjectAt(peopleHandRaiseTracker, personIndex)
-              .numberHandRaises++;
-            getDefaultObjectAt(
-              peopleHandRaiseTracker,
-              personIndex
-            ).concecutiveFramesHandDown = 0;
-          } else {
-            getDefaultObjectAt(
-              peopleHandRaiseTracker,
-              personIndex
-            ).concecutiveFramesHandRaised += 1;
-          }
-        } else {
-          //Frame without hand raise
-          if (
-            personHandTracker.concecutiveFramesHandDown >=
-            numberOfConcecutiveFramesToBeHandDown
-          ) {
-            getDefaultObjectAt(
-              peopleHandRaiseTracker,
-              personIndex
-            ).concecutiveFramesHandRaised = 0;
-          } else {
-            getDefaultObjectAt(
-              peopleHandRaiseTracker,
-              personIndex
-            ).concecutiveFramesHandDown += 1;
-          }
-        }
+    // studentVideoFrames.reduce(
+    //   (peopleHandsRaiseTracker: peopleArmPoseTracker, currentFrame) => {
+    //     currentFrame.people.reduce((accumulator, person: Person) => {
+    //       return {};
+    //     }, {});
+
+    //     return {
+    //       concecutiveFramesHandsRaised: 0,
+    //       concecutiveFramesHandDown: 0,
+    //       numberHandRaises: 0,
+    //     };
+    //   },
+    //   {
+    //     concecutiveFramesHandsRaised: 0,
+    //     concecutiveFramesHandDown: 0,
+    //     numberHandRaises: 0,
+    //   }
+    // );
+
+    const totaledArmPoses = engagementData.reduce(
+      (acc, curVal) => {
+        return {
+          handsRaised: acc.handsRaised +=
+            curVal.armPoseCount.handsRaised.length,
+          armsCrossed: acc.armsCrossed += curVal.armPoseCount.armsCrossed,
+          error: acc.error += curVal.armPoseCount.error,
+          handsOnFace: acc.handsOnFace += curVal.armPoseCount.handsOnFace,
+          other: acc.other += curVal.armPoseCount.other,
+        };
+      },
+      {
+        handsRaised: 0,
+        armsCrossed: 0,
+        error: 0,
+        handsOnFace: 0,
+        other: 0,
       }
-    }
-
-    // console.log(peopleHandRaiseTracker);
+    );
 
     return {
-      studentArmPoseFrames: studentArmPoseFrames,
+      totaledArmPoses: totaledArmPoses,
+      engagementData: engagementData,
       avgNumStudentsDetected: avgNumStudentsDetected,
     };
   };
-
-  function getDefaultObjectAt(array: any[], index: number) {
-    return (array[index] = array[index] || {});
-  }
 
   if (!selectedSession) return <Empty />;
 
   if (loading) return <Spin />;
 
-  const handRaiseDiff = prevFrameResults
-    ? totalArmPoseFrames.handRaised -
-      prevFrameResults.studentArmPoseFrames.handRaised
-    : totalArmPoseFrames.handRaised;
+  const handsRaiseDiff = prevFrameResults
+    ? totaledArmPoses.handsRaised - prevFrameResults.studentArmPoseFrames
+      ? prevFrameResults.studentArmPoseFrames.handsRaised
+      : 0
+    : totaledArmPoses.handsRaised;
   const handRaiseSessionMetric = new SessionMetric({
     metricType: SessionMetricType.HandRaises,
     name: "Hand Raises",
@@ -259,13 +233,13 @@ export default function MetricPage(props: IMetricPageProps) {
       dark: "#E6AE05",
       light: "#FFC107",
     },
-    metric: totalArmPoseFrames.handRaised,
+    metric: Math.round(totaledArmPoses.handsRaised / 15.0),
     metricPrepend: "",
     hasDenominator: false,
     denominator: 0,
     unit: "",
-    trend: handRaiseDiff > 0 ? 0 : 1,
-    trend_metric: handRaiseDiff,
+    trend: handsRaiseDiff > 0 ? 0 : 1,
+    trend_metric: Math.round(handsRaiseDiff / 15.0),
     trend_metric_unit: "",
     help_text:
       "The total frequency of detected hand raises during the class session",
@@ -371,6 +345,12 @@ export default function MetricPage(props: IMetricPageProps) {
     constructMetricUpdateObject: (newMetric: string) => {
       return { performance: parseFloat(newMetric) / 100.0 };
     },
+    children:
+      sessionPreformanceMetric === 0 ? (
+        <span>Enter your class preformance</span>
+      ) : (
+        <></>
+      ),
   });
 
   const attendanceDiff = prevFrameResults
@@ -418,11 +398,12 @@ export default function MetricPage(props: IMetricPageProps) {
   ];
 
   return (
-    <SessionPagePresentational
+    <MetricPagePresentational
       session={selectedSession}
       metrics={metrics}
       setSessionName={() => Promise.resolve()}
       videoFrames={videoFrames}
+      engagementData={engagementData}
     />
   );
 }

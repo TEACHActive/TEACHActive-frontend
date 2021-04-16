@@ -1,12 +1,14 @@
 import { AnyAction, combineReducers } from "redux";
 import session from "./session";
 import user from "./user";
+import reflections from "./reflections";
 import * as ReducerActionType from "../../redux/actionTypes";
 import storage from "redux-persist/lib/storage";
 
 const appReducer = combineReducers({
   session,
   user,
+  reflections,
 });
 
 const rootReducer = (state: any, action: AnyAction) => {

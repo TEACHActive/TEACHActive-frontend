@@ -1,4 +1,5 @@
 import { DateTime } from "luxon";
+import React from "react";
 import COLOR from "../../constants/colors";
 
 // export class AvgGradeAssignmentResponse {
@@ -66,6 +67,7 @@ export interface ISessionMetric {
   canEdit: boolean;
   updateMetric: (metricUpdateObject: any) => Promise<boolean>;
   constructMetricUpdateObject: (newMetric: string) => object;
+  children?: React.ReactNode;
 }
 
 export class SessionMetric implements ISessionMetric {
@@ -89,6 +91,7 @@ export class SessionMetric implements ISessionMetric {
   canEdit: boolean;
   updateMetric: (metricUpdateObject: any) => Promise<boolean>;
   constructMetricUpdateObject: (newMetric: string) => object;
+  children?: React.ReactNode;
 
   constructor(data: ISessionMetric) {
     this.name = data.name;
@@ -112,6 +115,7 @@ export class SessionMetric implements ISessionMetric {
     this.canEdit = data.canEdit;
     this.updateMetric = data.updateMetric;
     this.constructMetricUpdateObject = data.constructMetricUpdateObject;
+    this.children = data.children;
   }
 }
 
