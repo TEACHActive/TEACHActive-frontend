@@ -1,4 +1,4 @@
-import { DateTime } from "luxon";
+import { DateTime, DurationUnit } from "luxon";
 
 export class SessionResponse<T extends BaseSession> {
   success: boolean;
@@ -65,6 +65,56 @@ export class VideoFrameSession extends BaseSession {
       (videoFrame: any) => new VideoFrame(videoFrame)
     );
   }
+
+  getArmPoseCount = (
+    timestampDurationUnit: DurationUnit | DurationUnit[] = "minutes"
+  ) => {
+    const armPoseZero = {
+      handsRaised: 0,
+      armsCrossed: 0,
+      error: 0,
+      handsOnFace: 0,
+      other: 0,
+    };
+    const initialDateTime = this.videoFrames[0].timestamp;
+    return this.videoFrames.map((frame) => {
+      const armPoseCntObj = frame.people.map((person) => person.armpose);
+      // .reduce((tally: typeof armPoseZero, armPose: string) => {
+      //   // if (armPose === ArmPose.HandsRaised) cnt++;
+      //   if (tally.handsRaised === 0) console.log("===========");
+
+      //   tally.handsRaised += armPose === ArmPose.HandsRaised ? 1 : 0;
+      //   tally.armsCrossed += armPose === ArmPose.ArmsCrossed ? 1 : 0;
+      //   tally.error += armPose === ArmPose.Error ? 1 : 0;
+      //   tally.handsOnFace += armPose === ArmPose.HandsOnFace ? 1 : 0;
+      //   tally.other += armPose === ArmPose.Other ? 1 : 0;
+      //   return tally;
+      // }, armPoseZero);
+      //Todo: fix this reduce
+
+      return {
+        frameNumber: frame.frameNumber,
+        timestamp: Math.round(
+          frame.timestamp.diff(initialDateTime, timestampDurationUnit).minutes
+        ),
+        armPoseCount: {
+          handsRaised: frame.people
+            .map((person) => {
+              return {
+                pose: person.armpose,
+                id: person.openposeId,
+              };
+            })
+            .filter((personPose) => personPose.pose === ArmPose.HandsRaised),
+          armsCrossed: 0,
+          error: 0,
+          handsOnFace: 0,
+          other: 0,
+        },
+        people: frame.people,
+      };
+    });
+  };
 }
 
 export class VideoFrame {
@@ -82,15 +132,34 @@ export class VideoFrame {
 export class Person {
   openposeId: number;
   trackingId: number;
-  armpose: "other" | "handRaised" | "armsCrossed" | "handsOnFace" | "error";
-  sitStand: "sit" | "stand" | "error" | "other";
+  armpose: ArmPose;
+  sitStand: SitStand;
   body: number[];
 
   constructor(data: any) {
     this.openposeId = data.openposeId;
     this.trackingId = data.inference ? data.inference.trackingId : -1;
-    this.armpose = data.inference ? data.inference.posture.armPose : "error";
-    this.sitStand = data.inference ? data.inference.posture.sitStand : "error";
+    this.armpose = data.inference
+      ? data.inference.posture.armPose
+      : ArmPose.Error;
+    this.sitStand = data.inference
+      ? data.inference.posture.sitStand
+      : SitStand.Error;
     this.body = data.body;
   }
+}
+
+export enum ArmPose {
+  Other = "other",
+  HandsRaised = "handsRaised",
+  ArmsCrossed = "armsCrossed",
+  HandsOnFace = "handsOnFace",
+  Error = "error",
+}
+
+export enum SitStand {
+  Sit = "sit",
+  Stand = "stand",
+  Error = "error",
+  Other = "other",
 }

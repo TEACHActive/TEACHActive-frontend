@@ -42,7 +42,7 @@ export function stringToHexColor(str: string) {
  * @param myArray {Array} Array to split
  * @param chunkSize {Integer} Size of every group
  */
-export function chunkArray(myArray: any[], chunk_size: number) {
+export function chunkArray<T>(myArray: T[], chunk_size: number) {
   var results = [];
 
   while (myArray.length) {

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Layout, Button, Spin, Badge, message } from "antd";
+import { Layout, Button, Spin, Badge, message, Input } from "antd";
 import { useHistory } from "react-router-dom";
 import { FirebaseAuthConsumer } from "@react-firebase/auth";
 import "firebase/auth";
@@ -24,6 +24,7 @@ import generateChangelog from "../../generateChangelog";
 import { SessionTreeNodeTitle } from "../Header/sessionTreeNodeTitle";
 
 import "./header.css";
+import { setUserUID } from "../../redux/actions";
 
 const { Header: AntHeader } = Layout;
 
@@ -43,6 +44,8 @@ export function Header(props: IHeaderProps) {
   const [markedRead, setMarkedRead] = React.useState(false);
   const [sessionTreeData, setSessionTreeData] = React.useState<any[]>([]);
   const [refreshingSessions, setRefreshingSessions] = React.useState(false);
+  const [uid, setUID] = React.useState("");
+
   const history = useHistory();
   const dispatch = useDispatch();
 
@@ -53,6 +56,7 @@ export function Header(props: IHeaderProps) {
     setPrevAppVersion(prevAppVersion);
 
     rebuildSessions();
+    console.log(13);
 
     const secondsBetweenRefreshingSesions = 5;
 
@@ -66,13 +70,23 @@ export function Header(props: IHeaderProps) {
 
   const rebuildSessions = async () => {
     // const newSessions = await refreshSessions(userUID);
+    if (!sessions) return;
     buildSessionTreeData(
       sessions.sort((a, b) => a.createdAt.toMillis() - b.createdAt.toMillis())
     );
   };
 
+  const storeUID = () => {
+    if (cookies)
+      cookies.set("UID", uid, {
+        path: "/",
+        sameSite: "strict",
+      });
+
+    dispatch(setUserUID(uid));
+  };
+
   const setAppVersion = (version: string | undefined) => {
-    if (undefined) return;
     if (cookies)
       cookies.set(COOKIE.APP_VERSION, version, {
         path: "/",
@@ -94,37 +108,41 @@ export function Header(props: IHeaderProps) {
 
   const refreshSessions = async (uid: string) => {
     setRefreshingSessions(true);
+    console.log("refreshSessions", uid);
+
     const sessions: BaseSession[] = await props.apiHandler.getSessionsByUID(
       uid
     );
 
-    const namedSessionsPromises = sessions.map((session) => {
-      return new Promise(async (resolve, reject) => {
-        const sessionExtras = await apiHandler.getSessionExtras(session.id);
+    //Todo: reestablish
+    // const namedSessionsPromises = sessions.map((session) => {
+    //   return new Promise(async (resolve, reject) => {
+    //     const sessionExtras = await apiHandler.getSessionExtras(session.id);
 
-        resolve(
-          new BaseSession({
-            ...session,
-            ...sessionExtras,
-          })
-        );
-      });
-    });
+    //     resolve(
+    //       new BaseSession({
+    //         ...session,
+    //         ...sessionExtras,
+    //       })
+    //     );
+    //   });
+    // });
 
-    const namedSessions = await Promise.all(namedSessionsPromises);
+    // const namedSessions = await Promise.all(namedSessionsPromises);
 
     dispatch({
       type: ReducerActionType.SET_SESSIONS,
-      payload: { sessions: namedSessions },
+      payload: { sessions: sessions },
     });
     setRefreshingSessions(false);
     return sessions;
   };
 
   async function setSessionName(session: BaseSession, newName: string) {
-    const success = await props.apiHandler.updateMetric(session.id, "name", {
+    //Todo: reestablish
+    const success = false; /*await props.apiHandler.updateMetric(session.id, "name", {
       name: newName,
-    });
+    });*/
     if (!success) {
       message.error("Failed to update session name");
       return;
@@ -188,6 +206,8 @@ export function Header(props: IHeaderProps) {
 
   const changelog = generateChangelog(ChangelogJSON);
 
+  console.log("userUID", userUID);
+
   return (
     <FirebaseAuthConsumer>
       {({ isSignedIn, user, providerId }) => {
@@ -235,6 +255,11 @@ export function Header(props: IHeaderProps) {
                     />
                   </Button>
                 </div>
+                <Input
+                  style={{ marginLeft: "10px" }}
+                  onChange={(event) => setUID(event.target.value)}
+                ></Input>
+                <Button onClick={storeUID}>Set UID</Button>
                 <div
                   style={{
                     display: "flex",

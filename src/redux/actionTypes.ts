@@ -4,3 +4,5 @@ export const SET_SESSIONS = "SET_SESSIONS";
 
 export const SET_USER_UID = "SET_USER_UID";
 export const USER_LOGOUT = "USER_LOGOUT";
+
+export const GET_SET_REFLECTIONS = "GET_SET_REFLECTIONS";
