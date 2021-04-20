@@ -1,3 +1,7 @@
+/**
+ * Contains the routes to be available in the dashboard
+ */
+
 import React from "react";
 
 import {
@@ -14,7 +18,7 @@ import {
   SignInPage,
 } from "./pages";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import apiHandler, { APIHandler, IAPIHandler } from "./api/handler";
+import apiHandler from "./api/handler";
 
 export class ComponentRoute {
   name: string;
@@ -48,18 +52,6 @@ export const BaseRoute: ComponentRoute = new ComponentRoute({
   exact: true,
   secure: false,
 });
-
-export const SessionRoute: ComponentRoute = new ComponentRoute({
-  name: "Session",
-  path: "/session",
-  component: <>Test</>,
-  icon: <UserOutlined />,
-  link: () => "/session",
-  inSidebar: false,
-  exact: true,
-  secure: true,
-});
-
 export const MetricsRoute: ComponentRoute = new ComponentRoute({
   name: "Metrics",
   path: "/metrics",
@@ -117,7 +109,6 @@ export const SignInRoute: ComponentRoute = new ComponentRoute({
 
 export const routes: ComponentRoute[] = [
   BaseRoute,
-  SessionRoute,
   MetricsRoute,
   ProgressRoute,
   GoalsRoute,

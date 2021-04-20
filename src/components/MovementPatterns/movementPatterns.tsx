@@ -2,7 +2,7 @@ import React from "react";
 import { Dropdown, Menu, message, Spin } from "antd";
 import { DownOutlined } from "@ant-design/icons";
 
-import { chunkArray } from "../../util";
+import { chunkArray, quantile } from "../../util";
 import { BaseSession, VideoFrameSession } from "../../api/types";
 import { useSelector } from "react-redux";
 import { getSelectedSession } from "../../redux/selectors";
@@ -24,7 +24,7 @@ enum SelectedActivity {
   InstructorMovement,
 }
 
-const defaultResolution = 10;
+const defaultResolution = 100;
 
 export function MovementPatterns(props: IMovementPatternsProps) {
   const [selectedActivity, setSelectedActivity] = React.useState(
@@ -47,6 +47,49 @@ export function MovementPatterns(props: IMovementPatternsProps) {
     calculateInstructorMovementPatternData(props.videoFrames.instructor);
   }, [props.videoFrames]);
 
+  const getOpenPoseIdOfInstructor = (
+    instructorVideoFrames: VideoFrameSession[]
+  ) => {
+    //Not working because the highest person in frame is not always visible
+    let map = new Map();
+
+    for (
+      let videoFrameIndex = 0;
+      videoFrameIndex < instructorVideoFrames[0].videoFrames.length;
+      videoFrameIndex++
+    ) {
+      const frame = instructorVideoFrames[0].videoFrames[videoFrameIndex];
+      for (
+        let personIndex = 0;
+        personIndex < frame.people.length;
+        personIndex++
+      ) {
+        const person = frame.people[personIndex];
+        const personYFramesArr = map.get(person.openposeId) || [];
+        const yPosSecondTrackedPoint = person.body[4];
+        personYFramesArr.push(yPosSecondTrackedPoint);
+        map.set(person.openposeId, personYFramesArr);
+      }
+    }
+
+    const mapQuartile = Array.from(map)
+      .map(([openposeId, yPosArr]) => {
+        const q25 = quantile(yPosArr, 0.75);
+        return {
+          openposeId: openposeId,
+          q25: q25,
+        };
+      })
+      .reduce((acc, curr) => {
+        if (curr.q25 < acc.q25) {
+          return curr;
+        }
+        return acc;
+      });
+
+    return mapQuartile.openposeId;
+  };
+
   const calculateInstructorMovementPatternData = (
     instructorVideoFrames: VideoFrameSession[]
   ) => {
@@ -54,12 +97,41 @@ export function MovementPatterns(props: IMovementPatternsProps) {
       message.error("Error while calculating Instructor movement pattern data");
       return;
     }
+
+    const instructorOpenposeId = getOpenPoseIdOfInstructor(
+      instructorVideoFrames
+    );
+
     const movementPatternData = instructorVideoFrames[0].videoFrames.map(
       (frame) => {
+        // const averageYPosOfPeople = frame.people.reduce((acc: number[], person) => {
+        //   const yPosSecondTrackedPoint = person.body[4];
+        //   acc[person.openposeId] = yPosSecondTrackedPoint;
+        //   return acc;
+        // }, [])
+        let xPosInstructor = -1;
+        if (frame.people.length > 0) {
+          const instructorPerson = frame.people.find(
+            (person) => person.openposeId === instructorOpenposeId
+          );
+          if (instructorPerson) {
+            //Found the instructor in this frame?
+            console.log("Found instructor");
+            xPosInstructor = instructorPerson.body[3];
+          } else {
+            const minYPerson = frame.people.reduce((minYPerson, person) => {
+              if (person.body[3] > minYPerson.body[3]) {
+                return person;
+              }
+              return minYPerson;
+            });
+            xPosInstructor = minYPerson.body[3];
+          }
+        }
         return {
           frameNumber: frame.frameNumber,
           timestamp: frame.timestamp,
-          xPos: frame.people.length > 0 ? frame.people[0].body[3] : -1, //body[3] = Neck I think (at least the upper torso)
+          xPos: xPosInstructor, //body[3] = Neck I think (at least the upper torso)
         };
       }
     );
@@ -68,7 +140,7 @@ export function MovementPatterns(props: IMovementPatternsProps) {
 
     const chunkLength = movementPatternData.length / resolution;
 
-    console.log(movementPatternData);
+    // console.log(movementPatternData);
 
     const chunkedMovementPatternData = chunkArray<
       typeof movementPatternData[0]

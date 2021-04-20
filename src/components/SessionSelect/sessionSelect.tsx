@@ -9,7 +9,6 @@ import { getSelectedSession } from "../../redux/selectors";
 
 export interface ISessionSelectProps {
   sessions: BaseSession[];
-  apiHandler: IAPIHandler;
   sessionTreeData: any[];
 }
 

@@ -1,117 +1,79 @@
-import * as React from "react";
+import React from "react";
+
 import { Layout } from "antd";
 import { Switch, Route } from "react-router-dom";
-import { useHistory } from "react-router-dom";
 import { library } from "@fortawesome/fontawesome-svg-core";
+
 import {
-  faEdit,
-  faArrowUp,
-  faArrowDown,
-  faHandPaper,
-  faComment,
-  faComments,
-  faIdCard,
-  faBookReader,
+  faBan,
   faBell,
+  faEdit,
   faSync,
   faCheck,
-  faBan,
   faUsers,
+  faIdCard,
+  faComment,
+  faArrowUp,
+  faComments,
+  faHandPaper,
+  faArrowDown,
+  faBookReader,
 } from "@fortawesome/free-solid-svg-icons";
 
-import "./App.css";
-import { ComponentRoute, routes } from "./routes";
-
-import { Sidebar } from "./components/Sidebar/sidebar";
-import { Header } from "./components/Header/header";
-import apiHandler from "./api/handler";
 import { PrivateRoute } from "./hocs/withAuth";
-import { getSessions } from "./redux/selectors";
+import { ComponentRoute, routes } from "./routes";
+import { Header } from "./components/Header/header";
+import { Sidebar } from "./components/Sidebar/sidebar";
+
+import "./App.css";
 
 const { Content, Footer } = Layout;
 
 library.add(
-  faEdit,
-  faArrowUp,
-  faArrowDown,
-  faHandPaper,
-  faComment,
-  faComments,
-  faIdCard,
-  faBookReader,
+  faBan,
   faBell,
+  faEdit,
   faSync,
   faCheck,
-  faBan,
-  faUsers
+  faUsers,
+  faIdCard,
+  faComment,
+  faArrowUp,
+  faComments,
+  faHandPaper,
+  faArrowDown,
+  faBookReader
 );
 
-function App(props: any) {
-  const history = useHistory();
+interface IAppProps {}
 
-  // const [sessions, setSessions] = React.useState<Session[]>([]);
-  // const [selectedSession, setSelectedSession] = React.useState<Session | null>(
-  //   null
-  // );
-
-  React.useEffect(() => {
-    getSetSesssions();
-    checkForUpdates();
-  }, []);
-
-  const checkForUpdates = () => {
-    //REACT_APP_VERSION
-  };
-
-  const getSetSesssions = async () => {
-    // const allSessions = await (await apiHandler.getAllSessions()).data;
-    // if (allSessions) setSessions(allSessions);
-    // const allIDs = await newAPIHandler.getAllSessionIDs();
-    // console.log(videoFrames);
-  };
-
-  // console.log(selectedSession);
-
+function App(props: IAppProps) {
   return (
     <Layout className="layout">
-      {/* <pre style={{ height: 300, overflow: "auto" }}>
-                {JSON.stringify({ isSignedIn, user, providerId }, null, 2)}
-              </pre> */}
-      <Sidebar
-        history={history}
-        apiHandler={apiHandler}
-        refreshSessions={getSetSesssions}
-        // selectedSession={selectedSession}
-      />
+      <Sidebar />
       <Layout>
-        <Header
-          history={history}
-          apiHandler={apiHandler}
-          // selectedSession={selectedSession}
-          // updateSelectedSession={updateSelectedSession}
-        />
-        <div
-          className="site-layout-background"
-          style={{ padding: 24, minHeight: "100%", height: "100%" }}
-        >
-          <Switch>
-            {routes.map((item: ComponentRoute, i: number) =>
-              item.secure ? (
-                <PrivateRoute key={i} exact={item.exact} path={item.path}>
-                  <Content style={{ margin: "24px 16px 0" }}>
-                    {item.component}
-                  </Content>
-                </PrivateRoute>
-              ) : (
-                <Route key={i} exact={item.exact} path={item.path}>
-                  <Content style={{ margin: "24px 16px 0" }}>
-                    {item.component}
-                  </Content>
-                </Route>
-              )
-            )}
-          </Switch>
-        </div>
+        <Header />
+        <Switch>
+          {routes.map((item: ComponentRoute, i: number) => {
+            const content = (
+              <Content style={{ margin: "24px 16px 0" }}>
+                {item.component}
+              </Content>
+            );
+
+            const propProps = {
+              key: i,
+              exact: item.exact,
+              path: item.path,
+            };
+
+            return item.secure ? (
+              <PrivateRoute {...propProps}>{content}</PrivateRoute>
+            ) : (
+              <Route {...propProps}>{content}</Route>
+            );
+          })}
+        </Switch>
         <Footer style={{ textAlign: "center" }}></Footer>
       </Layout>
     </Layout>

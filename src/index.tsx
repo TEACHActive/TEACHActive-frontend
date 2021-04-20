@@ -1,23 +1,33 @@
+/**
+ * Entrypoint for application
+ */
+
 import React from "react";
+import { Spin } from "antd";
 import ReactDOM from "react-dom";
-import "./index.css";
-import App from "./App";
-import * as serviceWorker from "./serviceWorker";
-import "antd/dist/antd.css";
-import { BrowserRouter as Router } from "react-router-dom";
 import { Provider } from "react-redux";
-import store from "./redux/store";
-import firebase from "firebase/app";
+import { BrowserRouter as Router } from "react-router-dom";
+
 import "firebase/auth";
+import firebase from "firebase/app";
 import { FirebaseAuthProvider } from "@react-firebase/auth";
-import { firebaseConfig } from "./firebase/firebaseConfig";
+
 import { PersistGate } from "redux-persist/integration/react";
+
+import { firebaseConfig } from "./firebase/firebaseConfig";
+
+import App from "./App";
+import store from "./redux/store";
+import * as serviceWorker from "./serviceWorker";
+
+import "./index.css";
+import "antd/dist/antd.css";
 
 const { providerStore, persistor } = store();
 
 ReactDOM.render(
   <Provider store={providerStore}>
-    <PersistGate loading={null} persistor={persistor}>
+    <PersistGate loading={<Spin />} persistor={persistor}>
       <FirebaseAuthProvider firebase={firebase} {...firebaseConfig}>
         {
           <Router>

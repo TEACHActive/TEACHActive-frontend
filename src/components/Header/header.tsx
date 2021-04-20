@@ -28,10 +28,7 @@ import { setUserUID } from "../../redux/actions";
 
 const { Header: AntHeader } = Layout;
 
-export interface IHeaderProps {
-  history: any;
-  apiHandler: IAPIHandler;
-}
+export interface IHeaderProps {}
 
 export function Header(props: IHeaderProps) {
   const sessions: BaseSession[] = useSelector((store: any) =>
@@ -110,9 +107,7 @@ export function Header(props: IHeaderProps) {
     setRefreshingSessions(true);
     console.log("refreshSessions", uid);
 
-    const sessions: BaseSession[] = await props.apiHandler.getSessionsByUID(
-      uid
-    );
+    const sessions: BaseSession[] = await apiHandler.getSessionsByUID(uid);
 
     //Todo: reestablish
     // const namedSessionsPromises = sessions.map((session) => {
@@ -240,7 +235,6 @@ export function Header(props: IHeaderProps) {
                   {/* {props.history.location.pathname.split("/").pop()} */}
                   <SessionSelect
                     sessions={sessions}
-                    apiHandler={props.apiHandler}
                     sessionTreeData={sessionTreeData}
                   />
                   <Button
