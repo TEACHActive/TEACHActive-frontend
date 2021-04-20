@@ -25,15 +25,6 @@
 hr {
   margin: 0 2em 0 2em;
 }
-
-.site-layout-sub-header-background {
-  background: #fff;
-}
-
-.site-layout-background {
-  background: #fff;
-}
-
 .sessionNameEditIcon:hover {
   color: rgb(84, 84, 218);
   transition: 0.3s;

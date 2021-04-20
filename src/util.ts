@@ -1,3 +1,8 @@
+/*
+util.ts
+This file contains helper funtions that may be reused over the application
+*/
+
 // A helper function for automatically converting hex color code to rgb color elements
 export function hexToRgb(hex: string) {
   if (!hex) return null;
@@ -26,7 +31,7 @@ export function hashCode(str: string) {
 }
 
 export function intToRGB(i: number) {
-  var c = (i & 0x00ffffff).toString(16).toUpperCase();
+  const c = (i & 0x00ffffff).toString(16).toUpperCase();
 
   return "00000".substring(0, 6 - c.length) + c;
 }
@@ -51,3 +56,29 @@ export function chunkArray<T>(myArray: T[], chunk_size: number) {
 
   return results;
 }
+
+// sort array ascending
+const asc = (arr: any[]) => arr.sort((a: number, b: number) => a - b);
+
+const sum = (arr: any[]) => arr.reduce((a: any, b: any) => a + b, 0);
+
+const mean = (arr: any[]) => sum(arr) / arr.length;
+
+// sample standard deviation
+const std = (arr: any[]) => {
+  const mu = mean(arr);
+  const diffArr = arr.map((a: number) => (a - mu) ** 2);
+  return Math.sqrt(sum(diffArr) / (arr.length - 1));
+};
+
+export const quantile = (arr: number[], q: number) => {
+  const sorted = asc(arr);
+  const pos = (sorted.length - 1) * q;
+  const base = Math.floor(pos);
+  const rest = pos - base;
+  if (sorted[base + 1] !== undefined) {
+    return sorted[base] + rest * (sorted[base + 1] - sorted[base]);
+  } else {
+    return sorted[base];
+  }
+};

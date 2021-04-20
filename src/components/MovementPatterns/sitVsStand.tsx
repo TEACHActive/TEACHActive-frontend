@@ -159,15 +159,15 @@ export function SitVsStand(props: ISitVsStandProps) {
         type="monotone"
         dataKey={SitStand.Sit}
         stackId="1"
-        stroke="#82caFF"
-        fill="#82caFF"
+        stroke="#1e7fc7"
+        fill="#1e7fc7"
       />
       <Area
         type="monotone"
         dataKey={SitStand.Stand}
         stackId="1"
-        stroke="#64FF88"
-        fill="#64FF88"
+        stroke="#2bc44f"
+        fill="#2bc44f"
       />
       <Area
         type="monotone"
@@ -175,13 +175,6 @@ export function SitVsStand(props: ISitVsStandProps) {
         stackId="1"
         stroke="#ffffff"
         fill="#ffffff"
-      />
-      <Area
-        type="monotone"
-        dataKey={SitStand.Other}
-        stackId="1"
-        stroke="#b87904"
-        fill="#b87904"
       />
     </AreaChart>
   );

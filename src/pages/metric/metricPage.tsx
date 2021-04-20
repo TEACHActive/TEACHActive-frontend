@@ -1,22 +1,19 @@
 import * as React from "react";
-import { Empty, message, Spin } from "antd";
 import { useSelector } from "react-redux";
+import { Empty, message, Spin } from "antd";
 
-import { MetricPagePresentational } from "./metricPagePresentational";
-
-import "./metricPage.css";
 import {
   BaseSession,
-  VideoFrame,
   Person,
   VideoFrameSession,
   ArmPose,
 } from "../../api/types";
 import apiHandler from "../../api/handler";
+import { MetricPagePresentational } from "./metricPagePresentational";
 import { SessionMetric, SessionMetricType } from "./metricPage.types";
 import { getSelectedSession, getSessions } from "../../redux/selectors";
-import { chunkArray } from "../../util";
-// import { SessionMetric } from "./metricPage.types";
+
+import "./metricPage.css";
 
 export interface IMetricPageProps {}
 
@@ -237,12 +234,12 @@ export default function MetricPage(props: IMetricPageProps) {
     metricPrepend: "",
     hasDenominator: false,
     denominator: 0,
-    unit: "",
+    unit: "sec",
     trend: handsRaiseDiff > 0 ? 0 : 1,
     trend_metric: Math.round(handsRaiseDiff / 15.0),
-    trend_metric_unit: "",
+    trend_metric_unit: "sec",
     help_text:
-      "The total frequency of detected hand raises during the class session",
+      "The total number of seconds hand raises were detected during the class session",
     has_alert: false,
     icon: "hand-paper",
     canEdit: false,
@@ -401,7 +398,7 @@ export default function MetricPage(props: IMetricPageProps) {
     <MetricPagePresentational
       session={selectedSession}
       metrics={metrics}
-      setSessionName={() => Promise.resolve()}
+      setSessionName={() => Promise.resolve()} //Todo
       videoFrames={videoFrames}
       engagementData={engagementData}
     />
