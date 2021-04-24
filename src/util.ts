@@ -1,7 +1,7 @@
-/*
-util.ts
+/**
+ * util.ts
 This file contains helper funtions that may be reused over the application
-*/
+ */
 
 // A helper function for automatically converting hex color code to rgb color elements
 export function hexToRgb(hex: string) {
@@ -65,7 +65,7 @@ const sum = (arr: any[]) => arr.reduce((a: any, b: any) => a + b, 0);
 const mean = (arr: any[]) => sum(arr) / arr.length;
 
 // sample standard deviation
-const std = (arr: any[]) => {
+export const std = (arr: any[]) => {
   const mu = mean(arr);
   const diffArr = arr.map((a: number) => (a - mu) ** 2);
   return Math.sqrt(sum(diffArr) / (arr.length - 1));

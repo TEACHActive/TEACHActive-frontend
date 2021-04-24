@@ -16,6 +16,7 @@ import {
   faArrowUp,
   faComments,
   faHandPaper,
+  faGripLines,
   faArrowDown,
   faBookReader,
 } from "@fortawesome/free-solid-svg-icons";
@@ -26,6 +27,9 @@ import { Header } from "./components/Header/header";
 import { Sidebar } from "./components/Sidebar/sidebar";
 
 import "./App.css";
+import { updateSessions } from "redux/actions";
+import { useDispatch } from "react-redux";
+// import apiHandler from "api/handler";
 
 const { Content, Footer } = Layout;
 
@@ -41,6 +45,7 @@ library.add(
   faArrowUp,
   faComments,
   faHandPaper,
+  faGripLines,
   faArrowDown,
   faBookReader
 );
@@ -49,7 +54,7 @@ interface IAppProps {}
 
 function App(props: IAppProps) {
   return (
-    <Layout className="layout">
+    <Layout className="layout App">
       <Sidebar />
       <Layout>
         <Header />

@@ -1,44 +1,32 @@
 import * as React from "react";
-import { Checkbox, Slider, Spin, Tooltip } from "antd";
+
+import { Checkbox, Spin } from "antd";
 import { CheckboxValueType } from "antd/lib/checkbox/Group";
 import {
-  LineChart,
-  CartesianGrid,
   XAxis,
   YAxis,
-  Legend,
   Line,
-  Tooltip as RechartsTooltip,
   Label,
+  LineChart,
+  CartesianGrid,
+  Tooltip as RechartsTooltip,
 } from "recharts";
 
 import { chunkArray } from "../../util";
-import { ArmPose, Person } from "../../api/types";
+import { ArmPose, ArmPosesInFrame, BaseSession, Person } from "api/types";
+import apiHandler from "api/handler";
+import { useSelector } from "react-redux";
+import { getSelectedSession } from "redux/selectors";
+import { useCallback } from "react";
 
-export interface IBehavioralEngagementProps {
-  engagementData: {
-    frameNumber: number;
-    timestamp: number;
-    armPoseCount: {
-      handsRaised: {
-        pose: ArmPose;
-        id: number;
-      }[];
-      armsCrossed: number;
-      error: number;
-      handsOnFace: number;
-      other: number;
-    };
-    people: Person[];
-  }[];
-}
+export interface IBehavioralEngagementProps {}
 
 const defaultOptions = [
   {
     label: "Hand Raises",
     value: "handRaises",
     disabled: false,
-    checked: false,
+    checked: true,
   },
   {
     label: "Instructor Speech",
@@ -57,69 +45,74 @@ const defaultOptions = [
 const defaultResolution = 10;
 
 export function BehavioralEngagement(props: IBehavioralEngagementProps) {
-  const [options, setOptions] = React.useState(defaultOptions);
-  const [loading, setLoading] = React.useState(false);
-  const [resolution, setResolution] = React.useState(defaultResolution);
-  const [chunkedEngagementData, setChunkedEngagementData] = React.useState<
-    {
-      timestamp: number;
-      frameNumber: number;
-      handsRaised: number;
-      numPeopleHandsRaised: number;
-      armsCrossed: number;
-      error: number;
-      handsOnFace: number;
-      other: number;
-    }[]
-  >();
+  const selectedSession: BaseSession | null = useSelector(
+    (state: any) => getSelectedSession(state),
+    BaseSession.equal
+  );
 
-  React.useEffect(() => {
-    setLoading(true);
-    const chunkLength = props.engagementData.length / resolution;
-    const chunkedEngagementData = chunkArray<typeof props.engagementData[0]>(
-      props.engagementData,
-      chunkLength
-    )
-      .map((chunk) => {
-        return chunk.reduce(
-          (tally, armPose) => {
-            return {
-              handsRaised: tally.handsRaised +=
-                armPose.armPoseCount.handsRaised.length,
-              numPeopleHandsRaised: armPose.armPoseCount.handsRaised.filter(
-                (value, index, self) => self.indexOf(value) === index
-              ).length,
-              armsCrossed: tally.armsCrossed +=
-                armPose.armPoseCount.armsCrossed,
-              error: tally.error += armPose.armPoseCount.error,
-              handsOnFace: tally.handsOnFace +=
-                armPose.armPoseCount.handsOnFace,
-              other: tally.other += armPose.armPoseCount.other,
-              frameNumber: chunk[0].frameNumber,
-              timestamp: chunk[0].timestamp,
-            };
-          },
-          {
-            timestamp: 0,
-            frameNumber: 0,
-            handsRaised: 0,
-            numPeopleHandsRaised: 0,
-            armsCrossed: 0,
-            error: 0,
-            handsOnFace: 0,
-            other: 0,
-          }
-        );
-      })
-      .map((chunk) => {
-        return {
-          ...chunk,
-          handsRaised: chunk.handsRaised / 15.0,
-        };
-      });
-    setChunkedEngagementData(chunkedEngagementData);
-    setLoading(false);
-  }, [resolution]);
+  const [options, setOptions] = React.useState(defaultOptions);
+  const [loading, setLoading] = React.useState(true);
+  const [chunkedEngagementData, setChunkedEngagementData] = React.useState<
+    ArmPosesInFrame[]
+  >([]);
+  // const [resolution, setResolution] = React.useState(defaultResolution);
+  // const [chunkedEngagementData, setChunkedEngagementData] = React.useState<
+  //   {
+  //     timestamp: number;
+  //     frameNumber: number;
+  //     handsRaised: number;
+  //     numPeopleHandsRaised: number;
+  //     armsCrossed: number;
+  //     error: number;
+  //     handsOnFace: number;
+  //     other: number;
+  //   }[]
+  // >();
+
+  // React.useEffect(() => {
+  //   setLoading(true);
+  //   const chunkLength = props.engagementData.length / defaultResolution;
+  //   const chunkedEngagementData = chunkArray(props.engagementData, chunkLength)
+  //     .map((chunk) => {
+  //       return chunk.reduce(
+  //         (tally, armPose) => {
+  //           return {
+  //             handsRaised: tally.handsRaised +=
+  //               armPose.armPoseCount.handsRaised.length,
+  //             numPeopleHandsRaised: armPose.armPoseCount.handsRaised.filter(
+  //               (value, index, self) => self.indexOf(value) === index
+  //             ).length,
+  //             armsCrossed: tally.armsCrossed +=
+  //               armPose.armPoseCount.armsCrossed,
+  //             error: tally.error += armPose.armPoseCount.error,
+  //             handsOnFace: tally.handsOnFace +=
+  //               armPose.armPoseCount.handsOnFace,
+  //             other: tally.other += armPose.armPoseCount.other,
+  //             frameNumber: chunk[0].frameNumber,
+  //             timestamp: chunk[0].timestamp,
+  //           };
+  //         },
+  //         {
+  //           timestamp: 0,
+  //           frameNumber: 0,
+  //           handsRaised: 0,
+  //           numPeopleHandsRaised: 0,
+  //           armsCrossed: 0,
+  //           error: 0,
+  //           handsOnFace: 0,
+  //           other: 0,
+  //         }
+  //       );
+  //     })
+  //     .map((chunk) => {
+  //       return {
+  //         ...chunk,
+  //         handsRaised: chunk.handsRaised / 15.0,
+  //       };
+  //     });
+  //   setChunkedEngagementData(chunkedEngagementData);
+  //   setLoading(false);
+  // }, [props.engagementData]);
 
   const onChange = (checkedValue: CheckboxValueType[]) => {
     setLoading(true);
@@ -190,9 +183,61 @@ export function BehavioralEngagement(props: IBehavioralEngagementProps) {
     setLoading(false);
   };
 
+  const getEngagementData = useCallback(async () => {
+    setLoading(true);
+    const armPosesFrames = await apiHandler.getArmPosesInSession(
+      selectedSession.id
+    );
+    if (!armPosesFrames) {
+      //Issue here, should be getting these, will send message in API Handler
+      return;
+    }
+    const chunkLength = armPosesFrames.length / defaultResolution;
+    const chunkedEngagementData = chunkArray(armPosesFrames, chunkLength)
+      .map((chunk) => {
+        const timeDiffAtStartOfChunk = chunk[0].timeDiff;
+        return chunk.reduce((acc, curr) => {
+          return {
+            armPoseCount: {
+              handsRaised:
+                acc.armPoseCount.handsRaised + curr.armPoseCount.handsRaised,
+              armsCrossed:
+                acc.armPoseCount.armsCrossed + curr.armPoseCount.armsCrossed,
+              error: acc.armPoseCount.error + curr.armPoseCount.error,
+              handsOnFace:
+                acc.armPoseCount.handsOnFace + curr.armPoseCount.handsOnFace,
+              other: acc.armPoseCount.other + curr.armPoseCount.other,
+            },
+            timeDiff: timeDiffAtStartOfChunk,
+          };
+        });
+      })
+      .map((chunk) => {
+        return {
+          ...chunk,
+          armPoseCount: {
+            handsRaised: chunk.armPoseCount.handsRaised / 15.0,
+            armsCrossed: chunk.armPoseCount.armsCrossed / 15.0,
+            error: chunk.armPoseCount.error / 15.0,
+            handsOnFace: chunk.armPoseCount.handsOnFace / 15.0,
+            other: chunk.armPoseCount.other / 15.0,
+          },
+        };
+      });
+    setChunkedEngagementData(chunkedEngagementData);
+    setLoading(false);
+  }, []);
+
+  React.useEffect(() => {
+    getEngagementData();
+  }, [selectedSession]);
+
+  if (loading) {
+    return <Spin />;
+  }
+
   return (
     <div>
-      {loading && <Spin />}
       <Checkbox.Group
         options={options}
         defaultValue={["handRaises"]}
@@ -207,7 +252,7 @@ export function BehavioralEngagement(props: IBehavioralEngagementProps) {
         margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
       >
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="timestamp">
+        <XAxis dataKey="timeDiff.minutes">
           <Label
             value="Minutes elapsed in session"
             offset={0}
@@ -216,7 +261,7 @@ export function BehavioralEngagement(props: IBehavioralEngagementProps) {
         </XAxis>
         <YAxis
           type="number"
-          dataKey={ArmPose.HandsRaised}
+          dataKey={`armPoseCount.${ArmPose.HandsRaised}`}
           label={{
             value: "# of seconds of Hand Raises (student + time)",
             angle: -90,
@@ -228,7 +273,7 @@ export function BehavioralEngagement(props: IBehavioralEngagementProps) {
         {options.find((option) => option.value === "handRaises")?.checked && (
           <Line
             type="monotone"
-            dataKey={ArmPose.HandsRaised}
+            dataKey={`armPoseCount.${ArmPose.HandsRaised}`}
             stroke="#82ca9d"
           />
         )}

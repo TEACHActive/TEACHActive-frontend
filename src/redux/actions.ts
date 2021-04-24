@@ -1,6 +1,7 @@
-import firebase from "firebase";
+import apiHandler from "api/handler";
 import { BaseSession } from "../api/types";
 import * as ReducerActionType from "./actionTypes";
+import { AppDispatch } from "./store";
 
 export const setSelectedSession = (selectedSession: BaseSession | null) => ({
   type: ReducerActionType.SET_SELECTED_SESSION,
@@ -12,17 +13,15 @@ export const setSelectedSessionById = (id: string) => ({
   payload: { id },
 });
 
-export const setSessions = (sessions: BaseSession[]) => ({
-  type: ReducerActionType.SET_SESSIONS,
-  payload: { sessions },
-});
+export const updateSessions = (userUID: string) => async (
+  dispatch: AppDispatch
+) => {
+  const sessions = await apiHandler.getSessions(userUID);
 
-export const setUserUID = (userUID: string) => ({
-  type: ReducerActionType.SET_USER_UID,
-  payload: { userUID },
-});
-
-export const getSetReflections = (userUID: string, sessionId: string) => ({
-  type: ReducerActionType.GET_SET_REFLECTIONS,
-  payload: { userUID, sessionId },
-});
+  dispatch({
+    type: ReducerActionType.UPDATE_SESSIONS,
+    payload: {
+      sessions: sessions,
+    },
+  });
+};

@@ -1,13 +1,13 @@
-import { AnyAction, combineReducers } from "redux";
-import session from "./session";
-import user from "./user";
-import reflections from "./reflections";
-import * as ReducerActionType from "../../redux/actionTypes";
 import storage from "redux-persist/lib/storage";
+import { AnyAction, combineReducers } from "redux";
+
+import session from "./session";
+import reflections from "./reflections";
+import * as ReducerActionType from "redux/actionTypes";
+import { CookieSingleton } from "types/cookies.types";
 
 const appReducer = combineReducers({
   session,
-  user,
   reflections,
 });
 
@@ -16,7 +16,7 @@ const rootReducer = (state: any, action: AnyAction) => {
     // for all keys defined in your persistConfig(s)
     storage.removeItem("persist:root");
     // storage.removeItem('persist:otherKey')
-
+    CookieSingleton.getInstance().clearCookies();
     state = undefined;
   }
 

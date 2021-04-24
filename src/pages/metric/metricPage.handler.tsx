@@ -1,6 +1,5 @@
 import axios from "axios";
 import { BASE_SERVER_URL, TEACHACTIVE_PORT } from "../../constants/api";
-import { APIResponse } from "../../types/types";
 
 import MetricJSON from "./metricPage.json";
 

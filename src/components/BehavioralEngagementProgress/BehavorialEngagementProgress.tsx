@@ -1,13 +1,11 @@
-import { Checkbox, Select, Spin, Tooltip } from "antd";
-import { CheckboxValueType } from "antd/lib/checkbox/Group";
 import * as React from "react";
 import { useSelector } from "react-redux";
+import { Checkbox, Select, Spin } from "antd";
+import { CheckboxValueType } from "antd/lib/checkbox/Group";
 import { BarChart, CartesianGrid, XAxis, YAxis, Legend, Bar } from "recharts";
-import apiHandler from "../../api/handler";
-import { ArmPose, BaseSession } from "../../api/types";
 
-import FramesJSON from "../../data/frames.json";
-import { getSelectedSession, getSessions } from "../../redux/selectors";
+import { ArmPose, BaseSession } from "api/types";
+import { getSessions } from "redux/selectors";
 
 const { Option } = Select;
 
@@ -31,29 +29,6 @@ export interface IBehavioralEngagementProgressState {
     | undefined;
 }
 
-const data = [
-  {
-    name: "Page A",
-    uv: 4000,
-    pv: 2400,
-  },
-  {
-    name: "Page B",
-    uv: 3000,
-    pv: 1398,
-  },
-  {
-    name: "Page C",
-    uv: 2000,
-    pv: 9800,
-  },
-  {
-    name: "Page D",
-    uv: 2780,
-    pv: 3908,
-  },
-];
-
 const defaultOptions = [
   {
     label: "Hand Raises",
@@ -74,13 +49,6 @@ const defaultOptions = [
     checked: false,
   },
 ];
-// const selectedSession: BaseSession | null = useSelector(
-//   (state: any) => getSelectedSession(state),
-//   BaseSession.equal
-// );
-// const sessions: BaseSession[] = useSelector((state: any) =>
-//   getSessions(state)
-// );
 
 export function BehavioralEngagementProgress(
   props: IBehavioralEngagementProgressProps
@@ -93,12 +61,12 @@ export function BehavioralEngagementProgress(
   const sessions: BaseSession[] = useSelector((store: any) =>
     getSessions(store)
   );
-  const selectedSession: BaseSession | null = useSelector(
-    (state: any) => getSelectedSession(state),
-    BaseSession.equal
-  );
+  // const selectedSession: BaseSession | null = useSelector(
+  //   (state: any) => getSelectedSession(state),
+  //   BaseSession.equal
+  // );
 
-  const [engagementData, setEngagementData] = React.useState();
+  // const [engagementData, setEngagementData] = React.useState();
   const [options, setOptions] = React.useState<
     {
       label: string;
@@ -107,9 +75,9 @@ export function BehavioralEngagementProgress(
       checked: boolean;
     }[]
   >([]);
-  const [matchingSessions, setMatchingSessions] = React.useState<BaseSession[]>(
-    []
-  );
+  // const [matchingSessions, setMatchingSessions] = React.useState<BaseSession[]>(
+  //   []
+  // );
 
   const [loading, setLoading] = React.useState(false);
 
@@ -210,12 +178,12 @@ export function BehavioralEngagementProgress(
       const matchingSession = sessions.find((session) => session.id === value);
       if (matchingSession) matchingSessions.push(matchingSession);
     });
-    setMatchingSessions(matchingSessions);
+    // setMatchingSessions(matchingSessions);
 
-    const promises = matchingSessions.map((session) =>
-      apiHandler.getFramesBySessionID(session.id, "student")
-    );
-    const sessionFrames = await Promise.all(promises);
+    // const promises = matchingSessions.map((session) =>
+    //   apiHandler.getFramesBySessionID(session.id, "student")
+    // );
+    // const sessionFrames = await Promise.all(promises);
 
     // const somethign = sessionFrames.map((sessionFrame) =>
     //   sessionFrame.reduce((acc, frame) => {
@@ -267,7 +235,7 @@ export function BehavioralEngagementProgress(
           data={
             options.findIndex(
               (obj) => obj.value === "handRaises" && obj.checked
-            ) != -1
+            ) !== -1
               ? []
               : []
           }

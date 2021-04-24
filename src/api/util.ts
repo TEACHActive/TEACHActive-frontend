@@ -1,33 +1,20 @@
-import axios from "axios";
+import { MethodType } from "./types";
 
-const BASE_URL_HTTPS = "https://teachactive.engineering.iastate.edu";
-const EDUSENSE_STORAGE_URL = BASE_URL_HTTPS + ":5001";
+const BASE_URL = (https: boolean, port: number) =>
+  `http${https ? "s" : ""}://teachactive.engineering.iastate.edu:${port}`;
+const TEACHACTIVE_URL = BASE_URL(true, 4000);
+const TEACHACTIVE_URL_DEV = BASE_URL(false, 4001);
 
-const BASE_URL_HTTP = "http://teachactive.engineering.iastate.edu";
-const TEACHACTIVE_STORAGE_URL = BASE_URL_HTTP + ":4000";
-const TEACHACTIVE_STORAGE_URL_DEV = BASE_URL_HTTP + ":4001";
-
-const getAxiosConfig = (
-  method: "post" | "get" | "put",
-  endpoint: string,
-  to: "edusense" | "teachactive",
-  data?: any
-) => {
+const getAxiosConfig = (method: MethodType, endpoint: string, data?: any) => {
   const URL =
-    to === "edusense"
-      ? EDUSENSE_STORAGE_URL
-      : process.env.NODE_ENV === "production"
-      ? TEACHACTIVE_STORAGE_URL
-      : TEACHACTIVE_STORAGE_URL_DEV;
+    process.env.NODE_ENV === "production"
+      ? TEACHACTIVE_URL
+      : TEACHACTIVE_URL_DEV;
 
   return {
     method: method,
     url: `${URL}${endpoint}`,
     data: data,
-    auth: {
-      username: "edusense",
-      password: "password",
-    },
   };
 };
 

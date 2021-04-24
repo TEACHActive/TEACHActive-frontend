@@ -1,20 +1,15 @@
 import * as React from "react";
+
 import { Button, Empty, Input, Spin, Typography } from "antd";
-
-import { SessionMetric } from "./metricPage.types";
-import { InfoCard } from "../../components/InfoCard/infoCard";
-import MetricDisplay from "../../components/MetricDisplay/metricDisplay";
-import { MovementPatterns } from "../../components/MovementPatterns/movementPatterns";
-import BlockContent from "../../components/BlockContent/blockContent";
-import { BehavioralEngagement } from "../../components/BehavioralEngagement/behavioralEngagement";
-
-import {
-  ArmPose,
-  BaseSession,
-  Person,
-  VideoFrameSession,
-} from "../../api/types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+import { ArmPose, BaseSession, Person, VideoFrameSession } from "api/types";
+import { SessionMetric } from "./metricPage.types";
+import { InfoCard } from "components/InfoCard/infoCard";
+import BlockContent from "components/BlockContent/blockContent";
+import MetricDisplay from "components/MetricDisplay/metricDisplay";
+import { MovementPatterns } from "components/MovementPatterns/movementPatterns";
+import { BehavioralEngagement } from "components/BehavioralEngagement/behavioralEngagement";
 
 import "./metricPage.css";
 
@@ -27,29 +22,7 @@ export interface IMetricPagePresentationalProps {
     session: BaseSession,
     newSessionName: string
   ) => Promise<void>;
-  videoFrames:
-    | {
-        instructor: VideoFrameSession[];
-        student: VideoFrameSession[];
-      }
-    | undefined;
-  engagementData:
-    | {
-        frameNumber: number;
-        timestamp: number;
-        armPoseCount: {
-          handsRaised: {
-            pose: ArmPose;
-            id: number;
-          }[];
-          armsCrossed: number;
-          error: number;
-          handsOnFace: number;
-          other: number;
-        };
-        people: Person[];
-      }[]
-    | undefined;
+  loadingMetrics: boolean;
 }
 
 export function MetricPagePresentational(
@@ -117,7 +90,7 @@ export function MetricPagePresentational(
         ) : (
           <>
             <Title>{props.session.name}</Title>
-            {/* <FontAwesomeIcon
+            <FontAwesomeIcon
               icon="edit"
               size="1x"
               onClick={(event) => {
@@ -125,7 +98,7 @@ export function MetricPagePresentational(
                 setEditingSessionName(true);
               }}
               className="sessionTitleEdit"
-            /> */}
+            />
           </>
         )}
       </div>
@@ -146,7 +119,10 @@ export function MetricPagePresentational(
             width: "100%",
           }}
         >
-          {props.metrics &&
+          {props.loadingMetrics ? (
+            <Spin />
+          ) : (
+            props.metrics &&
             props.metrics.map((item: SessionMetric, i: number) => {
               return (
                 <BlockContent
@@ -178,28 +154,31 @@ export function MetricPagePresentational(
                   </MetricDisplay>
                 </BlockContent>
               );
-            })}
+            })
+          )}
         </div>
 
         <div style={{ display: "flex", marginTop: "3em" }}>
           {/* <BlockContent
             color={{ light: "#ED80A2", dark: "#D1728F" }}
             name="In-Class Activity"
-            help_text="This is help text"
+            help_text="Movement Patterns during class //Todo"
             has_alert={false}
-            icon=""
-            style={{
-              width: "4em !important",
-              height: "4em",
-              left: "10px",
-              top: "-20%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "white",
-              borderRadius: "3px",
-            }}
-          ></BlockContent> */}
+          >
+            <div className="infoCardContent">
+              <MovementPatterns />
+            </div>
+          </BlockContent> */}
+          {/* <BlockContent
+            color={{ light: "#FAB558", dark: "#E09F4B" }}
+            name="Behavioral Engagement"
+            help_text="Behavioral Engagement during class //Todo"
+            has_alert={false}
+          >
+            <div className="infoCardContent">
+              <BehavioralEngagement />
+            </div>
+          </BlockContent> */}
           <InfoCard
             color={{ light: "#ED80A2", dark: "#D1728F" }}
             icon=""
@@ -207,21 +186,18 @@ export function MetricPagePresentational(
             helpWindowText="Movement Patterns during class //Todo"
           >
             <div className="infoCardContent">
-              <MovementPatterns videoFrames={props.videoFrames} />
+              <MovementPatterns />
             </div>
           </InfoCard>
+
           <InfoCard
             color={{ light: "#FAB558", dark: "#E09F4B" }}
             icon=""
             title="Behavioral Engagement"
-            helpWindowText="Behavioral Engagement during class //todo"
+            helpWindowText="Behavioral Engagement during class //Todo"
           >
             <div className="infoCardContent">
-              {props.engagementData ? (
-                <BehavioralEngagement engagementData={props.engagementData} />
-              ) : (
-                <Spin />
-              )}
+              <BehavioralEngagement />
             </div>
           </InfoCard>
         </div>

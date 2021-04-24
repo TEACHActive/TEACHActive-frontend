@@ -1,11 +1,10 @@
 import * as React from "react";
-import { Typography, Collapse } from "antd";
+import { Collapse } from "antd";
 import HandRaisesForm from "./handRaisesForm";
 import InstructorSpeechForm from "./instructorSpeechForm";
 import StudentSpeechForm from "./studentSpeechForm";
 import { BaseSession } from "../../api/types";
 
-const { Title } = Typography;
 const { Panel } = Collapse;
 
 export interface IGoalsPagePresentationalProps {
@@ -21,8 +20,6 @@ export interface IGoalsPagePresentationalProps {
 export default function GoalsPagePresentational(
   props: IGoalsPagePresentationalProps
 ) {
-  console.log(props.reflections);
-
   return (
     <Collapse accordion defaultActiveKey={["1"]} style={{ width: "50%" }}>
       <Panel header="Hand Raises" key="1">

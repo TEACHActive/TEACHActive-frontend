@@ -1,6 +1,4 @@
-import { DateTime } from "luxon";
 import React from "react";
-import COLOR from "../../constants/colors";
 
 // export class AvgGradeAssignmentResponse {
 //   name: string;
@@ -58,9 +56,9 @@ export interface ISessionMetric {
   hasDenominator: boolean;
   denominator: number;
   unit: string;
-  trend: number; //Oneof(0,1)
-  trend_metric: number; //oneof
-  trend_metric_unit: string;
+  trend?: number;
+  trend_metric?: number;
+  trend_metric_unit?: string;
   help_text: string;
   has_alert: boolean;
   icon: string;
@@ -82,9 +80,9 @@ export class SessionMetric implements ISessionMetric {
   hasDenominator: boolean;
   denominator: number;
   unit: string;
-  trend: number; //Oneof(0,1)
-  trend_metric: number; //oneof
-  trend_metric_unit: string;
+  trend?: number;
+  trend_metric?: number;
+  trend_metric_unit?: string;
   help_text: string;
   has_alert: boolean;
   icon: string;
