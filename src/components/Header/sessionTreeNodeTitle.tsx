@@ -1,14 +1,15 @@
 import * as React from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 import { Input, Button, Tooltip } from "antd";
-import { BaseSession } from "../../api/types";
-import { DateTime } from "luxon";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+import { BaseSession } from "api/types";
 
 export interface ISessionTreeNodeTitle {
-  setSessionName: (
-    session: BaseSession,
-    newSessionName: string
-  ) => Promise<void>;
+  // setSessionName: (
+  //   session: BaseSession,
+  //   newSessionName: string
+  // ) => Promise<void>;
   session: BaseSession;
 }
 
@@ -31,12 +32,9 @@ export function SessionTreeNodeTitle(props: ISessionTreeNodeTitle) {
         type="primary"
         onClick={(event) => {
           event.stopPropagation();
-          props.setSessionName(props.session, newSessionName);
+          // props.setSessionName(props.session, newSessionName);
           setNewSessionName("");
           setEditing(false);
-          // let items = [...editingSessionIndexBool];
-          // items[i] = false;
-          // setEditingSessionIndexBool(items);
         }}
       >
         Save

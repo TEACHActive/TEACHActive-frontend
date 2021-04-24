@@ -1,8 +1,8 @@
 import React, { useState } from "react";
+
 import { Modal, Card, Button } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import COLOR from "../../constants/colors";
 import { hexToRgb } from "../../util";
 
 import "./blockContent.css";
@@ -12,7 +12,7 @@ export interface IBlockContentProps {
   name: string;
   help_text: string;
   has_alert: boolean;
-  icon: any;
+  icon?: any;
   children?: React.ReactNode;
   style?: any;
   width?: string;
@@ -54,7 +54,9 @@ export default function BlockContent(props: IBlockContentProps) {
               )`,
             }}
           >
-            <FontAwesomeIcon icon={props.icon} className="fa-icon" />
+            {props.icon && (
+              <FontAwesomeIcon icon={props.icon} className="fa-icon" />
+            )}
           </div>
           <p
             style={{

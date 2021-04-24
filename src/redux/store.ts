@@ -1,9 +1,18 @@
+import thunk from "redux-thunk";
+import { configureStore } from "@reduxjs/toolkit";
 import { DateTime } from "luxon";
-import { createStore, applyMiddleware } from "redux";
-import { composeWithDevTools } from "redux-devtools-extension";
-import { devToolsEnhancer } from "redux-devtools-extension";
-import { persistStore, persistReducer, createTransform } from "redux-persist";
 import storage from "redux-persist/lib/storage";
+import {
+  persistStore,
+  persistReducer,
+  createTransform,
+  FLUSH,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+  REHYDRATE,
+} from "redux-persist";
 
 import rootReducer from "./reducers";
 
@@ -31,11 +40,27 @@ const persistConfig = {
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
+const store = configureStore({
+  reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }).concat(thunk),
+  devTools: process.env.NODE_ENV !== "production",
+});
+const persistor = persistStore(store);
+
 export default () => {
-  let store = createStore(persistedReducer, devToolsEnhancer({}));
-  let persistor = persistStore(store);
   return {
     providerStore: store,
     persistor: persistor,
   };
 };
+
+//From: https://redux.js.org/recipes/usage-with-typescript
+// Infer the `RootState` and `AppDispatch` types from the store itself
+export type RootState = ReturnType<typeof store.getState>;
+// Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
+export type AppDispatch = typeof store.dispatch;

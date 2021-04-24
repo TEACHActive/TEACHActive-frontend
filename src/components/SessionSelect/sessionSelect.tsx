@@ -1,15 +1,16 @@
 import * as React from "react";
+
 import { TreeSelect } from "antd";
+import { DataNode } from "antd/lib/tree";
 import { useSelector, useDispatch } from "react-redux";
 
-import * as ReducerActionType from "../../redux/actionTypes";
-import { BaseSession } from "../../api/types";
-import { IAPIHandler } from "../../api/handler";
-import { getSelectedSession } from "../../redux/selectors";
+import { BaseSession } from "api/types";
+import * as ReducerActionType from "redux/actionTypes";
+import { getSelectedSession } from "redux/selectors";
 
 export interface ISessionSelectProps {
   sessions: BaseSession[];
-  sessionTreeData: any[];
+  sessionTreeData: DataNode[];
 }
 
 export default function SessionSelect(props: ISessionSelectProps) {

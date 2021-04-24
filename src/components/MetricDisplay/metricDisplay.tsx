@@ -1,14 +1,13 @@
 import React, { ReactNode } from "react";
+
+import { Input, Button } from "antd";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { TREND } from "../../constants/constants";
+import { TREND } from "constants/constants";
+import { SessionMetricType } from "pages/metric/metricPage.types";
 
 import "./metricDisplay.css";
-import { SessionMetricType } from "../../pages/metric/metricPage.types";
-import { Input, Button } from "antd";
-
-// type ColorKeys = keyof typeof COLOR;
-// type ColorValues = typeof COLOR[ColorKeys];
 
 type TrendKeys = keyof typeof TREND;
 type TrendValues = typeof TREND[TrendKeys];
@@ -19,9 +18,9 @@ export interface IMetricDisplayProps {
   denominator: number;
   hasDenominator: boolean;
   unit?: string;
-  trend: TrendValues;
-  trend_metric: number;
-  trend_metric_unit: string;
+  trend?: TrendValues;
+  trend_metric?: number;
+  trend_metric_unit?: string;
   metricPrepend: string;
   canEdit: boolean;
   updateMetric: (newMetric: string) => Promise<boolean>;
@@ -33,7 +32,19 @@ export default function MetricDisplay(props: IMetricDisplayProps) {
   const [newMetric, setNewMetric] = React.useState("");
   const [processing, setProcessing] = React.useState(false);
 
-  // const dispatch = useDispatch();
+  let icon: IconProp | null = null;
+
+  if (props.trend) {
+    if (props.trend === 0) {
+      icon = "grip-lines";
+    }
+    if (props.trend > 0) {
+      icon = "arrow-up";
+    }
+    if (props.trend < 0) {
+      icon = "arrow-down";
+    }
+  }
 
   return (
     <div className="MetricDisplay--bottom">
@@ -114,11 +125,9 @@ export default function MetricDisplay(props: IMetricDisplayProps) {
         {props.hasDenominator && <span>/ {props.denominator}</span>}
 
         <span>{props.unit}</span>
-        <FontAwesomeIcon
-          style={{ color: "blue" }}
-          size="2x"
-          icon={props.trend ? "arrow-down" : "arrow-up"}
-        />
+        {icon && (
+          <FontAwesomeIcon style={{ color: "blue" }} size="2x" icon={icon} />
+        )}
         <span>
           {props.trend_metric} {props.trend_metric_unit}
         </span>

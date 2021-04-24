@@ -1,15 +1,13 @@
-import { Form, Input, Checkbox, Button, Spin, message } from "antd";
 import * as React from "react";
-import Cookies from "universal-cookie";
+
 import { useHistory } from "react-router-dom";
-import { loginWithEmailAndPassword } from "../../firebase/auth";
-import * as routes from "../../routes";
-import { IAPIHandler, APIHandler } from "../../api/handler";
-import { BaseSession } from "../../api/types";
-import * as ReducerActionType from "../../redux/actionTypes";
-import { useDispatch, useSelector } from "react-redux";
-import { getUser } from "../../redux/selectors";
-import * as COOKIE from "../../constants/cookies";
+import { Form, Input, Checkbox, Button, message } from "antd";
+
+import * as Routes from "routes";
+import { IAPIHandler } from "api/handler";
+import { Cookie } from "constants/cookies";
+import { CookieSingleton } from "types/cookies.types";
+import { loginWithEmailAndPassword } from "firebase/authController";
 
 export interface ISignInPageProps {
   apiHandler: IAPIHandler;
@@ -22,30 +20,13 @@ interface ILoginValues {
 }
 
 export default function SignInPage(props: ISignInPageProps) {
-  const [cookies, setCookies] = React.useState<Cookies | null>(null);
-
   const history = useHistory();
-  const dispatch = useDispatch();
-  const userUID: string = useSelector((store: any) => getUser(store));
-
-  React.useEffect(() => {
-    setCookies(new Cookies());
-  }, []);
 
   const onFinish = async (values: ILoginValues) => {
     if (values.remember) rememberEmail(values.email);
     const user = await loginWithEmailAndPassword(values.email, values.password);
     if (user) {
-      history.push(routes.BaseRoute.link());
-      try {
-        dispatch({
-          type: ReducerActionType.SET_USER_UID,
-          payload: { uid: user.uid },
-        });
-      } catch (error) {
-        message.error("There was an error");
-        console.error(error);
-      }
+      history.push(Routes.BaseRoute.link());
     } else {
       message.error("Failed to log in, check email and password");
     }
@@ -64,11 +45,8 @@ export default function SignInPage(props: ISignInPageProps) {
   };
 
   const rememberEmail = (email: string) => {
-    if (cookies)
-      cookies.set(COOKIE.EMAIL, email, { path: "/", sameSite: "strict" });
+    CookieSingleton.getInstance().setCookie(Cookie.EMAIL, email);
   };
-
-  if (!cookies) return <Spin />;
 
   return (
     <div
@@ -83,7 +61,10 @@ export default function SignInPage(props: ISignInPageProps) {
       <Form<ILoginValues>
         {...layout}
         name="basic"
-        initialValues={{ remember: true, email: cookies.get(COOKIE.EMAIL) }}
+        initialValues={{
+          remember: true,
+          email: CookieSingleton.getInstance().getCookie(Cookie.EMAIL),
+        }}
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}
       >

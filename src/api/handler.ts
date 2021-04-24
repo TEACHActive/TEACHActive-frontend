@@ -1,287 +1,263 @@
-import { message } from "antd";
 import axios from "axios";
-import { BaseSession, SessionResponse, VideoFrameSession } from "./types";
+import { message } from "antd";
+import { DurationObjectUnits, DurationUnit } from "luxon";
+
 import { getAxiosConfig } from "./util";
+import {
+  Channel,
+  Response,
+  MethodType,
+  BaseSession,
+  SitStandInFrame,
+  ArmPosesInFrame,
+  XPositionInFrame,
+  VideoFrameSession,
+  ClassArrayFactory,
+  CumulativeArmPoses,
+  StudentAttendenceStats,
+} from "./types";
 
 export interface IAPIHandler {
-  getAllSessionIDs(): Promise<BaseSession[]>;
-  getSessionsByUID(uid: string): Promise<BaseSession[]>;
-  getFramesBySessionID(
-    sessionID: string,
-    channel: "student" | "instructor"
-  ): Promise<VideoFrameSession[]>;
-  updateMetric(
+  //Edusense
+  getSessions(uid: string): Promise<BaseSession[]>;
+  getFrames(sessionId: string, channel: Channel): Promise<VideoFrameSession[]>;
+  getNumberOfFramesOfArmPosesInSession(
+    sessionId: string
+  ): Promise<CumulativeArmPoses | null>;
+  getArmPosesInSession(
     sessionId: string,
-    metricName: string,
-    newMetricObj: object
-  ): Promise<boolean>;
-  getSessionExtras(sessionId: string): Promise<object>;
-  getSessionReflections(sessionID: string, uid: string): Promise<any | null>;
-  updateSessionReflections(
-    sessionID: string,
-    uid: string,
-    userSessionReflections?: any[]
-  ): Promise<boolean>;
+    durationUnit?: DurationUnit
+  ): Promise<ArmPosesInFrame[] | null>;
+  getStudentAttendenceStatsInSession(
+    sessionId: string
+  ): Promise<StudentAttendenceStats | null>;
+  getInstructorMovement(
+    sessionId: string,
+    durationUnit?: DurationUnit
+  ): Promise<XPositionInFrame[] | null>;
+  getStudentSitVsStandInSession(
+    sessionId: string,
+    durationUnit?: DurationUnit
+  ): Promise<SitStandInFrame[] | null>;
+  //Metadata
+  getSessionPerformance(sessionId: string): Promise<BaseSession | null>;
+  updateSessionPerformance(
+    sessionId: string,
+    preformance: number
+  ): Promise<BaseSession | null>;
+  updateSessionName(
+    sessionId: string,
+    name: string
+  ): Promise<BaseSession | null>; //Should probably require a uid for any updates
+  //Reflections
+  //Other
 }
 
 export class APIHandler implements IAPIHandler {
-  getAllSessionIDs = async (): Promise<BaseSession[]> => {
-    const data = JSON.stringify({
-      query: `{
-                sessions {
-                    id
-                    createdAt {
-                        unixSeconds
-                    }
-                }
-            }`,
-      variables: {},
-    });
-
-    const config = getAxiosConfig("post", "/query", "edusense", data);
+  getSessions = async (uid: string): Promise<BaseSession[]> => {
+    const config = getAxiosConfig(MethodType.GET, `/edusense/sessions/${uid}`);
 
     try {
-      const response = await axios.request(config);
-
-      const baseSessionResponse = new SessionResponse<BaseSession>(
-        {
-          sessions: JSON.parse(response.data.response).data.sessions,
-          success: response.data.success,
-        },
-        BaseSession
+      const response = new Response(
+        await axios.request(config),
+        new ClassArrayFactory<BaseSession>().transformToClass(BaseSession)
       );
-      if (!baseSessionResponse.success) {
-        message.error("An error occured");
-      }
-      return baseSessionResponse.sessions;
-    } catch (e) {
-      console.error(e);
+
+      return response.data?.arr || [];
+    } catch (error) {
+      logAPIError("Failed to get sessions", error);
       return [];
     }
   };
-
-  getSessionsByUID = async (uid: string): Promise<BaseSession[]> => {
-    console.log("getSessionsByUID");
-    console.log(uid);
-
-    const data = JSON.stringify({
-      query: `{
-                sessions(keyword: "${uid}") { 
-                    id
-                    createdAt {
-                        unixSeconds
-                    }
-                }
-            }`,
-      variables: {},
-    });
-
-    const config = getAxiosConfig("post", "/query", "edusense", data);
-    console.log(config);
-
-    try {
-      const response = await axios.request(config);
-      console.log(response);
-
-      const baseSessionResponse = new SessionResponse<BaseSession>(
-        {
-          sessions: JSON.parse(response.data.response).data.sessions,
-          success: response.data.success,
-        },
-        BaseSession
-      );
-      if (!baseSessionResponse.success) {
-        message.error("An error occured");
-      }
-      return baseSessionResponse.sessions;
-    } catch (e) {
-      console.error(e);
-      message.error("There was an error");
-      return [];
-    }
-  };
-
-  getFramesBySessionID = async (
-    sessionID: string,
-    channel: "student" | "instructor"
+  getFrames = async (
+    sessionId: string,
+    channel: Channel
   ): Promise<VideoFrameSession[]> => {
-    var data = JSON.stringify({
-      query: `{
-              sessions(sessionId: "${sessionID}") { 
-                  id
-                  createdAt { 
-                    unixSeconds
-                  }
-                  videoFrames(schema: "0.1.0", channel: ${channel}) { 
-                      frameNumber
-                      timestamp {
-                          unixSeconds
-                      }
-                      people { 
-                          openposeId 
-                          body
-                          inference { 
-                              trackingId 
-                              posture { 
-                                  armPose 
-                                  sitStand
-                              }
-                          }
-                      } 
-                  }
-              }
-          }`,
-      variables: {},
-    });
-
-    const config = getAxiosConfig("post", "/query", "edusense", data);
+    const config = getAxiosConfig(
+      MethodType.GET,
+      `/edusense/frames/${sessionId}/${channel}`
+    );
 
     try {
-      const response = await axios.request(config);
-
-      const edusenseResponse = JSON.parse(response.data.response);
-
-      const videoFrameSessionResponse = new SessionResponse<VideoFrameSession>(
-        {
-          sessions:
-            edusenseResponse && edusenseResponse.data
-              ? edusenseResponse.data.sessions
-              : [],
-          success: response.data.success,
-        },
-        VideoFrameSession
+      const response = new Response(
+        await axios.request(config),
+        new ClassArrayFactory<VideoFrameSession>().transformToClass(
+          VideoFrameSession
+        )
       );
-      if (!videoFrameSessionResponse.success) {
-        message.error("An error occured");
-      }
-
-      console.log(videoFrameSessionResponse.sessions);
-
-      return videoFrameSessionResponse.sessions;
-    } catch (e) {
-      console.error(e);
+      return response.data?.arr || [];
+    } catch (error) {
+      logAPIError("Failed to get frames", error);
       return [];
     }
   };
-
-  updateMetric = async (
-    sessionId: string,
-    metricName: string,
-    newMetricObj: object
-  ): Promise<boolean> => {
+  getNumberOfFramesOfArmPosesInSession = async (
+    sessionId: string
+  ): Promise<CumulativeArmPoses | null> => {
     const config = getAxiosConfig(
-      "put",
-      `/edusense/sessions/${sessionId}/${metricName}`,
-      "teachactive",
-      newMetricObj
-    );
-
-    console.log(newMetricObj);
-
-    try {
-      const response = await axios.request(config);
-      console.log(response);
-
-      if (response.data.error) {
-        message.error("An error occured");
-        console.error(response.data.detail);
-        return false;
-      }
-
-      return true;
-    } catch (e) {
-      console.error(e);
-      message.error("There was an error");
-      return false;
-    }
-  };
-
-  getSessionExtras = async (sessionId: string): Promise<object> => {
-    const config = getAxiosConfig(
-      "get",
-      `/edusense/sessions/${sessionId}`,
-      "teachactive"
+      MethodType.GET,
+      `/edusense/armPose/${sessionId}`
     );
 
     try {
-      const response = await axios.request(config);
-
-      if (response.data.error) {
-        message.error("An error occured");
-        console.error(response.data.detail);
-        return Promise.reject(response.data.error);
-      }
-
-      return {
-        name: response.data.name,
-        performance: response.data.performance,
-      };
-    } catch (e) {
-      console.error(e);
-      message.error("There was an error");
-      return Promise.reject(e);
-    }
-  };
-  async getSessionReflections(
-    sessionId: string,
-    uid: string
-  ): Promise<object | null> {
-    const config = getAxiosConfig(
-      "get",
-      `/reflections/${uid}/${sessionId}`,
-      "teachactive"
-    );
-
-    try {
-      const response = await axios.request(config);
-      console.log(response);
-
-      if (response.data.error) {
-        // message.error("An error occured");
-        console.error(response.data.detail);
-        return null;
-      }
+      const response = new Response(
+        await axios.request(config),
+        CumulativeArmPoses
+      );
 
       return response.data;
-    } catch (e) {
-      console.error(e);
-      // message.error("There was an error");
+    } catch (error) {
+      logAPIError("Failed to get arm pose stats", error);
       return null;
     }
-  }
-  async updateSessionReflections(
+  };
+  getArmPosesInSession = async (
     sessionId: string,
-    uid: string,
-    userSessionReflections: any[] = []
-  ): Promise<boolean> {
+    durationUnit: keyof DurationObjectUnits = "minutes" //Future ability to send this along as a param to the backend
+  ): Promise<ArmPosesInFrame[] | null> => {
     const config = getAxiosConfig(
-      "put",
-      `/reflections/${uid}/${sessionId}`,
-      "teachactive",
+      MethodType.GET,
+      `/edusense/armPose/frames/${sessionId}`
+    );
+
+    try {
+      const response = new Response(
+        await axios.request(config),
+        new ClassArrayFactory<ArmPosesInFrame>().transformToClass(
+          ArmPosesInFrame
+        )
+      );
+      return response.data?.arr || null;
+    } catch (error) {
+      logAPIError("Failed to get arm pose frames", error);
+      return null;
+    }
+  };
+  getStudentAttendenceStatsInSession = async (
+    sessionId: string
+  ): Promise<StudentAttendenceStats | null> => {
+    const config = getAxiosConfig(
+      MethodType.GET,
+      `/edusense/attendance/${sessionId}`
+    );
+
+    try {
+      const response = new Response(
+        await axios.request(config),
+        StudentAttendenceStats
+      );
+      return response.data;
+    } catch (error) {
+      logAPIError("Failed to get student attendence stats", error);
+      return null;
+    }
+  };
+  getInstructorMovement = async (
+    sessionId: string,
+    durationUnit: keyof DurationObjectUnits = "minutes"
+  ): Promise<XPositionInFrame[] | null> => {
+    const config = getAxiosConfig(
+      MethodType.GET,
+      `/edusense/instructor/movement/${sessionId}`
+    );
+
+    try {
+      const response = new Response(
+        await axios.request(config),
+        new ClassArrayFactory<XPositionInFrame>().transformToClass(
+          XPositionInFrame
+        )
+      );
+      return response.data?.arr || null;
+    } catch (error) {
+      logAPIError("Failed to get instructor movement frames", error);
+      return null;
+    }
+  };
+  getStudentSitVsStandInSession = async (
+    sessionId: string,
+    durationUnit: keyof DurationObjectUnits = "minutes"
+  ): Promise<SitStandInFrame[] | null> => {
+    const config = getAxiosConfig(
+      MethodType.GET,
+      `/edusense/student/sitvsstand/${sessionId}`
+    );
+
+    try {
+      const response = new Response(
+        await axios.request(config),
+        new ClassArrayFactory<SitStandInFrame>().transformToClass(
+          SitStandInFrame
+        )
+      );
+      return response.data?.arr || null;
+    } catch (error) {
+      logAPIError("Failed to get sit stand frames", error);
+      return null;
+    }
+  };
+  getSessionPerformance = async (
+    sessionId: string
+  ): Promise<BaseSession | null> => {
+    const config = getAxiosConfig(
+      MethodType.GET,
+      `/metadata/preformance/${sessionId}`
+    );
+
+    try {
+      const response = new Response(await axios.request(config), BaseSession);
+      return response.data || null;
+    } catch (error) {
+      logAPIError("Failed to get session preformance", error);
+      return null;
+    }
+  };
+  updateSessionPerformance = async (
+    sessionId: string,
+    preformance: number
+  ): Promise<BaseSession | null> => {
+    const config = getAxiosConfig(
+      MethodType.PUT,
+      `/metadata/preformance/${sessionId}`,
       {
-        userId: uid,
-        sessionId: sessionId,
-        reflections: userSessionReflections,
+        preformance: preformance,
       }
     );
 
     try {
-      const response = await axios.request(config);
-
-      if (response.data.error) {
-        message.error("An error occured");
-        console.error(response.data.detail);
-        return false;
-      }
-
-      return true;
-    } catch (e) {
-      console.error(e);
-      message.error("There was an error");
-      return false;
+      const response = new Response(await axios.request(config), BaseSession);
+      return response.data || null;
+    } catch (error) {
+      logAPIError("Failed to set session preformance", error);
+      return null;
     }
-  }
+  };
+  updateSessionName = async (
+    sessionId: string,
+    name: string
+  ): Promise<BaseSession | null> => {
+    const config = getAxiosConfig(
+      MethodType.PUT,
+      `/metadata/name/${sessionId}`,
+      {
+        name: name,
+      }
+    );
+
+    try {
+      const response = new Response(await axios.request(config), BaseSession);
+      return response.data || null;
+    } catch (error) {
+      logAPIError("Failed to set session name", error);
+      return null;
+    }
+  };
 }
+
+const logAPIError = (error: string, detail: any) => {
+  console.error(error, detail);
+  message.error(error);
+};
 
 const apiHandler: IAPIHandler = new APIHandler();
 

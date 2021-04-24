@@ -1,8 +1,7 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
-import { Button } from "antd";
 
-import * as routes from "../../routes";
+import * as routes from "routes";
 
 export interface IGettingStartedProps {}
 
