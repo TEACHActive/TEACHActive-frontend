@@ -18,6 +18,7 @@ import apiHandler from "api/handler";
 import { useSelector } from "react-redux";
 import { getSelectedSession } from "redux/selectors";
 import { useCallback } from "react";
+import { RootState } from "redux/store";
 
 export interface IBehavioralEngagementProps {}
 
@@ -46,7 +47,7 @@ const defaultResolution = 10;
 
 export function BehavioralEngagement(props: IBehavioralEngagementProps) {
   const selectedSession: BaseSession | null = useSelector(
-    (state: any) => getSelectedSession(state),
+    (state: RootState) => getSelectedSession(state),
     BaseSession.equal
   );
 

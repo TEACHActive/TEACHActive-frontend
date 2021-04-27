@@ -54,7 +54,7 @@ interface IAppProps {}
 
 function App(props: IAppProps) {
   return (
-    <Layout className="layout App">
+    <Layout className="layout">
       <Sidebar />
       <Layout>
         <Header />

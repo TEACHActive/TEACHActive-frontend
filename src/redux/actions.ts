@@ -25,3 +25,12 @@ export const updateSessions = (userUID: string) => async (
     },
   });
 };
+
+export const setKeywordFilter = (keyword: string) => ({
+  type: ReducerActionType.SET_KEYWORD_FILTER,
+  payload: { keyword },
+});
+export const clearKeywordFilter = () => ({
+  type: ReducerActionType.SET_KEYWORD_FILTER,
+  payload: { undefined },
+});

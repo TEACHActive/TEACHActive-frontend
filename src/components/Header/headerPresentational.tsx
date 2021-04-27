@@ -3,7 +3,7 @@ import * as React from "react";
 import "firebase/auth";
 
 import { DataNode } from "antd/lib/tree";
-import { Button, Badge, Modal, Layout, Input } from "antd";
+import { Button, Badge, Modal, Layout, Input, Select } from "antd";
 import { FirebaseAuthConsumer } from "@react-firebase/auth";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -12,10 +12,13 @@ import Changelog from "components/Changelog/changelog";
 import SessionSelect from "components/SessionSelect/sessionSelect";
 
 import "./header.css";
-import { CookieSingleton } from "types/cookies.types";
-import { Cookie } from "constants/cookies";
+import { SelectValue } from "antd/lib/select";
+import { useDispatch } from "react-redux";
+import { clearKeywordFilter, setKeywordFilter } from "redux/actions";
+import { getKeywordFilter } from "redux/selectors";
 
 const { Header: AntHeader } = Layout;
+const { Option } = Select;
 
 interface IHeaderPresentationalProps {
   sessions: BaseSession[];
@@ -29,14 +32,13 @@ interface IHeaderPresentationalProps {
   setAppVersion: (version: string | undefined) => void;
   refreshSessions: (uid: string) => void;
   refreshingSessions: boolean;
+  sessionKeywords: string[];
+  keywordFilter: string;
 }
 
 const HeaderPresentational: React.FC<IHeaderPresentationalProps> = (props) => {
-  const [UID, setUID] = React.useState("");
+  const dispatch = useDispatch();
 
-  const storeUID = (uid: string) => {
-    CookieSingleton.getInstance().setCookie(Cookie.UID, uid);
-  };
   return (
     <FirebaseAuthConsumer>
       {({
@@ -77,29 +79,47 @@ const HeaderPresentational: React.FC<IHeaderPresentationalProps> = (props) => {
                   sessionTreeData={props.sessionTreeData}
                 />
                 {isSignedIn && (
-                  <Button
-                    type="link"
-                    style={{ padding: "0px" }}
-                    onClick={() =>
-                      props.refreshSessions(
-                        CookieSingleton.getInstance().getCookie(Cookie.UID) ||
-                          user.uid
-                      )
-                    }
-                  >
-                    <FontAwesomeIcon
-                      icon="sync"
-                      color="white"
-                      className={props.refreshingSessions ? "sync--spin" : ""}
-                    />
-                  </Button>
+                  <>
+                    <Button
+                      type="link"
+                      style={{ padding: "0px" }}
+                      onClick={() => props.refreshSessions(user.uid)}
+                    >
+                      <FontAwesomeIcon
+                        icon="sync"
+                        color="white"
+                        className={props.refreshingSessions ? "sync--spin" : ""}
+                      />
+                    </Button>
+
+                    {props.sessionKeywords.length > 1 && (
+                      <Select
+                        showSearch
+                        style={{ width: 200, marginLeft: "1em" }}
+                        placeholder="Select a keyword"
+                        optionFilterProp="children"
+                        value={props.keywordFilter}
+                        allowClear
+                        onClear={() => dispatch(clearKeywordFilter())}
+                        onChange={(value: SelectValue) => {
+                          dispatch(setKeywordFilter(value.toString()));
+                        }}
+                        filterOption={(input, option) =>
+                          option?.children
+                            .toLowerCase()
+                            .indexOf(input.toLowerCase()) >= 0
+                        }
+                      >
+                        {props.sessionKeywords.map((keyword, i) => (
+                          <Option key={i} value={keyword}>
+                            {keyword}
+                          </Option>
+                        ))}
+                      </Select>
+                    )}
+                  </>
                 )}
               </div>
-              <Input
-                style={{ marginLeft: "10px" }}
-                onChange={(event) => setUID(event.target.value)}
-              ></Input>
-              <Button onClick={() => storeUID(UID)}>Set UID</Button>
               <div
                 style={{
                   display: "flex",

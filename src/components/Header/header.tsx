@@ -10,7 +10,7 @@ import { useSelector, useDispatch } from "react-redux";
 import * as routes from "routes";
 import { BaseSession } from "api/types";
 import { Cookie } from "constants/cookies";
-import { getSessions } from "redux/selectors";
+import { getAllSessions, getKeywordFilter, getSessions } from "redux/selectors";
 import { CookieSingleton } from "types/cookies.types";
 import * as ReducerActionType from "redux/actionTypes";
 import HeaderPresentational from "./headerPresentational";
@@ -21,18 +21,26 @@ import "./header.css";
 import { useCallback } from "react";
 import { updateSessions } from "redux/actions";
 import apiHandler from "api/handler";
+import { RootState } from "redux/store";
 
 export interface IHeaderProps {}
 
 export function Header(props: IHeaderProps) {
-  const sessions: BaseSession[] = useSelector((store: any) =>
+  const filteredSessions: BaseSession[] = useSelector((store: RootState) =>
     getSessions(store)
+  );
+  const allSessions: BaseSession[] = useSelector((store: RootState) =>
+    getAllSessions(store)
+  );
+  const keywordFilter: string = useSelector((store: RootState) =>
+    getKeywordFilter(store)
   );
   const [isNewAppVersion, setIsNewAppVersion] = React.useState(false);
   const [notificationsOpen, setNotificationsOpen] = React.useState(false);
   const [refreshingSessions, setRefreshingSessions] = React.useState(false);
   const [markedRead, setMarkedRead] = React.useState(false);
   const [sessionTreeData, setSessionTreeData] = React.useState<DataNode[]>([]);
+  const [sessionKeywords, setSessionKeywords] = React.useState<string[]>([]);
 
   const [timeoutIds, setTimeoutIds] = React.useState<
     ReturnType<typeof setTimeout>[]
@@ -50,12 +58,12 @@ export function Header(props: IHeaderProps) {
   };
 
   const rebuildSessions = useCallback(() => {
-    if (!sessions) return;
-    const sortedSessions = sessions.sort(
+    if (!filteredSessions) return;
+    const sortedSessions = filteredSessions.sort(
       (a, b) => a.createdAt.toMillis() - b.createdAt.toMillis()
     );
     buildSessionTreeData(sortedSessions);
-  }, [sessions]);
+  }, [filteredSessions]);
 
   const login = () => {
     history.push(routes.SignInRoute.link());
@@ -97,59 +105,79 @@ export function Header(props: IHeaderProps) {
     refreshSessions(uid);
   };
 
-  const buildSessionTreeData = (sessions: BaseSession[]) => {
-    setSessionTreeData([]);
-    const data: DataNode[] = [];
-    sessions.forEach((session: BaseSession, i: number) => {
-      let matchingIndexYear = data.findIndex(
-        (yearLevel: any) => yearLevel.title === session.createdAt.year
-      );
-      if (matchingIndexYear === -1) {
-        //Insert a new year into list
-        matchingIndexYear =
-          data.push({
-            title: session.createdAt.year,
-            key: session.createdAt.year,
-            selectable: false,
-            children: [],
-          }) - 1;
+  const buildSessionTreeData = useCallback(
+    (sessions: BaseSession[]) => {
+      //Todo: Consider using Set() or .distinct to make this cleaner
+      setSessionTreeData([]);
+
+      const differentKeywords = new Set([
+        ...allSessions.map((session) => session.keyword),
+      ]);
+      if (differentKeywords.size > 1) {
+        const definedKeywords = Array.from(differentKeywords).filter(
+          (keyword) => keyword !== undefined
+        ) as string[];
+
+        setSessionKeywords(definedKeywords);
       }
-      let matchingIndexMonth = data[matchingIndexYear].children?.findIndex(
-        (monthLevel: any) => monthLevel.title === session.createdAt.monthLong
-      );
-      if (!matchingIndexMonth || matchingIndexMonth === -1) {
-        //Insert a new month into list of children of correct year
-        if (!data[matchingIndexYear].children) {
-          data[matchingIndexYear].children = [];
+
+      const data: DataNode[] = [];
+      sessions.forEach((session: BaseSession, i: number) => {
+        let matchingIndexYear = data.findIndex(
+          (yearLevel: any) => yearLevel.title === session.createdAt.year
+        );
+        if (matchingIndexYear === -1) {
+          //Insert a new year into list
+          matchingIndexYear =
+            data.push({
+              title: session.createdAt.year,
+              key: session.createdAt.year,
+              selectable: false,
+              children: [],
+            }) - 1;
         }
-        matchingIndexMonth =
-          data[matchingIndexYear].children!.push({
-            title: session.createdAt.monthLong,
-            key: session.createdAt.monthLong,
-            selectable: false,
-            children: [],
-          }) - 1;
-      }
+        // console.log(data[matchingIndexYear].children);
 
-      if (!data[matchingIndexYear].children![matchingIndexMonth].children) {
-        data[matchingIndexYear].children![matchingIndexMonth].children = [];
-      }
+        let matchingIndexMonth = data[matchingIndexYear].children?.findIndex(
+          (monthLevel: any) => monthLevel.title === session.createdAt.monthLong
+        );
+        // console.log(matchingIndexMonth);
 
-      data[matchingIndexYear].children![matchingIndexMonth].children!.push({
-        title: (
-          <SessionTreeNodeTitle
-            session={session}
-            // setSessionName={(session: BaseSession,
-            //   newSessionName: string) => setSessionName(session.id, newSessionName, "")}
-          />
-        ),
-        key: session.id,
-        selectable: true,
+        if (matchingIndexMonth === undefined || matchingIndexMonth === -1) {
+          //Insert a new month into list of children of correct year
+          if (!data[matchingIndexYear].children) {
+            data[matchingIndexYear].children = [];
+          }
+          matchingIndexMonth =
+            data[matchingIndexYear].children!.push({
+              title: session.createdAt.monthLong,
+              key: session.createdAt.monthLong,
+              selectable: false,
+              children: [],
+            }) - 1;
+        }
+
+        if (!data[matchingIndexYear].children![matchingIndexMonth].children) {
+          data[matchingIndexYear].children![matchingIndexMonth].children = [];
+        }
+
+        data[matchingIndexYear].children![matchingIndexMonth].children!.push({
+          title: (
+            <SessionTreeNodeTitle
+              session={session}
+              // setSessionName={(session: BaseSession,
+              //   newSessionName: string) => setSessionName(session.id, newSessionName, "")}
+            />
+          ),
+          key: session.id,
+          selectable: true,
+        });
       });
-    });
 
-    setSessionTreeData(data);
-  };
+      setSessionTreeData(data);
+    },
+    [filteredSessions]
+  );
 
   React.useEffect(() => {
     rebuildSessions();
@@ -157,11 +185,11 @@ export function Header(props: IHeaderProps) {
     return () => {
       timeoutIds.forEach((timeoutId) => clearTimeout(timeoutId));
     };
-  }, [rebuildSessions, sessions]);
+  }, [rebuildSessions]);
 
   return (
     <HeaderPresentational
-      sessions={sessions}
+      sessions={filteredSessions}
       sessionTreeData={sessionTreeData}
       setNotificationsOpen={setNotificationsOpen}
       notificationsOpen={notificationsOpen}
@@ -172,6 +200,8 @@ export function Header(props: IHeaderProps) {
       setAppVersion={setAppVersion}
       refreshSessions={refreshSessions}
       refreshingSessions={refreshingSessions}
+      sessionKeywords={sessionKeywords}
+      keywordFilter={keywordFilter}
     />
   );
 }

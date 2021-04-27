@@ -6,6 +6,7 @@ import { BarChart, CartesianGrid, XAxis, YAxis, Legend, Bar } from "recharts";
 
 import { ArmPose, BaseSession } from "api/types";
 import { getSessions } from "redux/selectors";
+import { RootState } from "redux/store";
 
 const { Option } = Select;
 
@@ -58,7 +59,7 @@ export function BehavioralEngagementProgress(
   //   options: defaultOptions,
   //   engagementData: undefined,
   // };
-  const sessions: BaseSession[] = useSelector((store: any) =>
+  const sessions: BaseSession[] = useSelector((store: RootState) =>
     getSessions(store)
   );
   // const selectedSession: BaseSession | null = useSelector(
