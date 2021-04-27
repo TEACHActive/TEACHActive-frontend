@@ -68,7 +68,7 @@ export const ProgressRoute: ComponentRoute = new ComponentRoute({
   component: <ProgressPage />,
   icon: <UploadOutlined />,
   link: () => "/progress",
-  inSidebar: false,
+  inSidebar: true,
   exact: true,
   secure: true,
 });
