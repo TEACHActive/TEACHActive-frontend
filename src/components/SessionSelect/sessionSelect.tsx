@@ -7,6 +7,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { BaseSession } from "api/types";
 import * as ReducerActionType from "redux/actionTypes";
 import { getSelectedSession } from "redux/selectors";
+import { RootState } from "redux/store";
 
 export interface ISessionSelectProps {
   sessions: BaseSession[];
@@ -16,7 +17,7 @@ export interface ISessionSelectProps {
 export default function SessionSelect(props: ISessionSelectProps) {
   const dispatch = useDispatch();
   const selectedSession: BaseSession | null = useSelector(
-    (store: any) => getSelectedSession(store),
+    (store: RootState) => getSelectedSession(store),
     BaseSession.equal
   );
 
@@ -24,12 +25,14 @@ export default function SessionSelect(props: ISessionSelectProps) {
     <TreeSelect
       style={{ width: "15em", margin: "1em" }}
       value={selectedSession ? selectedSession.name : undefined}
-      dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
+      dropdownStyle={{ overflow: "auto" }}
       treeData={props.sessionTreeData}
       allowClear
       treeDefaultExpandAll={true}
       showSearch
+      virtual={false}
       placeholder="Please select"
+      dropdownClassName="sessionSelectDropdown"
       onChange={(value) => {
         dispatch({
           type: ReducerActionType.SET_SELECTED_SESSION_BY_ID,

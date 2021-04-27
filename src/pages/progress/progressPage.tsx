@@ -7,15 +7,16 @@ import { ProgressPagePresentational } from "./progressPagePresentational";
 import "./progressPage.css";
 import { BaseSession } from "../../api/types";
 import { getSelectedSession, getSessions } from "../../redux/selectors";
+import { RootState } from "redux/store";
 
 export interface IProgressPageProps {}
 
 export default function ProgressPage(props: IProgressPageProps) {
   const selectedSession: BaseSession | null = useSelector(
-    (state: any) => getSelectedSession(state),
+    (state: RootState) => getSelectedSession(state),
     BaseSession.equal
   );
-  const sessions: BaseSession[] = useSelector((state: any) =>
+  const sessions: BaseSession[] = useSelector((state: RootState) =>
     getSessions(state)
   );
 

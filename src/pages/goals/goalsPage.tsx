@@ -8,14 +8,15 @@ import { getReflections } from "redux/selectors";
 import GoalsPagePresentational from "./goalsPagePresentational";
 
 import "./goalsPage.css";
+import { RootState } from "redux/store";
 
 export interface IGoalsPageProps {}
 
 export default function GoalsPage(props: IGoalsPageProps) {
   const selectedSession: BaseSession | null = useSelector(
-    (state: any) => state.session.selectedSession
+    (state: RootState) => state.session.selectedSession
   );
-  const reflections = useSelector((store: any) => getReflections(store));
+  const reflections = useSelector((store: RootState) => getReflections(store));
 
   // const dispatch = useDispatch();
 

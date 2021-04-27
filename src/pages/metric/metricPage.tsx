@@ -5,21 +5,16 @@ import { Empty, message, Spin } from "antd";
 import { getSelectedSession, getSessions } from "redux/selectors";
 import { MetricPagePresentational } from "./metricPagePresentational";
 import { SessionMetric, SessionMetricType } from "./metricPage.types";
-import {
-  BaseSession,
-  Person,
-  VideoFrameSession,
-  ArmPose,
-  StudentAttendenceStats,
-} from "api/types";
+import { BaseSession, StudentAttendenceStats } from "api/types";
 
 import "./metricPage.css";
 import apiHandler from "api/handler";
-import { updateSessions } from "redux/actions";
+import { setSelectedSession, updateSessions } from "redux/actions";
 import { FirebaseAuthConsumer } from "@react-firebase/auth";
 import { useCallback } from "react";
 import { Cookie } from "constants/cookies";
 import { CookieSingleton } from "types/cookies.types";
+import { RootState } from "redux/store";
 
 export interface IMetricPageProps {}
 
@@ -27,11 +22,11 @@ export default function MetricPage(props: IMetricPageProps) {
   const dispatch = useDispatch();
 
   const selectedSession: BaseSession | null = useSelector(
-    (state: any) => getSelectedSession(state),
+    (state: RootState) => getSelectedSession(state),
     BaseSession.equal
   );
 
-  const sessions: BaseSession[] = useSelector((state: any) =>
+  const sessions: BaseSession[] = useSelector((state: RootState) =>
     getSessions(state)
   );
 
@@ -72,12 +67,14 @@ export default function MetricPage(props: IMetricPageProps) {
       (a, b) => a.createdAt.toMillis() - b.createdAt.toMillis()
     );
     let previousSession;
+
     const idOfSelectedSession = sortedSessions.findIndex(
       (session) => session.id === selectedSession.id
     );
     if (idOfSelectedSession === -1) {
       //Something went wrong, should have found the session
       message.error("Error occured when sorting sessions");
+      dispatch(setSelectedSession(null));
       return;
     }
     if (idOfSelectedSession !== 0) {
@@ -242,8 +239,11 @@ export default function MetricPage(props: IMetricPageProps) {
   }, [selectedSession, sessions]);
 
   React.useEffect(() => {
+    if (!selectedSession) return;
     createMetrics();
-  }, [createMetrics]);
+  }, [createMetrics, selectedSession]);
+
+  console.log(selectedSession);
 
   if (!selectedSession) return <Empty />;
 
@@ -311,11 +311,7 @@ export default function MetricPage(props: IMetricPageProps) {
             session={selectedSession}
             metrics={metrics}
             setSessionName={(session: BaseSession, newSessionName: string) =>
-              setSessionName(
-                session.id,
-                newSessionName,
-                CookieSingleton.getInstance().getCookie(Cookie.UID) || user.uid
-              )
+              setSessionName(session.id, newSessionName, user.uid)
             }
             loadingMetrics={loadingMetrics}
           />

@@ -78,12 +78,14 @@ export class BaseSession {
   createdAt: DateTime;
   name: string;
   performance: number;
+  keyword?: string;
 
   constructor(data: any) {
     this.id = data.id;
     this.createdAt = this.getCreatedAtFromData(data);
     this.name = this.getNameFromData(data);
     this.performance = data.performance ?? null;
+    this.keyword = data.keyword;
   }
 
   private getCreatedAtFromData(data: any): DateTime {

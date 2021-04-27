@@ -23,6 +23,7 @@ import apiHandler from "api/handler";
 import { useSelector } from "react-redux";
 import { getSelectedSession } from "redux/selectors";
 import { DurationObjectUnits } from "luxon";
+import { RootState } from "redux/store";
 
 export interface ISitVsStandProps {}
 
@@ -33,7 +34,7 @@ const defaultResolution = 10;
 
 export function SitVsStand(props: ISitVsStandProps) {
   const selectedSession: BaseSession | null = useSelector(
-    (state: any) => getSelectedSession(state),
+    (state: RootState) => getSelectedSession(state),
     BaseSession.equal
   );
 
@@ -137,6 +138,7 @@ export function SitVsStand(props: ISitVsStandProps) {
     const sitVsStandData = await apiHandler.getStudentSitVsStandInSession(
       selectedSession.id
     );
+    console.log(selectedSession);
 
     if (sitVsStandData) {
       const chunkLength = sitVsStandData.length / defaultResolution;
@@ -217,10 +219,10 @@ export function SitVsStand(props: ISitVsStandProps) {
       <RechartsTooltip />
       <Area
         type="monotone"
-        dataKey="sitNumber"
+        dataKey="errorNumber"
         stackId="1"
-        stroke="#1e7fc7"
-        fill="#1e7fc7"
+        stroke="#f0000"
+        fill="#ff0000"
       />
       <Area
         type="monotone"
@@ -231,10 +233,10 @@ export function SitVsStand(props: ISitVsStandProps) {
       />
       <Area
         type="monotone"
-        dataKey="errorNumber"
+        dataKey="sitNumber"
         stackId="1"
-        stroke="#ffffff"
-        fill="#ffffff"
+        stroke="#1e7fc7"
+        fill="#1e7fc7"
       />
     </AreaChart>
   );

@@ -4,12 +4,14 @@ import { BaseSession } from "api/types";
 interface StateShape {
   selectedSession: BaseSession | null;
   sessions: BaseSession[];
+  keywordFilter: string | undefined;
   reflections: any[];
 }
 
 const initialState: StateShape = {
   selectedSession: null,
   sessions: [],
+  keywordFilter: undefined,
   reflections: [],
 };
 
@@ -42,6 +44,12 @@ export default function (state = initialState, action: any) {
       return {
         ...state,
         sessions: sessions,
+      };
+    case ReducerActionType.SET_KEYWORD_FILTER:
+      const { keyword } = action.payload;
+      return {
+        ...state,
+        keywordFilter: keyword,
       };
     default:
       return state;

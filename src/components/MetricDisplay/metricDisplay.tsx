@@ -118,7 +118,7 @@ export default function MetricDisplay(props: IMetricDisplayProps) {
         ) : (
           <h1 className="metric-text">
             {props.metricPrepend}
-            {props.metric || "-"}
+            {props.metric === undefined ? "-" : props.metric}
           </h1>
         )}
 
