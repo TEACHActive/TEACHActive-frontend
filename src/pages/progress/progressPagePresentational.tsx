@@ -50,8 +50,9 @@ export function ProgressPagePresentational(
           help_text={block.help_text}
           has_alert={block.has_alert}
           icon={block.icon}
-          style={{ margin: "2em", width: "100%" }}
+          style={{ width: "100%", height: "30em" }}
           width="100%"
+          height="30em"
         >
           {block.content}
         </BlockContent>

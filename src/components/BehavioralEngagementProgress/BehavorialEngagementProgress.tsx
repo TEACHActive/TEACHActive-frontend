@@ -7,6 +7,7 @@ import { BarChart, CartesianGrid, XAxis, YAxis, Legend, Bar } from "recharts";
 import { ArmPose, BaseSession } from "api/types";
 import { getSessions } from "redux/selectors";
 import { RootState } from "redux/store";
+import apiHandler from "api/handler";
 
 const { Option } = Select;
 
@@ -35,7 +36,7 @@ const defaultOptions = [
     label: "Hand Raises",
     value: "handRaises",
     disabled: false,
-    checked: false,
+    checked: true,
   },
   {
     label: "Instructor Speech",
@@ -67,7 +68,7 @@ export function BehavioralEngagementProgress(
   //   BaseSession.equal
   // );
 
-  // const [engagementData, setEngagementData] = React.useState();
+  const [engagementData, setEngagementData] = React.useState<any[]>([]);
   const [options, setOptions] = React.useState<
     {
       label: string;
@@ -75,7 +76,7 @@ export function BehavioralEngagementProgress(
       disabled: boolean;
       checked: boolean;
     }[]
-  >([]);
+  >(defaultOptions);
   // const [matchingSessions, setMatchingSessions] = React.useState<BaseSession[]>(
   //   []
   // );
@@ -172,13 +173,44 @@ export function BehavioralEngagementProgress(
   };
 
   const handleSelectSessionChange = async (value: string[]) => {
-    let matchingSessions: BaseSession[] = [];
     setLoading(true);
 
-    value.forEach((value) => {
-      const matchingSession = sessions.find((session) => session.id === value);
-      if (matchingSession) matchingSessions.push(matchingSession);
+    const matchingSessions: BaseSession[] = value.reduce(
+      (acc, currSessionId) => {
+        const matchingSession = sessions.find(
+          (session) => session.id === currSessionId
+        );
+        if (matchingSession) {
+          return [...acc, matchingSession];
+        }
+        return acc;
+      },
+      [] as BaseSession[]
+    );
+
+    const handRaiseDataPromises = matchingSessions.map((session) => {
+      return apiHandler.getNumberOfFramesOfArmPosesInSession(session.id);
     });
+
+    const handRaiseData = await Promise.all(handRaiseDataPromises);
+
+    const transformedHandRaiseData = handRaiseData.reduce((acc, curr, i) => {
+      return [
+        ...acc,
+        {
+          name: matchingSessions[i].name,
+          handsRaised: curr?.handsRaised,
+        },
+      ];
+    }, [] as { name: string; handsRaised: number | undefined }[]);
+
+    setEngagementData(transformedHandRaiseData);
+    console.log(transformedHandRaiseData);
+
+    // value.forEach((value) => {
+    //   const matchingSession = sessions.find((session) => session.id === value);
+    //   if (matchingSession) matchingSessions.push(matchingSession);
+    // });
     // setMatchingSessions(matchingSessions);
 
     // const promises = matchingSessions.map((session) =>
@@ -208,7 +240,7 @@ export function BehavioralEngagementProgress(
   // const fakeData = [engagementData, engagementData2, engagementData3];
 
   return (
-    <div style={{ padding: "1em", margin: "1em" }}>
+    <div>
       <Select
         mode="multiple"
         allowClear
@@ -237,20 +269,16 @@ export function BehavioralEngagementProgress(
             options.findIndex(
               (obj) => obj.value === "handRaises" && obj.checked
             ) !== -1
-              ? []
+              ? engagementData
               : []
           }
           style={{ marginTop: "1em" }}
         >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="date" />
+          <XAxis dataKey="name" />
           <YAxis />
           <Legend />
-          <Bar
-            dataKey={ArmPose.HandsRaised}
-            fill="#8884d8"
-            label={<div>test</div>}
-          />
+          <Bar dataKey={ArmPose.HandsRaised} fill="#8884d8" />
         </BarChart>
       )}
       {loading && <Spin></Spin>}
