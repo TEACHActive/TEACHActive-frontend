@@ -6,6 +6,7 @@ import { Button, Dropdown, Menu, Spin } from "antd";
 import { SitVsStand } from "./sitVsStand";
 import { VideoFrameSession } from "api/types";
 import { InstructorMovement } from "./instructorMovement";
+import { FirebaseAuthConsumer } from "@react-firebase/auth";
 
 export interface IMovementPatternsProps {}
 
@@ -228,7 +229,15 @@ export function MovementPatterns(props: IMovementPatternsProps) {
       </Dropdown>
       {selectedActivity === SelectedActivity.SitVsStand && <SitVsStand />}
       {selectedActivity === SelectedActivity.InstructorMovement && (
-        <InstructorMovement />
+        <FirebaseAuthConsumer>
+          {({
+            isSignedIn,
+            user,
+          }: {
+            isSignedIn: boolean;
+            user: firebase.default.User;
+          }) => <InstructorMovement uid={user.uid} />}
+        </FirebaseAuthConsumer>
       )}
     </div>
   );

@@ -199,13 +199,12 @@ export function BehavioralEngagementProgress(
         ...acc,
         {
           name: matchingSessions[i].name,
-          handsRaised: curr?.handsRaised,
+          handsRaised: curr ? curr.handsRaised / 15 : undefined,
         },
       ];
     }, [] as { name: string; handsRaised: number | undefined }[]);
 
     setEngagementData(transformedHandRaiseData);
-    console.log(transformedHandRaiseData);
 
     // value.forEach((value) => {
     //   const matchingSession = sessions.find((session) => session.id === value);

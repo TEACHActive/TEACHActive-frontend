@@ -19,12 +19,12 @@ const Heatmap: React.FunctionComponent<IHeatmapProps> = (props) => {
       // var points = [];
       var max = 0;
       let min = Number.MAX_SAFE_INTEGER;
-      // var width = 1000;
-      // var height = 200;
-      // var len = 200;
+      // var width = 500;
+      // var height = 20;
+      // var len = 20;
 
       // while (len--) {
-      //   var val = Math.floor(Math.random() * 100);
+      //   var val = Math.floor(Math.random() * 1);
       //   max = Math.max(max, val);
       //   min = Math.min(min, val);
       //   var point = {
@@ -36,13 +36,13 @@ const Heatmap: React.FunctionComponent<IHeatmapProps> = (props) => {
       // }
 
       const newData = props.data.map((dataum) => {
-        const pos = Math.round(dataum) / 100;
+        const pos = Math.round((500 * dataum) / 3838); //500 is width of heatmap, 3838 is number of horizontal pixels in heatmap
         max = Math.max(max, pos);
         min = Math.min(min, pos);
         return {
           x: pos,
           y: 10,
-          value: 1,
+          value: 75,
         };
       });
 
@@ -52,11 +52,15 @@ const Heatmap: React.FunctionComponent<IHeatmapProps> = (props) => {
         data: newData,
       };
 
+      console.log(newData);
+
       // if you have a set of datapoints always use setData instead of addData
       // for data initialization
       heatmapInstance.setData(data);
     }
   }, []);
+
+  // console.log(props.data);
 
   return (
     <div

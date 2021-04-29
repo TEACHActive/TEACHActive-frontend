@@ -138,7 +138,6 @@ export function SitVsStand(props: ISitVsStandProps) {
     const sitVsStandData = await apiHandler.getStudentSitVsStandInSession(
       selectedSession.id
     );
-    console.log(selectedSession);
 
     if (sitVsStandData) {
       const chunkLength = sitVsStandData.length / defaultResolution;
