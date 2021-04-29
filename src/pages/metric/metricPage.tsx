@@ -243,8 +243,6 @@ export default function MetricPage(props: IMetricPageProps) {
     createMetrics();
   }, [createMetrics, selectedSession]);
 
-  console.log(selectedSession);
-
   if (!selectedSession) return <Empty />;
 
   // // const studentSpeechSessionMetric = new SessionMetric({

@@ -23,13 +23,13 @@ export default function GoalsPagePresentational(
   return (
     <Collapse accordion defaultActiveKey={["1"]} style={{ width: "50%" }}>
       <Panel header="Hand Raises" key="1">
-        <HandRaisesForm session={props.session} />
+        {/* <HandRaisesForm session={props.session} /> */}
       </Panel>
       <Panel header="Student Speech" key="3">
-        <StudentSpeechForm session={props.session} />
+        {/* <StudentSpeechForm session={props.session} /> */}
       </Panel>
       <Panel header="Instructor Speech" key="2">
-        <InstructorSpeechForm session={props.session} />
+        {/* <InstructorSpeechForm session={props.session} /> */}
       </Panel>
     </Collapse>
   );

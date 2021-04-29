@@ -3,7 +3,17 @@ import * as React from "react";
 import "firebase/auth";
 
 import { DataNode } from "antd/lib/tree";
-import { Button, Badge, Modal, Layout, Input, Select } from "antd";
+import {
+  Button,
+  Badge,
+  Modal,
+  Layout,
+  Input,
+  Select,
+  Tooltip,
+  Avatar,
+} from "antd";
+import { UserOutlined } from "@ant-design/icons";
 import { FirebaseAuthConsumer } from "@react-firebase/auth";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -16,6 +26,7 @@ import { SelectValue } from "antd/lib/select";
 import { useDispatch } from "react-redux";
 import { clearKeywordFilter, setKeywordFilter } from "redux/actions";
 import { getKeywordFilter } from "redux/selectors";
+import { intToRGB, stringToHexColor } from "../../util";
 
 const { Header: AntHeader } = Layout;
 const { Option } = Select;
@@ -96,7 +107,7 @@ const HeaderPresentational: React.FC<IHeaderPresentationalProps> = (props) => {
                       <Select
                         showSearch
                         style={{ width: 200, marginLeft: "1em" }}
-                        placeholder="Select a keyword"
+                        placeholder="Select a user"
                         optionFilterProp="children"
                         value={props.keywordFilter}
                         allowClear
@@ -110,9 +121,19 @@ const HeaderPresentational: React.FC<IHeaderPresentationalProps> = (props) => {
                             .indexOf(input.toLowerCase()) >= 0
                         }
                       >
-                        {props.sessionKeywords.map((keyword, i) => (
+                        {props.sessionKeywords.sort().map((keyword, i) => (
                           <Option key={i} value={keyword}>
-                            {keyword}
+                            <Avatar
+                              style={{
+                                backgroundColor: stringToHexColor(keyword),
+                                margin: "3px",
+                              }}
+                              icon={<UserOutlined />}
+                              size="small"
+                            />
+                            <Tooltip placement="right" title={keyword}>
+                              User {i + 1}
+                            </Tooltip>
                           </Option>
                         ))}
                       </Select>
