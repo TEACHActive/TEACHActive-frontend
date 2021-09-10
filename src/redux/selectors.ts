@@ -34,3 +34,7 @@ export const getAllSessions = createSelector(
 export const getReflections = (store: RootState) => {
   return store.reflections;
 };
+
+export const getMetrics = (store: RootState) => {
+  return store.session.metrics;
+};

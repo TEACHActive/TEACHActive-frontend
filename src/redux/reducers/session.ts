@@ -6,6 +6,7 @@ interface StateShape {
   sessions: BaseSession[];
   keywordFilter: string | undefined;
   reflections: any[];
+  metrics: any[];
 }
 
 const initialState: StateShape = {
@@ -13,6 +14,7 @@ const initialState: StateShape = {
   sessions: [],
   keywordFilter: undefined,
   reflections: [],
+  metrics: []
 };
 
 export default function (state = initialState, action: any) {
@@ -51,6 +53,12 @@ export default function (state = initialState, action: any) {
         ...state,
         keywordFilter: keyword,
       };
+    case ReducerActionType.UPDATE_METRICS:
+      const metrics = action.payload;
+      return {
+        ...state,
+        metrics: metrics
+      }
     default:
       return state;
   }

@@ -82,7 +82,7 @@ export const GoalsRoute: ComponentRoute = new ComponentRoute({
     </>
   ),
   link: () => "/goals",
-  inSidebar: false,
+  inSidebar: true,
   exact: true,
   secure: true,
 });
