@@ -89,6 +89,14 @@ export class BaseSession {
   }
 
   private getCreatedAtFromData(data: any): DateTime {
+    //Accounting for edge case where analysis is done on days after it is first recorded and name is changed
+    const nameToDate = DateTime.fromFormat(
+      this.getNameFromData(data),
+      "L/d/yyyy"
+    );
+    if (nameToDate.isValid) {
+      return nameToDate;
+    }
     if (!data.createdAt) {
       return DateTime.fromJSDate(new Date()); //Currently some issue with DateTime.now()?
     } else if (data.createdAt.isLuxonDateTime) {

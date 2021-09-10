@@ -16,6 +16,8 @@ import { Cookie } from "constants/cookies";
 import { CookieSingleton } from "types/cookies.types";
 import { RootState } from "redux/store";
 
+import * as ReducerActionType from "../../redux/actionTypes";
+
 export interface IMetricPageProps {}
 
 export default function MetricPage(props: IMetricPageProps) {
@@ -60,187 +62,185 @@ export default function MetricPage(props: IMetricPageProps) {
     dispatch(updateSessions(uid));
   };
 
-  const createMetrics = useCallback(async () => {
-    setLoadingMetrics(true);
-    let metrics: SessionMetric[] = [];
-    const sortedSessions = sessions.sort(
-      (a, b) => a.createdAt.toMillis() - b.createdAt.toMillis()
-    );
-    let previousSession;
-
-    const idOfSelectedSession = sortedSessions.findIndex(
-      (session) => session.id === selectedSession.id
-    );
-    if (idOfSelectedSession === -1) {
-      //Something went wrong, should have found the session
-      message.error("Error occured when sorting sessions");
-      dispatch(setSelectedSession(null));
-      return;
-    }
-    if (idOfSelectedSession !== 0) {
-      previousSession = sortedSessions[idOfSelectedSession - 1];
-    }
-
-    //=====ArmPose=====
-    const armPoseStats = await apiHandler.getNumberOfFramesOfArmPosesInSession(
-      selectedSession.id
-    );
-    let prevArmPoseStats;
-    if (previousSession) {
-      prevArmPoseStats = await apiHandler.getNumberOfFramesOfArmPosesInSession(
-        previousSession.id
+  const createMetrics = useCallback(
+    async (sessionId: string) => {
+      setLoadingMetrics(true);
+      let metrics: SessionMetric[] = [];
+      const sortedSessions = sessions.sort(
+        (a, b) => a.createdAt.toMillis() - b.createdAt.toMillis()
       );
-    }
-    if (armPoseStats) {
-      const handsRaiseDiff = prevArmPoseStats
-        ? armPoseStats.handsRaised - prevArmPoseStats.handsRaised
+      let previousSession;
+
+      const indexOfSelectedSession = sortedSessions.findIndex(
+        (session) => session.id === sessionId
+      );
+      if (indexOfSelectedSession === -1) {
+        //Something went wrong, should have found the session
+        // message.error("Error occured when sorting sessions");
+        dispatch(setSelectedSession(null));
+        return;
+      }
+      if (indexOfSelectedSession !== 0) {
+        previousSession = sortedSessions[indexOfSelectedSession - 1];
+      }
+
+      //=====ArmPose=====
+      const armPoseStats = await apiHandler.getNumberOfFramesOfArmPosesInSession(
+        sessionId
+      );
+      let prevArmPoseStats;
+      if (previousSession) {
+        prevArmPoseStats = await apiHandler.getNumberOfFramesOfArmPosesInSession(
+          previousSession.id
+        );
+      }
+      if (armPoseStats) {
+        const handsRaiseDiff = prevArmPoseStats
+          ? armPoseStats.handsRaised - prevArmPoseStats.handsRaised
+          : 0;
+        metrics.push({
+          metricType: SessionMetricType.HandRaises,
+          name: "Hand Raises",
+          color: {
+            dark: "#E6AE05",
+            light: "#FFC107",
+          },
+          metric: Math.round(armPoseStats.handsRaised / 15.0), //Todo: get fps per video
+          metricPrepend: "",
+          hasDenominator: false,
+          denominator: 0,
+          unit: "sec",
+          trend: previousSession ? handsRaiseDiff : undefined,
+          trend_metric: previousSession
+            ? Math.round(handsRaiseDiff / 15.0)
+            : undefined,
+          trend_metric_unit: previousSession ? "sec" : undefined,
+          help_text:
+            "The total number of seconds hand raises were detected during the class session",
+          has_alert: false,
+          icon: "hand-paper",
+          canEdit: false,
+          updateMetric: async (newMetric: string) => {
+            // const success = await apiHandler.updateMetric(//Todo
+            //   sessionId,
+            //   "handRaise",
+            //   newMetric
+            // );
+            return Promise.resolve(false);
+          },
+        });
+      }
+
+      //=====Class Preformance=====
+      const classPreformanceDiff = previousSession
+        ? selectedSession.performance - previousSession.performance
         : 0;
+
       metrics.push({
-        metricType: SessionMetricType.HandRaises,
-        name: "Hand Raises",
+        metricType: SessionMetricType.ClassPerformance,
+        name: "Class Performance",
         color: {
-          dark: "#E6AE05",
-          light: "#FFC107",
+          dark: "#1E7FD4",
+          light: "#1E88E5",
         },
-        metric: Math.round(armPoseStats.handsRaised / 15.0), //Todo: get fps per video
+        metric: selectedSession.performance,
         metricPrepend: "",
         hasDenominator: false,
         denominator: 0,
-        unit: "sec",
-        trend: previousSession ? handsRaiseDiff : undefined,
-        trend_metric: previousSession
-          ? Math.round(handsRaiseDiff / 15.0)
-          : undefined,
-        trend_metric_unit: previousSession ? "sec" : undefined,
+        unit: "%",
+        trend: previousSession ? classPreformanceDiff : undefined,
+        trend_metric: previousSession ? classPreformanceDiff : undefined,
+        trend_metric_unit: previousSession ? "%" : undefined,
         help_text:
-          "The total number of seconds hand raises were detected during the class session",
+          "Did you do any graded activity in this class session? You may enter manually the average class performance and compare them with future sessions!",
         has_alert: false,
-        icon: "hand-paper",
+        icon: "id-card",
+        canEdit: true,
+        updateMetric: async (newMetric: string) => {
+          const result = await apiHandler.updateSessionPerformance(
+            sessionId,
+            parseFloat(newMetric)
+          );
+          if (!result) {
+            //Failed to update
+            return false;
+          }
+          //Todo: refresh sessions here
+          return true;
+        },
+        children: !selectedSession.performance ? (
+          <span>Enter your class preformance</span>
+        ) : (
+          <></>
+        ),
+      });
+
+      //=====Attendance=====
+      const studentAttendanceStats = await apiHandler.getStudentAttendenceStatsInSession(
+        sessionId
+      );
+
+      let prevStudentAttendanceStats: StudentAttendenceStats | null = null;
+      if (previousSession) {
+        prevStudentAttendanceStats = await apiHandler.getStudentAttendenceStatsInSession(
+          previousSession.id
+        );
+      }
+
+      let attendanceDiff = 0;
+      if (studentAttendanceStats) {
+        attendanceDiff = previousSession
+          ? Math.round(
+              studentAttendanceStats.max -
+                (prevStudentAttendanceStats?.max || 0)
+            )
+          : 0;
+      }
+
+      metrics.push({
+        metricType: SessionMetricType.Attendance,
+        name: "Attendence",
+        color: {
+          dark: "#842ed1",
+          light: "#9534eb",
+        },
+        metric: studentAttendanceStats
+          ? Math.round(studentAttendanceStats.max)
+          : 0,
+        metricPrepend: "~",
+        hasDenominator: false,
+        denominator: 0,
+        unit: "",
+        trend: previousSession ? attendanceDiff : undefined,
+        trend_metric: previousSession ? attendanceDiff : undefined,
+        trend_metric_unit: previousSession ? "" : undefined,
+        help_text: "Average number of students detected during the session",
+        has_alert: false,
+        icon: "users",
         canEdit: false,
-        updateMetric: async (metricUpdateObject: object) => {
-          // const success = await apiHandler.updateMetric(
-          //   selectedSession.id,
-          //   "handRaise",
+        updateMetric: (newMetric: string) => {
+          // const result = apiHandler.updateMetric(
+          //   sessionId,
+          //   "attendance",
           //   metricUpdateObject
           // );
+
           return Promise.resolve(false);
         },
-        constructMetricUpdateObject: (newMetric: string) => {
-          return { handRaise: newMetric };
-        },
       });
-    }
 
-    //=====Class Preformance=====
-    const classPreformanceDiff = previousSession
-      ? selectedSession.performance - previousSession.performance
-      : 0;
-
-    metrics.push({
-      metricType: SessionMetricType.ClassPerformance,
-      name: "Class Performance",
-      color: {
-        dark: "#1E7FD4",
-        light: "#1E88E5",
-      },
-      metric: selectedSession.performance,
-      metricPrepend: "",
-      hasDenominator: false,
-      denominator: 0,
-      unit: "%",
-      trend: previousSession ? classPreformanceDiff : undefined,
-      trend_metric: previousSession ? classPreformanceDiff : undefined,
-      trend_metric_unit: previousSession ? "%" : undefined,
-      help_text:
-        "Did you do any graded activity in this class session? You may enter manually the average class performance and compare them with future sessions!",
-      has_alert: false,
-      icon: "id-card",
-      canEdit: true,
-      updateMetric: async (metricUpdateObject: { performance: number }) => {
-        const result = await apiHandler.updateSessionPerformance(
-          selectedSession.id,
-          metricUpdateObject.performance
-        );
-        if (!result) {
-          //Failed to update
-          return false;
-        }
-        //Todo: refresh sessions here
-        return true;
-      },
-      constructMetricUpdateObject: (newMetric: string) => {
-        return { performance: parseFloat(newMetric) / 100.0 };
-      },
-      children: !selectedSession.performance ? (
-        <span>Enter your class preformance</span>
-      ) : (
-        <></>
-      ),
-    });
-
-    //=====Attendance=====
-    const studentAttendanceStats = await apiHandler.getStudentAttendenceStatsInSession(
-      selectedSession.id
-    );
-
-    let prevStudentAttendanceStats: StudentAttendenceStats | null = null;
-    if (previousSession) {
-      prevStudentAttendanceStats = await apiHandler.getStudentAttendenceStatsInSession(
-        previousSession.id
-      );
-    }
-
-    let attendanceDiff = 0;
-    if (studentAttendanceStats) {
-      attendanceDiff = previousSession
-        ? Math.round(
-            studentAttendanceStats.max - (prevStudentAttendanceStats?.max || 0)
-          )
-        : 0;
-    }
-
-    metrics.push({
-      metricType: SessionMetricType.Attendance,
-      name: "Attendence",
-      color: {
-        dark: "#842ed1",
-        light: "#9534eb",
-      },
-      metric: studentAttendanceStats
-        ? Math.round(studentAttendanceStats.max)
-        : 0,
-      metricPrepend: "~",
-      hasDenominator: false,
-      denominator: 0,
-      unit: "",
-      trend: previousSession ? attendanceDiff : undefined,
-      trend_metric: previousSession ? attendanceDiff : undefined,
-      trend_metric_unit: previousSession ? "" : undefined,
-      help_text: "Average number of students detected during the session",
-      has_alert: false,
-      icon: "users",
-      canEdit: false,
-      updateMetric: (metricUpdateObject: object) => {
-        // const result = apiHandler.updateMetric(
-        //   selectedSession.id,
-        //   "attendance",
-        //   metricUpdateObject
-        // );
-
-        return Promise.resolve(false);
-      },
-      constructMetricUpdateObject: (newMetric: string) => {
-        return { attendance: newMetric };
-      },
-    });
-
-    setMetrics(metrics);
-    setLoadingMetrics(false);
-  }, [selectedSession, sessions]);
+      setMetrics(metrics);
+      dispatch({ type: ReducerActionType.UPDATE_METRICS, payload: metrics})
+      setLoadingMetrics(false);
+    },
+    [selectedSession, sessions]
+  );
 
   React.useEffect(() => {
     if (!selectedSession) return;
-    createMetrics();
+    console.log("reloading metrics page with sessionID " + selectedSession.id);
+
+    createMetrics(selectedSession.id);
   }, [createMetrics, selectedSession]);
 
   if (!selectedSession) return <Empty />;

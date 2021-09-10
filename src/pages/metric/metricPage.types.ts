@@ -63,8 +63,7 @@ export interface ISessionMetric {
   has_alert: boolean;
   icon: string;
   canEdit: boolean;
-  updateMetric: (metricUpdateObject: any) => Promise<boolean>;
-  constructMetricUpdateObject: (newMetric: string) => object;
+  updateMetric: (newMetric: string) => Promise<boolean>;
   children?: React.ReactNode;
 }
 
@@ -87,8 +86,7 @@ export class SessionMetric implements ISessionMetric {
   has_alert: boolean;
   icon: string;
   canEdit: boolean;
-  updateMetric: (metricUpdateObject: any) => Promise<boolean>;
-  constructMetricUpdateObject: (newMetric: string) => object;
+  updateMetric: (newMetric: string) => Promise<boolean>;
   children?: React.ReactNode;
 
   constructor(data: ISessionMetric) {
@@ -112,7 +110,6 @@ export class SessionMetric implements ISessionMetric {
     this.icon = data.icon;
     this.canEdit = data.canEdit;
     this.updateMetric = data.updateMetric;
-    this.constructMetricUpdateObject = data.constructMetricUpdateObject;
     this.children = data.children;
   }
 }

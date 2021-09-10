@@ -21,9 +21,9 @@ export default function GoalsPagePresentational(
   props: IGoalsPagePresentationalProps
 ) {
   return (
-    <Collapse accordion defaultActiveKey={["1"]} style={{ width: "50%" }}>
+    <Collapse accordion defaultActiveKey={["1"]} >
       <Panel header="Hand Raises" key="1">
-        {/* <HandRaisesForm session={props.session} /> */}
+        <HandRaisesForm session={props.session} />
       </Panel>
       <Panel header="Student Speech" key="3">
         {/* <StudentSpeechForm session={props.session} /> */}

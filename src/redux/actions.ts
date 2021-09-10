@@ -34,3 +34,8 @@ export const clearKeywordFilter = () => ({
   type: ReducerActionType.SET_KEYWORD_FILTER,
   payload: { undefined },
 });
+
+export const updateMetrics = (metrics: any[]) => ({
+  type: ReducerActionType.UPDATE_METRICS,
+  payload: { metrics },
+});

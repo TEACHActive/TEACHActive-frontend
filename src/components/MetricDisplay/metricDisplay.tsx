@@ -89,16 +89,13 @@ export default function MetricDisplay(props: IMetricDisplayProps) {
                   size="1x"
                   color="blue"
                   onClick={async (event) => {
-                    console.log(323);
-
                     setProcessing(true);
-                    setEditingMetric(false);
                     const success = await props.updateMetric(newMetric);
                     if (success) {
                       setNewMetric("");
                     }
+                    setEditingMetric(false);
                     setProcessing(false);
-                    console.log(32343);
                   }}
                 />
               </Button>

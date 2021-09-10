@@ -145,9 +145,7 @@ export function MetricPagePresentational(
                     trend_metric_unit={item.trend_metric_unit}
                     canEdit={item.canEdit}
                     updateMetric={(newMetric: string) =>
-                      item.updateMetric(
-                        item.constructMetricUpdateObject(newMetric)
-                      )
+                      item.updateMetric(newMetric)
                     }
                   >
                     {item.children}

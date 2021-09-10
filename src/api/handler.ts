@@ -39,8 +39,7 @@ export interface IAPIHandler {
     sessionId: string,
     durationUnit?: DurationUnit
   ): Promise<SitStandInFrame[] | null>;
-  //Metadata
-  getSessionPerformance(sessionId: string): Promise<BaseSession | null>;
+  // getSessionPerformance(sessionId: string): Promise<BaseSession | null>;
   updateSessionPerformance(
     sessionId: string,
     preformance: number
@@ -56,12 +55,15 @@ export interface IAPIHandler {
 export class APIHandler implements IAPIHandler {
   getSessions = async (uid: string): Promise<BaseSession[]> => {
     const config = getAxiosConfig(MethodType.GET, `/edusense/sessions/${uid}`);
+    console.log(config);
 
     try {
       const response = new Response(
         await axios.request(config),
         new ClassArrayFactory<BaseSession>().transformToClass(BaseSession)
       );
+
+      console.log(response.data?.arr);
 
       return response.data?.arr || [];
     } catch (error) {
@@ -196,31 +198,16 @@ export class APIHandler implements IAPIHandler {
       return null;
     }
   };
-  getSessionPerformance = async (
-    sessionId: string
-  ): Promise<BaseSession | null> => {
-    const config = getAxiosConfig(
-      MethodType.GET,
-      `/metadata/preformance/${sessionId}`
-    );
-
-    try {
-      const response = new Response(await axios.request(config), BaseSession);
-      return response.data || null;
-    } catch (error) {
-      logAPIError("Failed to get session preformance", error);
-      return null;
-    }
-  };
   updateSessionPerformance = async (
     sessionId: string,
     preformance: number
   ): Promise<BaseSession | null> => {
     const config = getAxiosConfig(
       MethodType.PUT,
-      `/metadata/preformance/${sessionId}`,
+      `/edusense/sessions/performance`,
       {
-        preformance: preformance,
+        sessionId: sessionId,
+        performance: preformance,
       }
     );
 
@@ -236,13 +223,10 @@ export class APIHandler implements IAPIHandler {
     sessionId: string,
     name: string
   ): Promise<BaseSession | null> => {
-    const config = getAxiosConfig(
-      MethodType.PUT,
-      `/metadata/name/${sessionId}`,
-      {
-        name: name,
-      }
-    );
+    const config = getAxiosConfig(MethodType.PUT, `/edusense/sessions/name`, {
+      sessionId: sessionId,
+      name: name,
+    });
 
     try {
       const response = new Response(await axios.request(config), BaseSession);
