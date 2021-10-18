@@ -16,6 +16,11 @@ import {
   CumulativeArmPoses,
   StudentAttendenceStats,
 } from "./types";
+import {
+  Reflections,
+  ReflectionSectionQuestionOnSelected,
+} from "pages/goals/goalsPage.types";
+// import { HandRaiseGoalsAndReflections } from "pages/goals/goalsPage.types";
 
 export interface IAPIHandler {
   //Edusense
@@ -49,6 +54,19 @@ export interface IAPIHandler {
     name: string
   ): Promise<BaseSession | null>; //Should probably require a uid for any updates
   //Reflections
+  getReflections(
+    sessionId: string,
+    userUID: string
+  ): Promise<Reflections | null>;
+  createReflections(
+    sessionId: string,
+    userUID: string
+  ): Promise<Reflections | null>;
+  updateReflections(
+    sessionId: string,
+    userUID: string,
+    reflectionObj: object
+  ): Promise<Reflections | null>;
   //Other
 }
 
@@ -233,6 +251,67 @@ export class APIHandler implements IAPIHandler {
       return response.data || null;
     } catch (error) {
       logAPIError("Failed to set session name", error);
+      return null;
+    }
+  };
+
+  getReflections = async (
+    sessionId: string,
+    userUID: string
+  ): Promise<Reflections | null> => {
+    let config = getAxiosConfig(
+      MethodType.GET,
+      `/reflections/${userUID}/${sessionId}`
+    );
+
+    let response;
+
+    try {
+      response = new Response(await axios.request(config), Reflections);
+
+      return response.data ? new Reflections(response.data) : null;
+    } catch (error) {
+      logAPIError("Failed to get reflections", error);
+      console.log(1);
+    }
+
+    return await this.createReflections(sessionId, userUID);
+  };
+
+  createReflections = async (
+    sessionId: string,
+    userUID: string
+  ): Promise<Reflections | null> => {
+    const config = getAxiosConfig(
+      MethodType.POST,
+      `/reflections/${userUID}/${sessionId}`
+    );
+
+    try {
+      const response = new Response(await axios.request(config), Reflections);
+      return response.data ? new Reflections(response.data) : null;
+    } catch (error) {
+      logAPIError("Failed to create reflections", error);
+      return null;
+    }
+  };
+
+  updateReflections = async (
+    sessionId: string,
+    userUID: string,
+    reflectionObj: object
+  ): Promise<Reflections | null> => {
+    const config = getAxiosConfig(
+      MethodType.PUT,
+      `/reflections/${userUID}/${sessionId}`,
+      reflectionObj
+    );
+
+    try {
+      const response = new Response(await axios.request(config), Reflections);
+      return response.data ? new Reflections(response.data) : null;
+    } catch (error) {
+      logAPIError("Failed to update reflections", error);
       return null;
     }
   };

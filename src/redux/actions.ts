@@ -39,3 +39,11 @@ export const updateMetrics = (metrics: any[]) => ({
   type: ReducerActionType.UPDATE_METRICS,
   payload: { metrics },
 });
+
+export const fetchReflections = (userUID: string, sessionID: string) => ({
+  type: ReducerActionType.GET_REFLECTIONS,
+  payload: {
+    userUID: userUID,
+    sessionID: sessionID,
+  },
+});

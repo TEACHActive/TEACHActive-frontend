@@ -96,6 +96,7 @@ export function SitVsStand(props: ISitVsStandProps) {
 
   React.useEffect(() => {
     console.log("reloading sit vs stand with id " + selectedSession.id);
+    console.log("TEST");
 
     getSitVsStand(selectedSession.id);
   }, [getSitVsStand, selectedSession]);
