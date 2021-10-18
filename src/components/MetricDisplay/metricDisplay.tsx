@@ -78,7 +78,7 @@ export default function MetricDisplay(props: IMetricDisplayProps) {
             }}
           >
             <Input
-              placeholder={props.metric.toString()}
+              placeholder={props.metric ? props.metric.toString() : ""}
               onChange={(event) => setNewMetric(event.target.value)}
               disabled={processing}
             />

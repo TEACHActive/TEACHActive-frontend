@@ -14,7 +14,7 @@ const initialState: StateShape = {
   sessions: [],
   keywordFilter: undefined,
   reflections: [],
-  metrics: []
+  metrics: [],
 };
 
 export default function (state = initialState, action: any) {
@@ -57,8 +57,15 @@ export default function (state = initialState, action: any) {
       const metrics = action.payload;
       return {
         ...state,
-        metrics: metrics
-      }
+        metrics: metrics,
+      };
+    case ReducerActionType.GET_REFLECTIONS:
+      const { userUID: userUID, sessionID: sessionID } = action.payload;
+      //TODO
+      return {
+        ...state,
+        reflections: [],
+      };
     default:
       return state;
   }

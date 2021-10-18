@@ -230,7 +230,7 @@ export default function MetricPage(props: IMetricPageProps) {
       });
 
       setMetrics(metrics);
-      dispatch({ type: ReducerActionType.UPDATE_METRICS, payload: metrics})
+      dispatch({ type: ReducerActionType.UPDATE_METRICS, payload: metrics });
       setLoadingMetrics(false);
     },
     [selectedSession, sessions]
@@ -238,7 +238,7 @@ export default function MetricPage(props: IMetricPageProps) {
 
   React.useEffect(() => {
     if (!selectedSession) return;
-    console.log("reloading metrics page with sessionID " + selectedSession.id);
+    // console.log("reloading metrics page with sessionID " + selectedSession.id);
 
     createMetrics(selectedSession.id);
   }, [createMetrics, selectedSession]);
