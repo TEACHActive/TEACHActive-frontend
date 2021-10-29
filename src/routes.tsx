@@ -16,9 +16,11 @@ import {
   SettingsPage,
   GettingStartedPage,
   SignInPage,
+  HomePage,
 } from "./pages";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import apiHandler from "./api/handler";
+import { FirebaseAuthConsumer } from "@react-firebase/auth";
 
 export class ComponentRoute {
   name: string;
@@ -29,6 +31,8 @@ export class ComponentRoute {
   inSidebar: boolean;
   exact: boolean;
   secure: boolean;
+  pathShowsHeader: boolean;
+  pathShowsSidebar: boolean;
 
   constructor(data: any) {
     this.name = data.name;
@@ -39,6 +43,8 @@ export class ComponentRoute {
     this.inSidebar = data.inSidebar;
     this.exact = data.exact;
     this.secure = data.secure;
+    this.pathShowsHeader = data.pathShowsHeader;
+    this.pathShowsSidebar = data.pathShowsSidebar;
   }
 }
 
@@ -51,6 +57,30 @@ export const BaseRoute: ComponentRoute = new ComponentRoute({
   inSidebar: false,
   exact: true,
   secure: false,
+  pathShowsHeader: false,
+  pathShowsSidebar: false,
+});
+export const HomeRoute: ComponentRoute = new ComponentRoute({
+  name: "Home",
+  path: "/home",
+  component: (
+    <FirebaseAuthConsumer>
+      {({
+        isSignedIn,
+        user,
+      }: {
+        isSignedIn: boolean;
+        user: firebase.default.User;
+      }) => <HomePage user={user} />}
+    </FirebaseAuthConsumer>
+  ),
+  icon: <UserOutlined />,
+  link: () => "/home",
+  inSidebar: false,
+  exact: true,
+  secure: true,
+  pathShowsHeader: false,
+  pathShowsSidebar: false,
 });
 export const MetricsRoute: ComponentRoute = new ComponentRoute({
   name: "Metrics",
@@ -61,6 +91,8 @@ export const MetricsRoute: ComponentRoute = new ComponentRoute({
   inSidebar: true,
   exact: true,
   secure: true,
+  pathShowsHeader: true,
+  pathShowsSidebar: true,
 });
 export const ProgressRoute: ComponentRoute = new ComponentRoute({
   name: "Progress",
@@ -71,6 +103,8 @@ export const ProgressRoute: ComponentRoute = new ComponentRoute({
   inSidebar: true,
   exact: true,
   secure: true,
+  pathShowsHeader: true,
+  pathShowsSidebar: true,
 });
 export const GoalsRoute: ComponentRoute = new ComponentRoute({
   name: "Reflections & Goals",
@@ -85,6 +119,8 @@ export const GoalsRoute: ComponentRoute = new ComponentRoute({
   inSidebar: true,
   exact: true,
   secure: true,
+  pathShowsHeader: true,
+  pathShowsSidebar: true,
 });
 export const SettingsRoute: ComponentRoute = new ComponentRoute({
   name: "Settings",
@@ -95,6 +131,8 @@ export const SettingsRoute: ComponentRoute = new ComponentRoute({
   inSidebar: false,
   exact: true,
   secure: true,
+  pathShowsHeader: true,
+  pathShowsSidebar: true,
 });
 export const SignInRoute: ComponentRoute = new ComponentRoute({
   name: "Sign In",
@@ -105,6 +143,8 @@ export const SignInRoute: ComponentRoute = new ComponentRoute({
   inSidebar: false,
   exact: true,
   secure: false,
+  pathShowsHeader: false,
+  pathShowsSidebar: false,
 });
 
 export const routes: ComponentRoute[] = [
@@ -114,4 +154,5 @@ export const routes: ComponentRoute[] = [
   GoalsRoute,
   SettingsRoute,
   SignInRoute,
+  HomeRoute,
 ];

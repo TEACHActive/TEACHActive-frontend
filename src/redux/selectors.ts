@@ -38,3 +38,7 @@ export const getReflections = (store: RootState) => {
 export const getMetrics = (store: RootState) => {
   return store.session.metrics;
 };
+
+export const getLastMetricsSessionId = (store: RootState) => {
+  return store.session.lastMetricsSessionId;
+};

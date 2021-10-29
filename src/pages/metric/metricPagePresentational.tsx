@@ -30,6 +30,7 @@ export function MetricPagePresentational(
 ) {
   const [editingSessionName, setEditingSessionName] = React.useState(false);
   const [newSessionName, setNewSessionName] = React.useState("");
+  const [updatedSessionName, setUpdatedSessionName] = React.useState("");
 
   if (!props.session) {
     return (
@@ -71,6 +72,7 @@ export function MetricPagePresentational(
                 onClick={(event) => {
                   setEditingSessionName(false);
                   props.setSessionName(props.session, newSessionName);
+                  setUpdatedSessionName(newSessionName); //Todo: figure out why this isnt automatic
                   setNewSessionName("");
                 }}
               />
@@ -89,7 +91,11 @@ export function MetricPagePresentational(
           </div>
         ) : (
           <>
-            <Title>{props.session.name}</Title>
+            <Title>
+              {updatedSessionName === ""
+                ? props.session.name
+                : updatedSessionName}
+            </Title>
             <FontAwesomeIcon
               icon="edit"
               size="1x"
@@ -117,6 +123,7 @@ export function MetricPagePresentational(
             justifyContent: "space-evenly",
             alignItems: "center",
             width: "100%",
+            flexWrap: "wrap",
           }}
         >
           {props.loadingMetrics ? (
@@ -132,6 +139,7 @@ export function MetricPagePresentational(
                   has_alert={item.has_alert}
                   icon={item.icon}
                   key={i}
+                  style={{ marginTop: "2em", marginBottom: "2em" }}
                 >
                   <MetricDisplay
                     metricType={item.metricType}
@@ -182,6 +190,7 @@ export function MetricPagePresentational(
             icon=""
             title="Movement Patterns"
             helpWindowText="Movement Patterns during class //Todo"
+            style={{ margin: ".5em" }}
           >
             <div className="infoCardContent">
               <MovementPatterns />
@@ -193,6 +202,7 @@ export function MetricPagePresentational(
             icon=""
             title="Behavioral Engagement"
             helpWindowText="Behavioral Engagement during class //Todo"
+            style={{ margin: ".5em" }}
           >
             <div className="infoCardContent">
               <BehavioralEngagement />

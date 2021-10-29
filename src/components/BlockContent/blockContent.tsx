@@ -14,7 +14,7 @@ export interface IBlockContentProps {
   has_alert: boolean;
   icon?: any;
   children?: React.ReactNode;
-  style?: any;
+  style?: React.CSSProperties;
   width?: string;
   minWidth?: string;
   height?: string;

@@ -1,7 +1,7 @@
 import React from "react";
 
 import { Layout } from "antd";
-import { Switch, Route } from "react-router-dom";
+import { Switch, Route, useLocation } from "react-router-dom";
 import { library } from "@fortawesome/fontawesome-svg-core";
 
 import {
@@ -27,8 +27,8 @@ import { Header } from "./components/Header/header";
 import { Sidebar } from "./components/Sidebar/sidebar";
 
 import "./App.css";
-import { updateSessions } from "redux/actions";
-import { useDispatch } from "react-redux";
+// import { updateSessions } from "redux/actions";
+// import { useDispatch } from "react-redux";
 // import apiHandler from "api/handler";
 
 const { Content, Footer } = Layout;
@@ -60,12 +60,6 @@ function App(props: IAppProps) {
         <Header />
         <Switch>
           {routes.map((item: ComponentRoute, i: number) => {
-            const content = (
-              <Content style={{ margin: "24px 16px 0" }}>
-                {item.component}
-              </Content>
-            );
-
             const propProps = {
               key: i,
               exact: item.exact,
@@ -73,13 +67,12 @@ function App(props: IAppProps) {
             };
 
             return item.secure ? (
-              <PrivateRoute {...propProps}>{content}</PrivateRoute>
+              <PrivateRoute {...propProps}>{item.component}</PrivateRoute>
             ) : (
-              <Route {...propProps}>{content}</Route>
+              <Route {...propProps}>{item.component}</Route>
             );
           })}
         </Switch>
-        <Footer style={{ textAlign: "center" }}></Footer>
       </Layout>
     </Layout>
   );

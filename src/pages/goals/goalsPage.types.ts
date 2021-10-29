@@ -130,24 +130,29 @@ class YNQuestion {
   }
 }
 
-class MultiChoiceQuestion {
+export class MultiChoiceQuestion {
   options: NestedChoiceQuestionOption[];
   hasOther?: boolean;
   otherValue?: string;
+  otherSelected?: boolean;
 
   constructor(data: any) {
-    this.options = data.options.map(
-      (option: any) => new NestedChoiceQuestionOption(option)
-    );
+    this.options = data.options
+      ? data.options.map(
+          (option: any) => new NestedChoiceQuestionOption(option)
+        )
+      : [];
     this.hasOther = data.hasOther;
     this.otherValue = data.otherValue;
+    this.otherSelected = data.otherSelected;
   }
 }
 
-class SingleChoiceQuestion {
+export class SingleChoiceQuestion {
   options: NestedChoiceQuestionOption[];
   hasOther?: boolean;
   otherValue?: string;
+  otherSelected?: boolean;
 
   constructor(data: any) {
     this.options = data.options.map(
@@ -155,6 +160,7 @@ class SingleChoiceQuestion {
     );
     this.hasOther = data.hasOther;
     this.otherValue = data.otherValue;
+    this.otherSelected = data.otherSelected;
   }
 }
 
@@ -178,15 +184,15 @@ class LikertQuestion {
   }
 }
 
-class NestedChoiceQuestionOption {
+export class NestedChoiceQuestionOption {
   value: string;
   label: string;
   selected: boolean;
 
   constructor(data: any) {
-    this.value = data.value;
-    this.label = data.label;
-    this.selected = data.selected;
+    this.value = data.value || "";
+    this.label = data.label || "";
+    this.selected = data.selected || false;
   }
 }
 

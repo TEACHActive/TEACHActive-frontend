@@ -84,16 +84,25 @@ export class BaseSession {
     this.id = data.id;
     this.createdAt = this.getCreatedAtFromData(data);
     this.name = this.getNameFromData(data);
-    this.performance = data.performance ?? null;
+    this.performance = this.getPreformanceFromData(data);
     this.keyword = data.keyword;
+  }
+
+  private getPreformanceFromData(data: any): number {
+    if (data.preformance) {
+      return data.preformance;
+    }
+    if (data.data && data.data.preformance) {
+      return data.data.preformance;
+    }
+    return 0;
   }
 
   private getCreatedAtFromData(data: any): DateTime {
     //Accounting for edge case where analysis is done on days after it is first recorded and name is changed
-    const nameToDate = DateTime.fromFormat(
-      this.getNameFromData(data),
-      "L/d/yyyy"
-    );
+    const name = this.getNameFromData(data);
+
+    const nameToDate = DateTime.fromFormat(name, "L/d/yyyy");
     if (nameToDate.isValid) {
       return nameToDate;
     }
@@ -113,11 +122,22 @@ export class BaseSession {
   private getNameFromData(data: any): string {
     if (data.name) {
       return data.name;
-    } else if (data.createdAt.isLuxonDateTime) {
+    } else if (data.createdAt && data.createdAt.isLuxonDateTime) {
       return data.createdAt.toLocaleString();
-    } else if (data.createdAt.unixSeconds) {
+    } else if (data.createdAt && data.createdAt.unixSeconds) {
       return DateTime.fromSeconds(data.createdAt.unixSeconds).toLocaleString();
     } else {
+      if (data.data && data.data.name) {
+        if (data.data.name) {
+          return data.data.name;
+        } else if (data.data.createdAt && data.data.createdAt.isLuxonDateTime) {
+          return data.data.createdAt.toLocaleString();
+        } else if (data.data.createdAt && data.data.createdAt.unixSeconds) {
+          return DateTime.fromSeconds(
+            data.data.createdAt.unixSeconds
+          ).toLocaleString();
+        }
+      }
       return data.id;
     }
   }
@@ -293,6 +313,32 @@ export class SitStandInFrame extends WithTimeDiff {
     this.sitNumber = sitNumber;
     this.standNumber = standNumber;
     this.errorNumber = errorNumber;
+  }
+}
+
+export class AudioInFrame extends WithTimeDiff {
+  sitNumber: number;
+  standNumber: number;
+  errorNumber: number;
+  channel: string;
+
+  constructor(data: any) {
+    super(data);
+    const { sitNumber, standNumber, errorNumber } = data.audio;
+    this.sitNumber = sitNumber;
+    this.standNumber = standNumber;
+    this.errorNumber = errorNumber;
+    this.channel = data.channel;
+  }
+}
+
+export class InstructorNameResponse {
+  name: string;
+  uid: string;
+
+  constructor(data: any) {
+    this.name = data.name;
+    this.uid = data.uid;
   }
 }
 

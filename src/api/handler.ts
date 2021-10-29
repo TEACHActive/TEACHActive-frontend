@@ -15,6 +15,8 @@ import {
   ClassArrayFactory,
   CumulativeArmPoses,
   StudentAttendenceStats,
+  AudioInFrame,
+  InstructorNameResponse,
 } from "./types";
 import {
   Reflections,
@@ -45,6 +47,14 @@ export interface IAPIHandler {
     durationUnit?: DurationUnit
   ): Promise<SitStandInFrame[] | null>;
   // getSessionPerformance(sessionId: string): Promise<BaseSession | null>;
+  getStudentSpeechInSession(sessionId: string): Promise<AudioInFrame[] | null>;
+  getInstructorSpeechInSession(
+    sessionId: string
+  ): Promise<AudioInFrame[] | null>;
+  getStudentSpeechFrameNumberInSession(
+    sessionId: string,
+    threashold: number
+  ): Promise<number>;
   updateSessionPerformance(
     sessionId: string,
     preformance: number
@@ -67,6 +77,7 @@ export interface IAPIHandler {
     userUID: string,
     reflectionObj: object
   ): Promise<Reflections | null>;
+  getInstructorName(userUID: string): Promise<InstructorNameResponse | null>;
   //Other
 }
 
@@ -80,8 +91,6 @@ export class APIHandler implements IAPIHandler {
         await axios.request(config),
         new ClassArrayFactory<BaseSession>().transformToClass(BaseSession)
       );
-
-      console.log(response.data?.arr);
 
       return response.data?.arr || [];
     } catch (error) {
@@ -216,6 +225,62 @@ export class APIHandler implements IAPIHandler {
       return null;
     }
   };
+  getStudentSpeechInSession = async (
+    sessionId: string
+  ): Promise<AudioInFrame[] | null> => {
+    const config = getAxiosConfig(
+      MethodType.GET,
+      `/edusense/student/speech/frames/${sessionId}`
+    );
+
+    try {
+      const response = new Response(
+        await axios.request(config),
+        new ClassArrayFactory<AudioInFrame>().transformToClass(AudioInFrame)
+      );
+      return response.data?.arr || null;
+    } catch (error) {
+      logAPIError("Failed to get audio frames", error);
+      return null;
+    }
+  };
+  getInstructorSpeechInSession = async (
+    sessionId: string
+  ): Promise<AudioInFrame[] | null> => {
+    const config = getAxiosConfig(
+      MethodType.GET,
+      `/edusense/instructor/speech/frames/${sessionId}`
+    );
+
+    try {
+      const response = await axios.request(config);
+      return response.data?.arr || null;
+    } catch (error) {
+      logAPIError("Failed to get audio frames", error);
+      return null;
+    }
+  };
+  getStudentSpeechFrameNumberInSession = async (
+    sessionId: string,
+    threashold: number
+  ): Promise<number> => {
+    const config = getAxiosConfig(
+      MethodType.GET,
+      `/edusense/student/speech/${sessionId}/${threashold}`
+    );
+
+    try {
+      const response = await axios.request(config);
+      return response.data.frames;
+    } catch (error) {
+      logAPIError(
+        "Failed to get Student Speech Frame Number In Session",
+        error
+      );
+      return 0;
+    }
+  };
+
   updateSessionPerformance = async (
     sessionId: string,
     preformance: number
@@ -248,8 +313,11 @@ export class APIHandler implements IAPIHandler {
 
     try {
       const response = new Response(await axios.request(config), BaseSession);
+
       return response.data || null;
     } catch (error) {
+      console.log(error);
+
       logAPIError("Failed to set session name", error);
       return null;
     }
@@ -272,7 +340,6 @@ export class APIHandler implements IAPIHandler {
       return response.data ? new Reflections(response.data) : null;
     } catch (error) {
       logAPIError("Failed to get reflections", error);
-      console.log(1);
     }
 
     return await this.createReflections(sessionId, userUID);
@@ -312,6 +379,24 @@ export class APIHandler implements IAPIHandler {
       return response.data ? new Reflections(response.data) : null;
     } catch (error) {
       logAPIError("Failed to update reflections", error);
+      return null;
+    }
+  };
+
+  getInstructorName = async (
+    userUID: string
+  ): Promise<InstructorNameResponse | null> => {
+    const config = getAxiosConfig(
+      MethodType.GET,
+      `/teachactive/name/${userUID}`
+    );
+
+    try {
+      const response = await axios.request(config);
+
+      return new Response(response.data, InstructorNameResponse).data;
+    } catch (error) {
+      logAPIError("Failed to get Instructor Name", error);
       return null;
     }
   };
