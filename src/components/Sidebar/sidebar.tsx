@@ -1,8 +1,8 @@
 import React from "react";
 import { Menu, Layout } from "antd";
+import { useHistory, useLocation } from "react-router-dom";
 
 import { ComponentRoute, routes } from "routes";
-import { useHistory } from "react-router-dom";
 
 const { Sider } = Layout;
 
@@ -10,6 +10,13 @@ export interface ISidebarProps {}
 
 export function Sidebar(props: ISidebarProps) {
   const history = useHistory();
+  let location = useLocation();
+
+  if (
+    !routes.find((route) => route.path === location.pathname)?.pathShowsSidebar
+  ) {
+    return null;
+  }
   return (
     <Sider breakpoint="lg" collapsedWidth="0" style={{ flexGrow: 4 }}>
       <div

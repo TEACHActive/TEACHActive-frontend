@@ -63,10 +63,14 @@ const Heatmap: React.FunctionComponent<IHeatmapProps> = (props) => {
   // console.log(props.data);
 
   return (
-    <div
-      className="instructorMovementChart"
-      style={{ height: "20px", width: "500px" }}
-    ></div>
+    <div style={{ display: "flex" }}>
+      <p style={{ marginRight: "5px" }}>Left</p>
+      <div
+        className="instructorMovementChart"
+        style={{ height: "20px", width: "100%", border: "2px solid black" }}
+      />
+      <p style={{ marginLeft: "5px" }}>Right</p>
+    </div>
   );
 };
 

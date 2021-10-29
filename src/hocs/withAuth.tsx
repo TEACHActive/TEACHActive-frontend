@@ -11,9 +11,7 @@ export const PrivateRoute = ({ ...rest }) => {
       {({ isSignedIn }: { isSignedIn: boolean }) => {
         return isSignedIn ? (
           <Route {...rest}>
-            <Content style={{ margin: "24px 16px 0", overflow: "auto" }}>
-              {rest.children}
-            </Content>
+            <Content>{rest.children}</Content>
           </Route>
         ) : (
           <Redirect to="/login" />

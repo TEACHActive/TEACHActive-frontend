@@ -47,3 +47,8 @@ export const fetchReflections = (userUID: string, sessionID: string) => ({
     sessionID: sessionID,
   },
 });
+
+export const setLastMetricsSessionId = (sessionId: string) => ({
+  type: ReducerActionType.SET_LAST_METRICS_SESSION_ID,
+  payload: { sessionId },
+});

@@ -13,6 +13,7 @@ export interface IInfoCardProps {
   title: string;
   helpWindowText: string; //Maybe make this a whole react node?
   children?: React.ReactNode;
+  style?: React.CSSProperties;
 }
 
 const whiteColor = {
@@ -25,7 +26,7 @@ export function InfoCard(props: IInfoCardProps) {
   const darkRGB = props.color ? hexToRgb(props.color.dark) : whiteColor;
   const lightRGB = props.color ? hexToRgb(props.color.light) : whiteColor;
   return (
-    <Card className="InfoCard--card">
+    <Card className="InfoCard--card" style={props.style}>
       <div className="InfoCard--top">
         <div
           className="InfoCard--iconbox"
@@ -39,7 +40,9 @@ export function InfoCard(props: IInfoCardProps) {
         >
           {props.icon}
         </div>
-        <p className="InfoCard--title"><strong>{props.title}</strong></p>
+        <p className="InfoCard--title">
+          <strong>{props.title}</strong>
+        </p>
       </div>
       {props.children}
     </Card>

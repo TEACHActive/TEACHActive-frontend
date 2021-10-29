@@ -189,6 +189,15 @@ export function BehavioralEngagement(props: IBehavioralEngagementProps) {
     const armPosesFrames = await apiHandler.getArmPosesInSession(
       selectedSession.id
     );
+    const instructorSpeech = await apiHandler.getInstructorSpeechInSession(
+      selectedSession.id
+    );
+    const studentSpeech = await apiHandler.getStudentSpeechInSession(
+      selectedSession.id
+    );
+
+    console.log(instructorSpeech);
+
     if (!armPosesFrames) {
       //Issue here, should be getting these, will send message in API Handler
       return;
@@ -266,7 +275,7 @@ export function BehavioralEngagement(props: IBehavioralEngagementProps) {
           label={{
             value: "# of seconds of Hand Raises (student + time)",
             angle: -90,
-            position: "insideLeft",
+            position: "center",
           }}
         />
         <RechartsTooltip />

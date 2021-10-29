@@ -2,14 +2,23 @@ import * as React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Empty, message, Spin } from "antd";
 
-import { getSelectedSession, getSessions } from "redux/selectors";
+import {
+  getLastMetricsSessionId,
+  getMetrics,
+  getSelectedSession,
+  getSessions,
+} from "redux/selectors";
 import { MetricPagePresentational } from "./metricPagePresentational";
 import { SessionMetric, SessionMetricType } from "./metricPage.types";
 import { BaseSession, StudentAttendenceStats } from "api/types";
 
 import "./metricPage.css";
 import apiHandler from "api/handler";
-import { setSelectedSession, updateSessions } from "redux/actions";
+import {
+  setLastMetricsSessionId,
+  setSelectedSession,
+  updateSessions,
+} from "redux/actions";
 import { FirebaseAuthConsumer } from "@react-firebase/auth";
 import { useCallback } from "react";
 import { Cookie } from "constants/cookies";
@@ -26,6 +35,12 @@ export default function MetricPage(props: IMetricPageProps) {
   const selectedSession: BaseSession | null = useSelector(
     (state: RootState) => getSelectedSession(state),
     BaseSession.equal
+  );
+  const reduxMetrics: any[] = useSelector((state: RootState) =>
+    getMetrics(state)
+  );
+  const lastMetricsSessionId: string = useSelector((state: RootState) =>
+    getLastMetricsSessionId(state)
   );
 
   const sessions: BaseSession[] = useSelector((state: RootState) =>
@@ -132,48 +147,50 @@ export default function MetricPage(props: IMetricPageProps) {
       }
 
       //=====Class Preformance=====
-      const classPreformanceDiff = previousSession
-        ? selectedSession.performance - previousSession.performance
-        : 0;
+      // const classPreformanceDiff = previousSession
+      //   ? selectedSession.performance - previousSession.performance
+      //   : 0;
 
-      metrics.push({
-        metricType: SessionMetricType.ClassPerformance,
-        name: "Class Performance",
-        color: {
-          dark: "#1E7FD4",
-          light: "#1E88E5",
-        },
-        metric: selectedSession.performance,
-        metricPrepend: "",
-        hasDenominator: false,
-        denominator: 0,
-        unit: "%",
-        trend: previousSession ? classPreformanceDiff : undefined,
-        trend_metric: previousSession ? classPreformanceDiff : undefined,
-        trend_metric_unit: previousSession ? "%" : undefined,
-        help_text:
-          "Did you do any graded activity in this class session? You may enter manually the average class performance and compare them with future sessions!",
-        has_alert: false,
-        icon: "id-card",
-        canEdit: true,
-        updateMetric: async (newMetric: string) => {
-          const result = await apiHandler.updateSessionPerformance(
-            sessionId,
-            parseFloat(newMetric)
-          );
-          if (!result) {
-            //Failed to update
-            return false;
-          }
-          //Todo: refresh sessions here
-          return true;
-        },
-        children: !selectedSession.performance ? (
-          <span>Enter your class preformance</span>
-        ) : (
-          <></>
-        ),
-      });
+      // console.log(selectedSession);
+
+      // metrics.push({
+      //   metricType: SessionMetricType.ClassPerformance,
+      //   name: "Class Performance",
+      //   color: {
+      //     dark: "#1E7FD4",
+      //     light: "#1E88E5",
+      //   },
+      //   metric: selectedSession.performance,
+      //   metricPrepend: "",
+      //   hasDenominator: false,
+      //   denominator: 0,
+      //   unit: "%",
+      //   trend: previousSession ? classPreformanceDiff : undefined,
+      //   trend_metric: previousSession ? classPreformanceDiff : undefined,
+      //   trend_metric_unit: previousSession ? "%" : undefined,
+      //   help_text:
+      //     "Did you do any graded activity in this class session? You may enter manually the average class performance and compare them with future sessions!",
+      //   has_alert: false,
+      //   icon: "id-card",
+      //   canEdit: true,
+      //   updateMetric: async (newMetric: string) => {
+      //     const result = await apiHandler.updateSessionPerformance(
+      //       sessionId,
+      //       parseFloat(newMetric)
+      //     );
+      //     if (!result) {
+      //       //Failed to update
+      //       return false;
+      //     }
+      //     //Todo: refresh sessions here
+      //     return true;
+      //   },
+      //   children: !selectedSession.performance ? (
+      //     <span>Enter your class preformance</span>
+      //   ) : (
+      //     <></>
+      //   ),
+      // });
 
       //=====Attendance=====
       const studentAttendanceStats = await apiHandler.getStudentAttendenceStatsInSession(
@@ -229,6 +246,62 @@ export default function MetricPage(props: IMetricPageProps) {
         },
       });
 
+      //=====Student Speech=====
+
+      const studentSpeechMetric = 0;
+      // await apiHandler.getStudentSpeechFrameNumberInSession(
+      //   selectedSession.id,
+      //   0.01
+      // );
+
+      metrics.push({
+        metricType: SessionMetricType.StudentSpeech,
+        name: "Student Speech",
+        color: {
+          dark: "#CB1859",
+          light: "#D81B60",
+        },
+        metric: studentSpeechMetric / 15 / 60,
+        metricPrepend: "",
+        hasDenominator: false,
+        denominator: 0,
+        unit: "min",
+        trend: undefined,
+        trend_metric: undefined,
+        trend_metric_unit: undefined,
+        help_text:
+          "The total frequency of student talk (in minutes) during the class session",
+        has_alert: false,
+        icon: "comments",
+        canEdit: false,
+        updateMetric: (newMetric: string) => Promise.reject(),
+      });
+
+      //=====Instructor Speech=====
+
+      metrics.push({
+        metricType: SessionMetricType.InstructorSpeech,
+        name: "Instructor Speech",
+        color: {
+          dark: "#01332A",
+          light: "#004D40",
+        },
+        metric: (studentSpeechMetric + 5) / 15 / 60,
+        metricPrepend: "",
+        hasDenominator: false,
+        denominator: 0,
+        unit: "min",
+        trend: undefined,
+        trend_metric: undefined,
+        trend_metric_unit: undefined,
+        help_text:
+          "The total frequency of instructor talk (in minutes) during the class session",
+        has_alert: false,
+        icon: "comment",
+        canEdit: false,
+        updateMetric: (newMetric: string) => Promise.reject(),
+      });
+
       setMetrics(metrics);
       dispatch({ type: ReducerActionType.UPDATE_METRICS, payload: metrics });
       setLoadingMetrics(false);
@@ -241,6 +314,22 @@ export default function MetricPage(props: IMetricPageProps) {
     // console.log("reloading metrics page with sessionID " + selectedSession.id);
 
     createMetrics(selectedSession.id);
+
+    // getLastMetricsSessionId
+
+    console.log(reduxMetrics.length, lastMetricsSessionId, selectedSession.id);
+
+    //Todo: Use redux?
+    if (
+      reduxMetrics.length === 0 ||
+      lastMetricsSessionId !== selectedSession.id
+    ) {
+      createMetrics(selectedSession.id);
+      dispatch(setLastMetricsSessionId(selectedSession.id));
+    } else {
+      setMetrics(reduxMetrics);
+      setLoadingMetrics(false);
+    }
   }, [createMetrics, selectedSession]);
 
   if (!selectedSession) return <Empty />;

@@ -85,7 +85,7 @@ export function SitVsStand(props: ISitVsStandProps) {
             ...chunk,
             sitNumber: Math.round(chunk.sitNumber / 15),
             standNumber: Math.round(chunk.standNumber / 15),
-            errorNumber: Math.round(chunk.errorNumber / 15),
+            unknownNumber: Math.round(chunk.errorNumber / 15),
           };
         });
 
@@ -96,7 +96,7 @@ export function SitVsStand(props: ISitVsStandProps) {
 
   React.useEffect(() => {
     console.log("reloading sit vs stand with id " + selectedSession.id);
-    console.log("TEST");
+    // console.log("TEST");
 
     getSitVsStand(selectedSession.id);
   }, [getSitVsStand, selectedSession]);
@@ -131,13 +131,13 @@ export function SitVsStand(props: ISitVsStandProps) {
         label={{
           value: "Percentage of students in each state",
           angle: -90,
-          position: "insideLeft",
+          position: "center",
         }}
       />
       <RechartsTooltip />
       <Area
         type="monotone"
-        dataKey="errorNumber"
+        dataKey="unknownNumber"
         stackId="1"
         stroke="#f0000"
         fill="#ff0000"

@@ -1,19 +1,18 @@
+import { Spin } from "antd";
 import * as React from "react";
 import { Collapse } from "antd";
-import axios from "axios";
-import { Spin } from "antd";
-import HandRaisesForm from "./handRaisesForm";
-import InstructorSpeechForm from "./instructorSpeechForm";
-import StudentSpeechForm from "./studentSpeechForm";
-import { BaseSession } from "../../api/types";
 import { useSelector } from "react-redux";
+
+import apiHandler from "api/handler";
 import { RootState } from "redux/store";
 import { getMetrics } from "redux/selectors";
-import apiHandler from "api/handler";
-import { Reflections } from "./goalsPage.types";
-import { SectionForm } from "./sectionForm";
 import BlockContent from "components/BlockContent/blockContent";
 import MetricDisplay from "components/MetricDisplay/metricDisplay";
+
+import { camelize } from "../../util";
+import { SectionForm } from "./sectionForm";
+import { BaseSession } from "../../api/types";
+import { Reflections } from "./goalsPage.types";
 
 const { Panel } = Collapse;
 
@@ -40,6 +39,7 @@ export default function GoalsPagePresentational(
         props.session.id,
         props.user.uid
       );
+
       if (reflections) setReflections(reflections);
     }
 
@@ -47,51 +47,84 @@ export default function GoalsPagePresentational(
   }, []);
 
   if (!reflections) return <Spin />;
-  console.log(reflections);
 
-  let handRaiseMetric = metrics.find((metric) => metric.name === "Hand Raises");
-  const handRaiseMetricDisplay = (
-    <BlockContent
-      color={handRaiseMetric.color}
-      name={handRaiseMetric.name}
-      help_text={handRaiseMetric.help_text}
-      has_alert={handRaiseMetric.has_alert}
-      icon={handRaiseMetric.icon}
-    >
-      <MetricDisplay
-        metricType={handRaiseMetric.metricType}
-        metric={handRaiseMetric.metric}
-        metricPrepend={handRaiseMetric.metricPrepend}
-        denominator={handRaiseMetric.denominator}
-        hasDenominator={handRaiseMetric.hasDenominator}
-        unit={handRaiseMetric.unit}
-        trend={handRaiseMetric.trend}
-        trend_metric={handRaiseMetric.trend_metric}
-        trend_metric_unit={handRaiseMetric.trend_metric_unit}
-        canEdit={handRaiseMetric.canEdit}
-        updateMetric={(newMetric: string) =>
-          handRaiseMetric.updateMetric(newMetric)
-        }
-      >
-        {handRaiseMetric.children}
-      </MetricDisplay>
-    </BlockContent>
+  console.log(metrics);
+
+  const handRaiseMetric = metrics.find(
+    (metric) => metric.name === "Hand Raises"
+  );
+  const studentSpeechMetric = metrics.find(
+    (metric) => metric.name === "Student Speech"
+  );
+  const instructorSpeechMetric = metrics.find(
+    (metric) => metric.name === "Instructor Speech"
   );
 
-  const reflectionSectionMetricMap = new Map([
-    [
-      "handRaises",
-      {
-        metricDisplay: handRaiseMetricDisplay,
-        comment: (
-          <p>
-            During this section there were{" "}
-            <strong>{handRaiseMetric.metric}</strong> seconds of hand raises
-          </p>
-        ),
-      },
-    ],
-  ]);
+  const reflectionSectionMetricMap = new Map<
+    string,
+    { metricDisplay: React.ReactNode; comment: React.ReactNode }
+  >();
+
+  [
+    {
+      metric: handRaiseMetric,
+      comment: (
+        <p>
+          During this section there were{" "}
+          <strong>{handRaiseMetric.metric}</strong> seconds of hand raises
+        </p>
+      ),
+    },
+    {
+      metric: instructorSpeechMetric,
+      comment: (
+        <p>
+          During this section there were{" "}
+          <strong>{instructorSpeechMetric.metric}</strong>
+        </p>
+      ),
+    },
+    {
+      metric: studentSpeechMetric,
+      comment: (
+        <p>
+          During this section there were{" "}
+          <strong>{studentSpeechMetric.metric}</strong>
+        </p>
+      ),
+    },
+  ].forEach((currentMetric) => {
+    reflectionSectionMetricMap.set(camelize(currentMetric.metric.name), {
+      metricDisplay: (
+        <BlockContent
+          color={currentMetric.metric.color}
+          name={currentMetric.metric.name}
+          help_text={currentMetric.metric.help_text}
+          has_alert={currentMetric.metric.has_alert}
+          icon={currentMetric.metric.icon}
+        >
+          <MetricDisplay
+            metricType={currentMetric.metric.metricType}
+            metric={currentMetric.metric.metric}
+            metricPrepend={currentMetric.metric.metricPrepend}
+            denominator={currentMetric.metric.denominator}
+            hasDenominator={currentMetric.metric.hasDenominator}
+            unit={currentMetric.metric.unit}
+            trend={currentMetric.metric.trend}
+            trend_metric={currentMetric.metric.trend_metric}
+            trend_metric_unit={currentMetric.metric.trend_metric_unit}
+            canEdit={currentMetric.metric.canEdit}
+            updateMetric={(newMetric: string) =>
+              currentMetric.metric.updateMetric(newMetric)
+            }
+          >
+            {currentMetric.metric.children}
+          </MetricDisplay>
+        </BlockContent>
+      ),
+      comment: currentMetric.comment,
+    });
+  });
 
   return (
     <Collapse accordion>
@@ -123,13 +156,4 @@ export default function GoalsPagePresentational(
       })}
     </Collapse>
   );
-}
-
-{
-  /* <HandRaisesForm
-          session={props.session}
-          metric={metrics.find((metric) => metric.name == "Hand Raises")}
-          user={props.user}
-          handRaiseReflections={handRaiseReflections}
-        /> */
 }

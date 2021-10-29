@@ -7,6 +7,7 @@ interface StateShape {
   keywordFilter: string | undefined;
   reflections: any[];
   metrics: any[];
+  lastMetricsSessionId: string;
 }
 
 const initialState: StateShape = {
@@ -15,6 +16,7 @@ const initialState: StateShape = {
   keywordFilter: undefined,
   reflections: [],
   metrics: [],
+  lastMetricsSessionId: "",
 };
 
 export default function (state = initialState, action: any) {
@@ -65,6 +67,13 @@ export default function (state = initialState, action: any) {
       return {
         ...state,
         reflections: [],
+      };
+    case ReducerActionType.SET_LAST_METRICS_SESSION_ID:
+      const { sessionId } = action.payload;
+
+      return {
+        ...state,
+        lastMetricsSessionId: sessionId,
       };
     default:
       return state;

@@ -4,10 +4,10 @@ import "firebase/auth";
 
 import { message } from "antd";
 import { DataNode } from "antd/lib/tree";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
-import * as routes from "routes";
+import { routes, SignInRoute } from "routes";
 import { BaseSession } from "api/types";
 import { Cookie } from "constants/cookies";
 import { getAllSessions, getKeywordFilter, getSessions } from "redux/selectors";
@@ -26,6 +26,8 @@ import { RootState } from "redux/store";
 export interface IHeaderProps {}
 
 export function Header(props: IHeaderProps) {
+  let location = useLocation();
+
   const filteredSessions: BaseSession[] = useSelector((store: RootState) =>
     getSessions(store)
   );
@@ -66,7 +68,7 @@ export function Header(props: IHeaderProps) {
   }, [filteredSessions]);
 
   const login = () => {
-    history.push(routes.SignInRoute.link());
+    history.push(SignInRoute.link());
   };
 
   const logout = async () => {
@@ -74,7 +76,7 @@ export function Header(props: IHeaderProps) {
     dispatch({
       type: ReducerActionType.USER_LOGOUT,
     });
-    history.push(routes.SignInRoute.link());
+    history.push(SignInRoute.link());
   };
 
   const setAppVersion = (version: string | undefined) => {
@@ -186,6 +188,12 @@ export function Header(props: IHeaderProps) {
       timeoutIds.forEach((timeoutId) => clearTimeout(timeoutId));
     };
   }, [rebuildSessions]);
+
+  if (
+    !routes.find((route) => route.path === location.pathname)?.pathShowsSidebar
+  ) {
+    return null;
+  }
 
   return (
     <HeaderPresentational

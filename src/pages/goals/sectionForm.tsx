@@ -1,12 +1,24 @@
-import { Button, Checkbox, Form, Radio, Select, Slider, Spin } from "antd";
+import {
+  Button,
+  Checkbox,
+  Form,
+  Input,
+  Radio,
+  Select,
+  Slider,
+  Spin,
+} from "antd";
 import TextArea from "antd/lib/input/TextArea";
 import apiHandler from "api/handler";
 import * as React from "react";
 import {
+  MultiChoiceQuestion,
+  NestedChoiceQuestionOption,
   QuestionType,
   ReflectionSection,
   ReflectionSectionQuestion,
   ReflectionSectionQuestionOnSelected,
+  SingleChoiceQuestion,
 } from "./goalsPage.types";
 
 const { Option } = Select;
@@ -26,8 +38,13 @@ export function SectionForm(props: ISectionFormProps) {
   const [saving, setSaving] = React.useState(false);
   const [initialValues, setInitialValues] = React.useState<any>(null);
 
+  const [sectionQuestions, setSectionQuestions] = React.useState<
+    ReflectionSectionQuestion[]
+  >([]);
+
   React.useEffect(() => {
-    fillInitialValues();
+    setSectionQuestions([...props.section.questions]);
+    fillInitialValues([...props.section.questions]);
   }, []);
 
   const onSave = async (values: any) => {
@@ -35,7 +52,7 @@ export function SectionForm(props: ISectionFormProps) {
 
     const updateMapObj = Object.fromEntries(updateMap);
 
-    // console.log(Object.keys(updateMapObj).map((key) => updateMapObj[key]));
+    console.log(Object.keys(updateMapObj).map((key) => updateMapObj[key]));
 
     let response = await apiHandler.updateReflections(
       props.sessionId,
@@ -48,86 +65,195 @@ export function SectionForm(props: ISectionFormProps) {
     console.log("Failed:", errorInfo);
   };
 
-  const fillInitialValues = () => {
+  const fillInitialValues = (questions: ReflectionSectionQuestion[]) => {
     let initialValues: Map<string, any> = new Map<string, any>();
-    props.section.questions.forEach((question) => {
-      console.log(question.id, question.onSelected.questionType);
-
+    const newQuestions = questions.map((question) => {
       switch (question.onSelected.questionType) {
         case QuestionType.multiChoiceQuestion:
-          console.log(question);
+          let multipleSelectedCheckboxes: string[] = [];
+          multipleSelectedCheckboxes =
+            question.onSelected.multiChoiceQuestion?.options
+              .filter((option) => option.selected)
+              .map((option) => option.label) || [];
 
-          const multipleSelectedCheckboxes = question.onSelected.multiChoiceQuestion?.options
-            .filter((option) => option.selected)
-            .map((option) => option.label);
+          if (
+            question.onSelected.multiChoiceQuestion?.hasOther &&
+            question.onSelected.multiChoiceQuestion?.otherSelected
+          ) {
+            multipleSelectedCheckboxes.push("other"); ///Todo?
+          }
+
+          initialValues.set(question.id, {
+            base: [...multipleSelectedCheckboxes],
+            other: question.onSelected.multiChoiceQuestion?.otherValue,
+          });
+
           console.log(multipleSelectedCheckboxes);
-          initialValues.set(question.id, multipleSelectedCheckboxes);
 
-          // initialValues.set("2", multipleSelectedCheckboxes);
-          // if (multipleSelectedCheckboxes) initialValues[question.id] = "ghfdg";
-          console.log(initialValues.get(question.id));
-          console.log(initialValues);
+          // if (question.onSelected.multiChoiceQuestion?.hasOther) {
+          //   initialValues.set(
+          //     question.id + "-other",
+          //     question.onSelected.multiChoiceQuestion?.otherValue
+          //   );
+          // }
 
           break;
-
-        // console.log("multipleSelectedCheckboxes", multipleSelectedCheckboxes);
         case QuestionType.freeResponseQuestion:
-          console.log(13, question);
-
           initialValues.set(
             question.id,
             question.onSelected.freeResponseQuestion?.feild
           );
-          // initialValues[question.id] =
-          //   question.onSelected.freeResponseQuestion?.feild;
-          // console.log(
-          //   "freeResponseQuestion",
-          //   question.onSelected.freeResponseQuestion?.feild
-          // );
+
           break;
         case QuestionType.likertQuestion:
           initialValues.set(
             question.id,
             question.onSelected.likertQuestion?.value
           );
-          // initialValues[question.id] =
-          //   question.onSelected.likertQuestion?.value;
-          // console.log(
-          //   "likertQuestion",
-          //   question.onSelected.likertQuestion?.value
-          // );
           break;
         case QuestionType.singleChoiceQuestion:
-          console.log("singleChoiceQuestion", question.onSelected);
-
           const singleSelectedCheckboxes = question.onSelected.singleChoiceQuestion?.options
             .filter((option) => option.selected)
             .map((option) => option.value);
-          console.log(singleSelectedCheckboxes);
 
           initialValues.set(question.id, singleSelectedCheckboxes);
-          // initialValues[question.id] = singleSelectedCheckboxes;
-          // console.log("singleSelectedCheckboxes", singleSelectedCheckboxes);
+
+          if (question.onSelected.singleChoiceQuestion?.hasOther) {
+            initialValues.set(
+              question.id + "-other",
+              question.onSelected.singleChoiceQuestion?.otherValue
+            );
+          }
+
           break;
         case QuestionType.ynQuestion:
-          console.log(question.onSelected.ynQuestion);
-
           if (question.onSelected.ynQuestion?.no.selected) {
-            // initialValues[question.id] = "no";
             initialValues.set(question.id, "no");
           } else if (question.onSelected.ynQuestion?.yes.selected) {
-            // initialValues[question.id] = "yes";
             initialValues.set(question.id, "yes");
           }
+
           break;
         default:
           break;
       }
+
+      let multiChoiceQuestionOptionsWithOther;
+      if (question.onSelected.multiChoiceQuestion) {
+        multiChoiceQuestionOptionsWithOther =
+          question.onSelected.multiChoiceQuestion.options;
+
+        if (
+          question.onSelected.multiChoiceQuestion &&
+          question.onSelected.multiChoiceQuestion.hasOther &&
+          question.onSelected.multiChoiceQuestion.options.findIndex(
+            (option) => (option.label ?? option.value).toLowerCase() === "other"
+          ) === -1 //Dont add "other" if it already exists
+        ) {
+          multiChoiceQuestionOptionsWithOther.push(
+            new NestedChoiceQuestionOption({
+              value: "Other",
+              label: "Other",
+              selected: question.onSelected.multiChoiceQuestion.otherSelected,
+            })
+          );
+        } else if (
+          question.onSelected.multiChoiceQuestion &&
+          question.onSelected.multiChoiceQuestion.hasOther &&
+          question.onSelected.multiChoiceQuestion.options.findIndex(
+            (option) => (option.label ?? option.value).toLowerCase() === "other"
+          ) !== -1
+        ) {
+          //Somehow other already exists, set Selected val
+          multiChoiceQuestionOptionsWithOther.map((option) => {
+            if ((option.label ?? option.value).toLowerCase() === "other") {
+              return {
+                ...option,
+                selected:
+                  question.onSelected.multiChoiceQuestion?.otherSelected,
+              };
+            }
+            return option;
+          });
+        }
+      }
+
+      let singleChoiceQuestionOptionsWithOther;
+      if (question.onSelected.singleChoiceQuestion) {
+        singleChoiceQuestionOptionsWithOther =
+          question.onSelected.singleChoiceQuestion.options;
+        if (
+          question.onSelected.singleChoiceQuestion &&
+          question.onSelected.singleChoiceQuestion.hasOther &&
+          question.onSelected.singleChoiceQuestion.options.findIndex(
+            (option) => (option.label ?? option.value).toLowerCase() === "other"
+          ) === -1 //Dont add "other" if it already exists
+        ) {
+          singleChoiceQuestionOptionsWithOther.push(
+            new NestedChoiceQuestionOption({
+              value: "Other",
+              label: "Other",
+              selected: question.onSelected.singleChoiceQuestion.otherSelected,
+            })
+          );
+        } else if (
+          question.onSelected.singleChoiceQuestion &&
+          question.onSelected.singleChoiceQuestion.hasOther &&
+          question.onSelected.singleChoiceQuestion.options.findIndex(
+            (option) => (option.label ?? option.value).toLowerCase() === "other"
+          ) !== -1
+        ) {
+          //Somehow other already exists, set Selected val
+          singleChoiceQuestionOptionsWithOther.map((option) => {
+            if ((option.label ?? option.value).toLowerCase() === "other") {
+              return {
+                ...option,
+                selected:
+                  question.onSelected.singleChoiceQuestion?.otherSelected,
+              };
+            }
+            return option;
+          });
+        }
+      }
+
+      const reflectionSectionData = {
+        ...question,
+        onSelected: {
+          ...question.onSelected,
+          ynQuestion: question.onSelected.ynQuestion,
+          multiChoiceQuestion: question.onSelected.multiChoiceQuestion
+            ? new MultiChoiceQuestion({
+                options: multiChoiceQuestionOptionsWithOther,
+                hasOther: question.onSelected.multiChoiceQuestion?.hasOther,
+                otherValue: question.onSelected.multiChoiceQuestion?.otherValue,
+                otherSelected:
+                  question.onSelected.multiChoiceQuestion?.otherSelected,
+              })
+            : null,
+          singleChoiceQuestion: question.onSelected.singleChoiceQuestion
+            ? new SingleChoiceQuestion({
+                options: singleChoiceQuestionOptionsWithOther,
+                hasOther: question.onSelected.singleChoiceQuestion?.hasOther,
+                otherValue:
+                  question.onSelected.singleChoiceQuestion?.otherValue,
+                otherSelected:
+                  question.onSelected.singleChoiceQuestion?.otherSelected,
+              })
+            : null,
+          freeResponseQuestion: question.onSelected.freeResponseQuestion,
+          likertQuestion: question.onSelected.likertQuestion,
+        },
+      };
+
+      return new ReflectionSectionQuestion(reflectionSectionData);
     });
+    console.log(newQuestions);
+    console.log(Object.fromEntries(initialValues));
+
+    setSectionQuestions(newQuestions);
     setInitialValues(Object.fromEntries(initialValues));
   };
-
-  console.log(initialValues);
 
   if (initialValues === null) return <Spin />;
 
@@ -148,16 +274,13 @@ export function SectionForm(props: ISectionFormProps) {
       >
         {props.metricDisplay && <Form.Item>{props.metricDisplay}</Form.Item>}
         {props.comment && <Form.Item>{props.comment}</Form.Item>}
-
-        {props.section.questions
-          .sort((question) => question.priority)
+        {sectionQuestions
+          .sort((q1, q2) => q1.priority - q2.priority)
           .map((question, i) => {
             if (!question.onSelected) return null;
             let currQuestion;
             switch (question.onSelected.questionType) {
               case QuestionType.freeResponseQuestion:
-                console.log("freeResponseQuestion", question);
-
                 return (
                   <Form.Item
                     key={i}
@@ -248,51 +371,138 @@ export function SectionForm(props: ISectionFormProps) {
               case QuestionType.multiChoiceQuestion:
                 currQuestion = question.onSelected.multiChoiceQuestion;
 
+                let questionOptions = currQuestion?.options;
+
                 return (
-                  <Form.Item
-                    key={i}
-                    label={question.onSelected.prompt}
-                    name={question.id}
-                    required={question.required}
-                  >
-                    <Checkbox.Group
-                      disabled={saving}
-                      style={{ display: "flex", flexDirection: "column" }}
-                      options={currQuestion?.options}
-                      onChange={(checkedValues) => {
-                        setUpdateMap(
-                          new Map(
-                            updateMap.set(question.id, {
-                              ...question,
-                              onSelected: {
-                                ...question.onSelected,
-                                multiChoiceQuestion: {
-                                  ...question.onSelected?.multiChoiceQuestion,
-                                  options: question.onSelected
-                                    .multiChoiceQuestion
-                                    ? question.onSelected.multiChoiceQuestion?.options.map(
-                                        (option) => {
-                                          return {
-                                            label: option.label,
-                                            value: option.label,
-                                            selected:
-                                              checkedValues.findIndex(
-                                                (value) =>
-                                                  value.valueOf() ===
-                                                  option.label
-                                              ) !== -1,
-                                          };
-                                        }
-                                      )
-                                    : [],
+                  <React.Fragment key={i}>
+                    <Form.Item
+                      label={question.onSelected.prompt}
+                      name={[question.id, "base"]}
+                      required={question.required}
+                    >
+                      <Checkbox.Group
+                        disabled={saving}
+                        style={{ display: "flex", flexDirection: "column" }}
+                        options={questionOptions}
+                        onChange={(checkedValues) => {
+                          setUpdateMap(
+                            new Map(
+                              updateMap.set(question.id, {
+                                ...question,
+                                onSelected: {
+                                  ...question.onSelected,
+                                  multiChoiceQuestion: {
+                                    ...question.onSelected?.multiChoiceQuestion,
+                                    options: question.onSelected
+                                      .multiChoiceQuestion
+                                      ? question.onSelected.multiChoiceQuestion?.options
+                                          .map((option) => {
+                                            return {
+                                              label: option.label,
+                                              value: option.label,
+                                              selected:
+                                                checkedValues.findIndex(
+                                                  (value) =>
+                                                    value.valueOf() ===
+                                                    option.label
+                                                ) !== -1,
+                                            };
+                                          })
+                                          .filter(
+                                            (option) =>
+                                              (
+                                                option.label ?? option.value
+                                              ).toLowerCase() !== "other"
+                                          )
+                                      : [],
+                                    otherSelected:
+                                      checkedValues.findIndex(
+                                        (value) =>
+                                          value.toString().toLowerCase() ===
+                                          "other"
+                                      ) !== -1,
+                                  },
                                 },
-                              },
-                            })
-                          )
-                        );
-                      }}
-                    />
-                  </Form.Item>
+                              })
+                            )
+                          );
+                          const newQuestions = sectionQuestions.map(
+                            (sectionQuestion) => {
+                              if (sectionQuestion.id !== question.id) {
+                                return sectionQuestion;
+                              }
+
+                              return {
+                                ...sectionQuestion,
+                                onSelected: {
+                                  ...sectionQuestion.onSelected,
+                                  multiChoiceQuestion: {
+                                    ...sectionQuestion.onSelected
+                                      .multiChoiceQuestion,
+                                    options: question.onSelected
+                                      .multiChoiceQuestion
+                                      ? question.onSelected.multiChoiceQuestion?.options.map(
+                                          (option) => {
+                                            return {
+                                              label: option.label,
+                                              value: option.label,
+                                              selected:
+                                                checkedValues.findIndex(
+                                                  (value) =>
+                                                    value.valueOf() ===
+                                                    option.label
+                                                ) !== -1,
+                                            };
+                                          }
+                                        )
+                                      : [],
+                                  },
+                                },
+                              };
+                            }
+                          );
+                          setSectionQuestions(newQuestions);
+                        }}
+                      />
+                    </Form.Item>
+                    {question.onSelected.multiChoiceQuestion?.hasOther &&
+                      currQuestion?.options.find(
+                        (option) =>
+                          (option.label ?? option.value).toLowerCase() ===
+                          "other"
+                      )?.selected && (
+                        <Form.Item
+                          label={"Other"}
+                          name={[question.id, "other"]}
+                          required={
+                            question.onSelected.multiChoiceQuestion?.hasOther
+                          }
+                        >
+                          <Input
+                            onChange={(e) => {
+                              setUpdateMap(
+                                new Map(
+                                  updateMap.set(question.id, {
+                                    ...question,
+                                    onSelected: {
+                                      ...question.onSelected,
+                                      multiChoiceQuestion: {
+                                        ...question.onSelected
+                                          .multiChoiceQuestion,
+                                        options:
+                                          question.onSelected
+                                            .multiChoiceQuestion?.options ?? [],
+                                        otherValue: e.target.value,
+                                      },
+                                    },
+                                  })
+                                )
+                              );
+                            }}
+                          />
+                        </Form.Item>
+                      )}
+                  </React.Fragment>
                 );
               case QuestionType.singleChoiceQuestion:
                 currQuestion = question.onSelected.singleChoiceQuestion;
@@ -319,8 +529,8 @@ export function SectionForm(props: ISectionFormProps) {
                                   ...question.onSelected?.singleChoiceQuestion,
                                   options: question.onSelected
                                     .singleChoiceQuestion
-                                    ? question.onSelected.singleChoiceQuestion?.options.map(
-                                        (option) => {
+                                    ? question.onSelected.singleChoiceQuestion?.options
+                                        .map((option) => {
                                           let selected;
                                           if (Array.isArray(value)) {
                                             selected =
@@ -337,9 +547,16 @@ export function SectionForm(props: ISectionFormProps) {
                                             value: option.value,
                                             selected: selected,
                                           };
-                                        }
-                                      )
+                                        })
+                                        .filter(
+                                          (option) =>
+                                            (
+                                              option.label ?? option.value
+                                            ).toLowerCase() !== "other"
+                                        )
                                     : [],
+                                  otherSelected:
+                                    value.toString().toLowerCase() === "other",
                                 },
                               },
                             })
@@ -356,11 +573,48 @@ export function SectionForm(props: ISectionFormProps) {
                         </Option>
                       ))}
                     </Select>
+                    {question.onSelected.singleChoiceQuestion?.hasOther &&
+                      currQuestion?.options.find(
+                        (option) =>
+                          (option.label ?? option.value).toLowerCase() ===
+                          "other"
+                      )?.selected && (
+                        <Form.Item
+                          label={"Other"}
+                          name={[question.id, "other"]}
+                          required={
+                            question.onSelected.singleChoiceQuestion?.hasOther
+                          }
+                        >
+                          <Input
+                            onChange={(e) => {
+                              setUpdateMap(
+                                new Map(
+                                  updateMap.set(question.id, {
+                                    ...question,
+                                    onSelected: {
+                                      ...question.onSelected,
+                                      singleChoiceQuestion: {
+                                        ...question.onSelected
+                                          .singleChoiceQuestion,
+                                        options:
+                                          question.onSelected
+                                            .singleChoiceQuestion?.options ??
+                                          [],
+                                        otherValue: e.target.value,
+                                      },
+                                    },
+                                  })
+                                )
+                              );
+                            }}
+                          />
+                        </Form.Item>
+                      )}
                   </Form.Item>
                 );
               case QuestionType.ynQuestion:
                 currQuestion = question.onSelected.ynQuestion;
-                // console.log(question.id, 5461);
 
                 return (
                   <Form.Item
@@ -372,7 +626,6 @@ export function SectionForm(props: ISectionFormProps) {
                     <Radio.Group
                       disabled={saving}
                       onChange={(event) => {
-                        console.log(event.target.value);
                         setUpdateMap(
                           new Map(
                             updateMap.set(question.id, {
