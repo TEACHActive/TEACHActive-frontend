@@ -3,29 +3,38 @@
   height: 100%;
 }
 
-.layout {
-  height: 100%;
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
 }
 
-.logo {
-  height: 32px;
-  background: rgba(255, 255, 255, 0.2);
-  margin: 16px;
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-float infinite 3s ease-in-out;
+  }
+}
+
+.App-header {
+  min-height: 100vh;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
 }
 
-.logo h1 {
-  margin: 0px;
-  color: white;
-  font-size: larger;
+.App-link {
+  color: rgb(112, 76, 182);
 }
 
-hr {
-  margin: 0 2em 0 2em;
-}
-.sessionNameEditIcon:hover {
-  color: rgb(84, 84, 218);
-  transition: 0.3s;
+@keyframes App-logo-float {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
 }

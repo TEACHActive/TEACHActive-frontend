@@ -1,0 +1,23 @@
+.loginPage {
+  height: 100%;
+  display: flex;
+  background-image: linear-gradient(to right, #89d0ca, white);
+}
+
+.loginPageLeft,
+.loginPageRight {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50%;
+}
+
+.leftLogoSmall {
+  width: 1000px;
+  max-width: 60%;
+  height: auto;
+}
+
+.loginButton {
+  width: 100%;
+}

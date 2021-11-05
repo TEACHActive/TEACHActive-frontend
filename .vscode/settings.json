@@ -1,5 +1,0 @@
-{
-    "python.formatting.provider": "yapf",
-    "prettier.packageManager": "yarn",
-    "npm.packageManager": "yarn"
-}

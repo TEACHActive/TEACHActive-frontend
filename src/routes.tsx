@@ -1,158 +1,226 @@
 /**
  * Contains the routes to be available in the dashboard
  */
-
 import React from "react";
-
 import {
   UploadOutlined,
   UserOutlined,
   VideoCameraOutlined,
 } from "@ant-design/icons";
-import {
-  GoalsPage,
-  ProgressPage,
-  MetricPage,
-  SettingsPage,
-  GettingStartedPage,
-  SignInPage,
-  HomePage,
-} from "./pages";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import apiHandler from "./api/handler";
-import { FirebaseAuthConsumer } from "@react-firebase/auth";
 
-export class ComponentRoute {
+import { Error404Page, LoginPage } from "./pages";
+import { RouteObject } from "react-router-dom";
+//  import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+/**
+ * Details describing routes and elements that show
+ */
+export interface IElementRoute {
+  routeObject: RouteObject; // Contains path, element, and children
+  name: string; // The name of the route
+  icon: React.ReactNode; // Icon representing the path
+  link: (data?: any) => string; //
+  visible: boolean; //
+  secureRoute: boolean; //
+  pathExtras: {
+    showSidebar: boolean;
+    showHeader: boolean;
+  };
+}
+
+export class ElementRoute implements IElementRoute {
+  routeObject: RouteObject;
   name: string;
-  path: string;
-  component: React.ReactNode;
-  icon: any;
-  link: (id?: string) => string;
-  inSidebar: boolean;
-  exact: boolean;
-  secure: boolean;
-  pathShowsHeader: boolean;
-  pathShowsSidebar: boolean;
+  icon: React.ReactNode;
+  link: (data: any) => string;
+  visible: boolean;
+  secureRoute: boolean;
+  pathExtras: {
+    showSidebar: boolean;
+    showHeader: boolean;
+  };
 
-  constructor(data: any) {
+  constructor(data: IElementRoute) {
+    this.routeObject = data.routeObject;
     this.name = data.name;
-    this.path = data.path;
-    this.component = data.component;
     this.icon = data.icon;
     this.link = data.link;
-    this.inSidebar = data.inSidebar;
-    this.exact = data.exact;
-    this.secure = data.secure;
-    this.pathShowsHeader = data.pathShowsHeader;
-    this.pathShowsSidebar = data.pathShowsSidebar;
+    this.visible = data.visible;
+    this.secureRoute = data.secureRoute;
+    this.pathExtras = data.pathExtras ?? {
+      showSidebar: false,
+      showHeader: false,
+    };
   }
 }
 
-export const BaseRoute: ComponentRoute = new ComponentRoute({
+const basePath = "";
+export const BaseRoute: IElementRoute = new ElementRoute({
+  routeObject: {
+    path: basePath,
+    element: (
+      <>
+        <h1>Base Path</h1>
+      </>
+    ),
+  },
   name: "Base",
-  path: "/",
-  component: <GettingStartedPage />,
   icon: <UserOutlined />,
-  link: () => "/",
-  inSidebar: false,
-  exact: true,
-  secure: false,
-  pathShowsHeader: false,
-  pathShowsSidebar: false,
-});
-export const HomeRoute: ComponentRoute = new ComponentRoute({
-  name: "Home",
-  path: "/home",
-  component: (
-    <FirebaseAuthConsumer>
-      {({
-        isSignedIn,
-        user,
-      }: {
-        isSignedIn: boolean;
-        user: firebase.default.User;
-      }) => <HomePage user={user} />}
-    </FirebaseAuthConsumer>
-  ),
-  icon: <UserOutlined />,
-  link: () => "/home",
-  inSidebar: false,
-  exact: true,
-  secure: true,
-  pathShowsHeader: false,
-  pathShowsSidebar: false,
-});
-export const MetricsRoute: ComponentRoute = new ComponentRoute({
-  name: "Metrics",
-  path: "/metrics",
-  component: <MetricPage />,
-  icon: <UserOutlined />,
-  link: () => "/metrics",
-  inSidebar: true,
-  exact: true,
-  secure: true,
-  pathShowsHeader: true,
-  pathShowsSidebar: true,
-});
-export const ProgressRoute: ComponentRoute = new ComponentRoute({
-  name: "Progress",
-  path: "/progress",
-  component: <ProgressPage />,
-  icon: <UploadOutlined />,
-  link: () => "/progress",
-  inSidebar: true,
-  exact: true,
-  secure: true,
-  pathShowsHeader: true,
-  pathShowsSidebar: true,
-});
-export const GoalsRoute: ComponentRoute = new ComponentRoute({
-  name: "Reflections & Goals",
-  path: "/goals",
-  component: <GoalsPage />,
-  icon: (
-    <>
-      <FontAwesomeIcon icon="book-reader" />{" "}
-    </>
-  ),
-  link: () => "/goals",
-  inSidebar: true,
-  exact: true,
-  secure: true,
-  pathShowsHeader: true,
-  pathShowsSidebar: true,
-});
-export const SettingsRoute: ComponentRoute = new ComponentRoute({
-  name: "Settings",
-  path: "/settings",
-  component: <SettingsPage />,
-  icon: <VideoCameraOutlined />,
-  link: () => "/settings",
-  inSidebar: false,
-  exact: true,
-  secure: true,
-  pathShowsHeader: true,
-  pathShowsSidebar: true,
-});
-export const SignInRoute: ComponentRoute = new ComponentRoute({
-  name: "Sign In",
-  path: "/login",
-  component: <SignInPage apiHandler={apiHandler} />,
-  icon: <VideoCameraOutlined />,
-  link: () => "/login",
-  inSidebar: false,
-  exact: true,
-  secure: false,
-  pathShowsHeader: false,
-  pathShowsSidebar: false,
+  link: () => basePath,
+  visible: true,
+  secureRoute: false,
+  pathExtras: {
+    showSidebar: false,
+    showHeader: false,
+  },
 });
 
-export const routes: ComponentRoute[] = [
+const homePath = "home";
+export const HomeRoute: IElementRoute = new ElementRoute({
+  routeObject: {
+    path: homePath,
+    element: (
+      <>
+        <h1>Home Path</h1>
+      </>
+    ),
+  },
+  name: "Home",
+  icon: <UserOutlined />,
+  link: () => homePath,
+  visible: true,
+  secureRoute: true,
+  pathExtras: {
+    showSidebar: false,
+    showHeader: false,
+  },
+});
+
+const metricsPath = "metrics";
+export const MetricsRoute: IElementRoute = new ElementRoute({
+  routeObject: {
+    path: metricsPath,
+    element: (
+      <>
+        <h1>Metrics Path</h1>
+      </>
+    ),
+  },
+  name: "Metrics",
+  icon: <UserOutlined />,
+  link: () => metricsPath,
+  visible: true,
+  secureRoute: true,
+  pathExtras: {
+    showSidebar: true,
+    showHeader: true,
+  },
+});
+
+const progressPath = "progress";
+export const ProgressRoute: IElementRoute = new ElementRoute({
+  routeObject: {
+    path: progressPath,
+    element: (
+      <>
+        <h1>Progress Path</h1>
+      </>
+    ),
+  },
+  name: "Progress",
+  icon: <UserOutlined />,
+  link: () => progressPath,
+  visible: true,
+  secureRoute: true,
+  pathExtras: {
+    showSidebar: true,
+    showHeader: true,
+  },
+});
+
+const goalsPath = "goals";
+export const GoalsRoute: IElementRoute = new ElementRoute({
+  routeObject: {
+    path: progressPath,
+    element: (
+      <>
+        <h1>Goals Path</h1>
+      </>
+    ),
+  },
+  name: "Goals",
+  icon: <UserOutlined />,
+  link: () => goalsPath,
+  visible: true,
+  secureRoute: true,
+  pathExtras: {
+    showSidebar: true,
+    showHeader: true,
+  },
+});
+
+const settingsPath = "settings";
+export const SettingsRoute: IElementRoute = new ElementRoute({
+  routeObject: {
+    path: settingsPath,
+    element: (
+      <>
+        <h1>Settings Path</h1>
+      </>
+    ),
+  },
+  name: "Settings",
+  icon: <UserOutlined />,
+  link: () => settingsPath,
+  visible: true,
+  secureRoute: true,
+  pathExtras: {
+    showSidebar: true,
+    showHeader: true,
+  },
+});
+
+const logInPath = "login";
+export const LogInRoute: IElementRoute = new ElementRoute({
+  routeObject: {
+    path: logInPath,
+    element: <LoginPage />,
+  },
+  name: "Sign In",
+  icon: <VideoCameraOutlined />,
+  link: () => "/login",
+  visible: true,
+  secureRoute: false,
+  pathExtras: {
+    showSidebar: false,
+    showHeader: false,
+  },
+});
+
+const error404Path = "*";
+export const Error404Route: IElementRoute = new ElementRoute({
+  routeObject: {
+    path: error404Path,
+    element: <Error404Page />,
+  },
+  name: "Error 404",
+  icon: <VideoCameraOutlined />,
+  link: () => "",
+  visible: true,
+  secureRoute: false,
+  pathExtras: {
+    showSidebar: false,
+    showHeader: false,
+  },
+});
+
+export const appRoutes: IElementRoute[] = [
   BaseRoute,
+  HomeRoute,
   MetricsRoute,
   ProgressRoute,
   GoalsRoute,
   SettingsRoute,
-  SignInRoute,
-  HomeRoute,
+  LogInRoute,
+  Error404Route,
 ];

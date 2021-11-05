@@ -1,78 +1,32 @@
-import React from "react";
-
 import { Layout } from "antd";
-import { Switch, Route, useLocation } from "react-router-dom";
-import { library } from "@fortawesome/fontawesome-svg-core";
+import { Route, Routes } from "react-router-dom";
 
-import {
-  faBan,
-  faBell,
-  faEdit,
-  faSync,
-  faCheck,
-  faUsers,
-  faIdCard,
-  faComment,
-  faArrowUp,
-  faComments,
-  faHandPaper,
-  faGripLines,
-  faArrowDown,
-  faBookReader,
-} from "@fortawesome/free-solid-svg-icons";
-
-import { PrivateRoute } from "./hocs/withAuth";
-import { ComponentRoute, routes } from "./routes";
-import { Header } from "./components/Header/header";
-import { Sidebar } from "./components/Sidebar/sidebar";
+import { appRoutes } from "routes";
+import { PrivateRoute } from "hocs/privateRoute";
 
 import "./App.css";
-// import { updateSessions } from "redux/actions";
-// import { useDispatch } from "react-redux";
-// import apiHandler from "api/handler";
 
-const { Content, Footer } = Layout;
-
-library.add(
-  faBan,
-  faBell,
-  faEdit,
-  faSync,
-  faCheck,
-  faUsers,
-  faIdCard,
-  faComment,
-  faArrowUp,
-  faComments,
-  faHandPaper,
-  faGripLines,
-  faArrowDown,
-  faBookReader
-);
-
-interface IAppProps {}
-
-function App(props: IAppProps) {
+function App() {
   return (
     <Layout className="layout">
-      <Sidebar />
+      {/* <Sidebar /> */}
       <Layout>
-        <Header />
-        <Switch>
-          {routes.map((item: ComponentRoute, i: number) => {
-            const propProps = {
-              key: i,
-              exact: item.exact,
-              path: item.path,
-            };
+        {/* <Header /> */}
+        <Routes>
+          {appRoutes.map((item, i) => {
+            if (item.secureRoute) {
+              return <PrivateRoute elementRoute={item} key={i} />;
+            }
 
-            return item.secure ? (
-              <PrivateRoute {...propProps}>{item.component}</PrivateRoute>
-            ) : (
-              <Route {...propProps}>{item.component}</Route>
+            return (
+              <Route
+                {...item.routeObject}
+                key={i}
+                element={<>{item.routeObject.element}</>} //Need to overwrite this since the element types are different
+              />
             );
           })}
-        </Switch>
+        </Routes>
       </Layout>
     </Layout>
   );
