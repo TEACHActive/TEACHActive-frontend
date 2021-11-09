@@ -52,7 +52,7 @@ export function SectionForm(props: ISectionFormProps) {
 
     const updateMapObj = Object.fromEntries(updateMap);
 
-    console.log(Object.keys(updateMapObj).map((key) => updateMapObj[key]));
+    // console.log(Object.keys(updateMapObj).map((key) => updateMapObj[key]));
 
     let response = await apiHandler.updateReflections(
       props.sessionId,
@@ -87,8 +87,6 @@ export function SectionForm(props: ISectionFormProps) {
             base: [...multipleSelectedCheckboxes],
             other: question.onSelected.multiChoiceQuestion?.otherValue,
           });
-
-          console.log(multipleSelectedCheckboxes);
 
           // if (question.onSelected.multiChoiceQuestion?.hasOther) {
           //   initialValues.set(
@@ -248,8 +246,6 @@ export function SectionForm(props: ISectionFormProps) {
 
       return new ReflectionSectionQuestion(reflectionSectionData);
     });
-    console.log(newQuestions);
-    console.log(Object.fromEntries(initialValues));
 
     setSectionQuestions(newQuestions);
     setInitialValues(Object.fromEntries(initialValues));
@@ -555,8 +551,9 @@ export function SectionForm(props: ISectionFormProps) {
                                             ).toLowerCase() !== "other"
                                         )
                                     : [],
-                                  otherSelected:
-                                    value.toString().toLowerCase() === "other",
+                                  otherSelected: value
+                                    ? value.toString().toLowerCase() === "other"
+                                    : false,
                                 },
                               },
                             })

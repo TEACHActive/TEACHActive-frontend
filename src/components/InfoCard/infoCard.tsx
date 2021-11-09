@@ -28,7 +28,7 @@ export function InfoCard(props: IInfoCardProps) {
   return (
     <Card className="InfoCard--card" style={props.style}>
       <div className="InfoCard--top">
-        <div
+        {/* <div
           className="InfoCard--iconbox"
           style={{
             background: `linear-gradient(\
@@ -37,13 +37,13 @@ export function InfoCard(props: IInfoCardProps) {
               rgba(${lightRGB?.r}, ${lightRGB?.g}, ${lightRGB?.b}, 1) 100%\
           )`,
           }}
-        >
-          {props.icon}
-        </div>
-        <p className="InfoCard--title">
-          <strong>{props.title}</strong>
-        </p>
+        > */}
+        {props.icon}
       </div>
+      <p className="InfoCard--title">
+        <strong>{props.title}</strong>
+      </p>
+      {/* </div> */}
       {props.children}
     </Card>
   );

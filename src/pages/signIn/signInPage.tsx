@@ -37,7 +37,7 @@ export default function SignInPage(props: ISignInPageProps) {
     if (values.remember) rememberEmail(values.email);
     const user = await loginWithEmailAndPassword(values.email, values.password);
     if (user) {
-      history.push(Routes.BaseRoute.link());
+      history.push(Routes.HomeRoute.link());
     } else {
       message.error("Failed to log in, check email and password");
     }
@@ -107,15 +107,13 @@ export default function SignInPage(props: ISignInPageProps) {
             </Form.Item>
           )}
           <Form.Item wrapperCol={{ offset: 0, span: 32 }}>
-            <Link to="/home">
-              <Button className="loginButton" type="primary">
-                Login
-              </Button>
-            </Link>
+            <Button className="loginButton" type="primary" htmlType="submit">
+              Login
+            </Button>
           </Form.Item>
-          <Form.Item wrapperCol={{ offset: 0, span: 32 }}>
+          {/* <Form.Item wrapperCol={{ offset: 0, span: 32 }}>
             <Button type="link">Forgot password?</Button>
-          </Form.Item>
+          </Form.Item> */}
         </Form>
       </div>
     </div>

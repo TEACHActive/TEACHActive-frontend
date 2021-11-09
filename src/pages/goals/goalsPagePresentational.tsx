@@ -48,8 +48,6 @@ export default function GoalsPagePresentational(
 
   if (!reflections) return <Spin />;
 
-  console.log(metrics);
-
   const handRaiseMetric = metrics.find(
     (metric) => metric.name === "Hand Raises"
   );

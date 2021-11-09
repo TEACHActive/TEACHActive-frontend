@@ -46,6 +46,7 @@ const store = configureStore({
     getDefaultMiddleware({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+        ignoredPaths: ["session.selectedSession.createdAt", "session.sessions"], //Ignore this because its being handed on dehydrate and rehydrate by converting to and from ISO
       },
     }).concat(thunk),
   devTools: process.env.NODE_ENV !== "production",

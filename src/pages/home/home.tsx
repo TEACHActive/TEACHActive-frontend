@@ -24,9 +24,11 @@ export default function HomePage(props: IHomePageProps) {
 
   React.useEffect(() => {
     async function fetchMyAPI() {
-      const response = await apiHandler.getInstructorName(props.user.uid);
-
-      setInstructorName(response?.name);
+      let response;
+      try {
+        response = await apiHandler.getInstructorName(props.user.uid);
+        setInstructorName(response?.name);
+      } catch (e) {}
     }
     fetchMyAPI();
   }, []);

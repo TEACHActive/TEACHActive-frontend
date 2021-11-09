@@ -115,7 +115,11 @@ export default function MetricDisplay(props: IMetricDisplayProps) {
         ) : (
           <h1 className="metric-text">
             {props.metricPrepend}
-            {props.metric === undefined ? "-" : props.metric}
+            {props.metric === undefined
+              ? "-"
+              : props.metric % 1 !== 0
+              ? props.metric.toFixed(2)
+              : props.metric}
           </h1>
         )}
 
@@ -129,7 +133,7 @@ export default function MetricDisplay(props: IMetricDisplayProps) {
           {props.trend_metric} {props.trend_metric_unit}
         </span>
       </div>
-      {props.children}
+      {/* {props.children} Todo: Re add this*/}
     </div>
   );
 }

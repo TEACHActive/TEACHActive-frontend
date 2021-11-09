@@ -1,5 +1,3 @@
-// import firebase from 'firebase'
-
 const apiKey = process.env.REACT_APP_API_KEY;
 if (!apiKey) {
   throw new Error("Empty apiKey, Check .env");

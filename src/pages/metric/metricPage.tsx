@@ -49,6 +49,10 @@ export default function MetricPage(props: IMetricPageProps) {
 
   const [loadingMetrics, setLoadingMetrics] = React.useState(false);
   const [metrics, setMetrics] = React.useState<SessionMetric[]>([]);
+  const [
+    classPerformanceMetric,
+    setClassPerformanceMetric,
+  ] = React.useState<number>(0);
 
   // const [avgNumberStudents, setAvgNumberStudents] = React.useState(0);
   // const [videoFrames, setVideoFrames] = React.useState<{
@@ -110,6 +114,12 @@ export default function MetricPage(props: IMetricPageProps) {
         );
       }
       if (armPoseStats) {
+        // console.log(
+        //   324,
+        //   armPoseStats.handsRaised,
+        //   Math.round(armPoseStats.handsRaised / 15.0)
+        // );
+
         const handsRaiseDiff = prevArmPoseStats
           ? armPoseStats.handsRaised - prevArmPoseStats.handsRaised
           : 0;
@@ -146,12 +156,19 @@ export default function MetricPage(props: IMetricPageProps) {
         });
       }
 
-      //=====Class Preformance=====
-      // const classPreformanceDiff = previousSession
-      //   ? selectedSession.performance - previousSession.performance
-      //   : 0;
+      // const preformance = await apiHandler.getSessionPerformance(sessionId);
 
-      // console.log(selectedSession);
+      // let prevPreformance = 0;
+
+      // if (previousSession?.id) {
+      //   prevPreformance =
+      //     (await apiHandler.getSessionPerformance(previousSession.id)) || 0;
+      // }
+
+      // // =====Class Preformance=====
+      // const classPreformanceDiff = previousSession
+      //   ? preformance - prevPreformance
+      //   : 0;
 
       // metrics.push({
       //   metricType: SessionMetricType.ClassPerformance,
@@ -160,7 +177,7 @@ export default function MetricPage(props: IMetricPageProps) {
       //     dark: "#1E7FD4",
       //     light: "#1E88E5",
       //   },
-      //   metric: selectedSession.performance,
+      //   metric: preformance,
       //   metricPrepend: "",
       //   hasDenominator: false,
       //   denominator: 0,
@@ -172,7 +189,7 @@ export default function MetricPage(props: IMetricPageProps) {
       //     "Did you do any graded activity in this class session? You may enter manually the average class performance and compare them with future sessions!",
       //   has_alert: false,
       //   icon: "id-card",
-      //   canEdit: true,
+      //   canEdit: false, //Todo; update
       //   updateMetric: async (newMetric: string) => {
       //     const result = await apiHandler.updateSessionPerformance(
       //       sessionId,
@@ -183,9 +200,10 @@ export default function MetricPage(props: IMetricPageProps) {
       //       return false;
       //     }
       //     //Todo: refresh sessions here
+      //     setClassPerformanceMetric(parseFloat(newMetric));
       //     return true;
       //   },
-      //   children: !selectedSession.performance ? (
+      //   children: !preformance ? (
       //     <span>Enter your class preformance</span>
       //   ) : (
       //     <></>
@@ -246,13 +264,18 @@ export default function MetricPage(props: IMetricPageProps) {
         },
       });
 
-      //=====Student Speech=====
+      // TOdo: NExt up
+      const speechTimeInSession = await apiHandler.getTotalSpeechTimesInSession(
+        sessionId
+      );
+      console.log(
+        324,
+        speechTimeInSession,
+        speechTimeInSession?.data,
+        speechTimeInSession?.data?.studentSpeechInSeconds
+      );
 
-      const studentSpeechMetric = 0;
-      // await apiHandler.getStudentSpeechFrameNumberInSession(
-      //   selectedSession.id,
-      //   0.01
-      // );
+      //=====Student Speech=====
 
       metrics.push({
         metricType: SessionMetricType.StudentSpeech,
@@ -261,8 +284,8 @@ export default function MetricPage(props: IMetricPageProps) {
           dark: "#CB1859",
           light: "#D81B60",
         },
-        metric: studentSpeechMetric / 15 / 60,
-        metricPrepend: "",
+        metric: (speechTimeInSession?.data?.studentSpeechInSeconds || 0) / 60,
+        metricPrepend: "~",
         hasDenominator: false,
         denominator: 0,
         unit: "min",
@@ -270,7 +293,7 @@ export default function MetricPage(props: IMetricPageProps) {
         trend_metric: undefined,
         trend_metric_unit: undefined,
         help_text:
-          "The total frequency of student talk (in minutes) during the class session",
+          "The total time of student talk (in minutes) during the class session",
         has_alert: false,
         icon: "comments",
         canEdit: false,
@@ -286,8 +309,9 @@ export default function MetricPage(props: IMetricPageProps) {
           dark: "#01332A",
           light: "#004D40",
         },
-        metric: (studentSpeechMetric + 5) / 15 / 60,
-        metricPrepend: "",
+        metric:
+          (speechTimeInSession?.data?.instructorSpeechInSeconds || 0) / 60,
+        metricPrepend: "~",
         hasDenominator: false,
         denominator: 0,
         unit: "min",
@@ -295,7 +319,7 @@ export default function MetricPage(props: IMetricPageProps) {
         trend_metric: undefined,
         trend_metric_unit: undefined,
         help_text:
-          "The total frequency of instructor talk (in minutes) during the class session",
+          "The total time of instructor talk (in minutes) during the class session",
         has_alert: false,
         icon: "comment",
         canEdit: false,
@@ -314,12 +338,6 @@ export default function MetricPage(props: IMetricPageProps) {
     // console.log("reloading metrics page with sessionID " + selectedSession.id);
 
     createMetrics(selectedSession.id);
-
-    // getLastMetricsSessionId
-
-    console.log(reduxMetrics.length, lastMetricsSessionId, selectedSession.id);
-
-    //Todo: Use redux?
     if (
       reduxMetrics.length === 0 ||
       lastMetricsSessionId !== selectedSession.id

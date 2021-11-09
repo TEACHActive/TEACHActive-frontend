@@ -56,9 +56,10 @@ export function InstructorMovement(props: IInstructorMovementProps) {
   );
 
   const [loading, setLoading] = React.useState(true);
-  const [instructorMovement, setInstructorMovement] = React.useState<
-    AgumentedInstructorMovementData
-  >([]);
+  const [
+    instructorMovement,
+    setInstructorMovement,
+  ] = React.useState<AgumentedInstructorMovementData>([]);
   const [data, setData] = React.useState<any[]>([]);
 
   const getInstructorMovement = useCallback(async () => {

@@ -143,6 +143,7 @@ export class BaseSession {
   }
 
   static equal(left: BaseSession, right: BaseSession): boolean {
+    if (!left || !right) return false;
     return left.id === right.id;
   }
 }
@@ -317,18 +318,15 @@ export class SitStandInFrame extends WithTimeDiff {
 }
 
 export class AudioInFrame extends WithTimeDiff {
-  sitNumber: number;
-  standNumber: number;
-  errorNumber: number;
-  channel: string;
+  amplitude: number;
+  frameNumber: number;
+  timestamp: DateTime;
 
   constructor(data: any) {
     super(data);
-    const { sitNumber, standNumber, errorNumber } = data.audio;
-    this.sitNumber = sitNumber;
-    this.standNumber = standNumber;
-    this.errorNumber = errorNumber;
-    this.channel = data.channel;
+    this.amplitude = data.amplitude;
+    this.frameNumber = data.frameNumber;
+    this.timestamp = DateTime.fromISO(data.timestamp);
   }
 }
 
@@ -339,6 +337,20 @@ export class InstructorNameResponse {
   constructor(data: any) {
     this.name = data.name;
     this.uid = data.uid;
+  }
+}
+
+export class TotalSpeechTimesInSessionResponse {
+  studentSpeechInSeconds: number;
+  instructorSpeechInSeconds: number;
+  ambiantNoiseInSeconds: number;
+
+  constructor(data: any) {
+    console.log(12, data);
+
+    this.studentSpeechInSeconds = data.studentSpeechInSeconds;
+    this.instructorSpeechInSeconds = data.instructorSpeechInSeconds;
+    this.ambiantNoiseInSeconds = data.ambiantNoiseInSeconds;
   }
 }
 

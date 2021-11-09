@@ -12,6 +12,9 @@ import { MovementPatterns } from "components/MovementPatterns/movementPatterns";
 import { BehavioralEngagement } from "components/BehavioralEngagement/behavioralEngagement";
 
 import "./metricPage.css";
+import { SitVsStand } from "components/MovementPatterns/sitVsStand";
+import { FirebaseAuthConsumer } from "@react-firebase/auth";
+import { InstructorMovement } from "components/MovementPatterns/instructorMovement";
 
 const { Title } = Typography;
 
@@ -56,6 +59,8 @@ export function MetricPagePresentational(
           alignItems: "center",
           marginBottom: "3em",
           minHeight: "5em",
+          overflow: "auto",
+          height: "100%",
         }}
       >
         {editingSessionName ? (
@@ -64,7 +69,8 @@ export function MetricPagePresentational(
               placeholder={props.session.name}
               onChange={(event) => setNewSessionName(event.target.value)}
             />
-            <Button type="primary" size="small">
+            {/*Todo: add this back */}
+            {/* <Button type="primary" size="small">
               <FontAwesomeIcon
                 icon="check"
                 size="1x"
@@ -76,8 +82,8 @@ export function MetricPagePresentational(
                   setNewSessionName("");
                 }}
               />
-            </Button>
-            <Button type="default" size="small" danger>
+            </Button> */}
+            {/* <Button type="default" size="small" danger>
               <FontAwesomeIcon
                 icon="ban"
                 size="1x"
@@ -87,7 +93,7 @@ export function MetricPagePresentational(
                   setNewSessionName("");
                 }}
               />
-            </Button>
+            </Button> */}
           </div>
         ) : (
           <>
@@ -152,9 +158,9 @@ export function MetricPagePresentational(
                     trend_metric={item.trend_metric}
                     trend_metric_unit={item.trend_metric_unit}
                     canEdit={item.canEdit}
-                    updateMetric={(newMetric: string) =>
-                      item.updateMetric(newMetric)
-                    }
+                    updateMetric={(newMetric: string) => {
+                      return item.updateMetric(newMetric);
+                    }}
                   >
                     {item.children}
                   </MetricDisplay>
@@ -164,7 +170,13 @@ export function MetricPagePresentational(
           )}
         </div>
 
-        <div style={{ display: "flex", marginTop: "3em" }}>
+        <div
+          style={{
+            display: "flex",
+            marginTop: "3em",
+            overflowX: "auto",
+          }}
+        >
           {/* <BlockContent
             color={{ light: "#ED80A2", dark: "#D1728F" }}
             name="In-Class Activity"
@@ -188,12 +200,31 @@ export function MetricPagePresentational(
           <InfoCard
             color={{ light: "#ED80A2", dark: "#D1728F" }}
             icon=""
-            title="Movement Patterns"
+            title="Sit vs Stand"
             helpWindowText="Movement Patterns during class //Todo"
             style={{ margin: ".5em" }}
           >
             <div className="infoCardContent">
-              <MovementPatterns />
+              <SitVsStand />
+            </div>
+          </InfoCard>
+          <InfoCard
+            color={{ light: "#ED80A2", dark: "#D1728F" }}
+            icon=""
+            title="Instructor Movement"
+            helpWindowText="Movement Patterns during class //Todo"
+            style={{ margin: ".5em" }}
+          >
+            <div className="infoCardContent">
+              <FirebaseAuthConsumer>
+                {({
+                  isSignedIn,
+                  user,
+                }: {
+                  isSignedIn: boolean;
+                  user: firebase.default.User;
+                }) => <InstructorMovement uid={user.uid} />}
+              </FirebaseAuthConsumer>
             </div>
           </InfoCard>
 

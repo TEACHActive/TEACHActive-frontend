@@ -56,7 +56,7 @@ export const BaseRoute: ComponentRoute = new ComponentRoute({
   link: () => "/",
   inSidebar: false,
   exact: true,
-  secure: false,
+  secure: true,
   pathShowsHeader: false,
   pathShowsSidebar: false,
 });

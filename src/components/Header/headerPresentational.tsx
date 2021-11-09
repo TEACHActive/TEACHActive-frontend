@@ -112,8 +112,12 @@ const HeaderPresentational: React.FC<IHeaderPresentationalProps> = (props) => {
                         value={props.keywordFilter}
                         allowClear
                         onClear={() => dispatch(clearKeywordFilter())}
-                        onChange={(value: SelectValue) => {
-                          dispatch(setKeywordFilter(value.toString()));
+                        onChange={async (value: SelectValue) => {
+                          await new Promise((resolve) =>
+                            setTimeout(resolve, 0.25)
+                          ); //Some state change is happening so delay this
+                          if (value)
+                            dispatch(setKeywordFilter(value.toString()));
                         }}
                         filterOption={(input, option) =>
                           option?.children
@@ -121,7 +125,7 @@ const HeaderPresentational: React.FC<IHeaderPresentationalProps> = (props) => {
                             .indexOf(input.toLowerCase()) >= 0
                         }
                       >
-                        {props.sessionKeywords.sort().map((keyword, i) => (
+                        {[...props.sessionKeywords].sort().map((keyword, i) => (
                           <Option key={i} value={keyword}>
                             <Avatar
                               style={{
