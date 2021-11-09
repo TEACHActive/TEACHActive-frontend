@@ -1,61 +1,67 @@
-import * as React from "react";
+import { Spin, Result } from "antd";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { Form, Input, Button, Checkbox, Typography } from "antd";
-import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
+import { Navigate, useNavigate } from "react-router-dom";
 
 import { auth } from "firebase";
-import LogoSmall from "../../images/LogoSmall.png";
+import { HomeRoute } from "routes";
+import { loginWithEmailAndPassword } from "firebase/authController";
 
-import "./login.css";
+import { logger } from "logging";
 
-const { Title } = Typography;
+import { Cookie, CookieSingleton } from "cookies";
+import { LoginPagePresentational } from "./loginPresentational";
 
 export interface ILoginPageProps {}
 
+export interface ILoginValues {
+  password: string;
+  remember: boolean;
+  email: string;
+}
+
 export function LoginPage(props: ILoginPageProps) {
-  const [showRememberMeCheckbox, setShowRememberMeCheckbox] =
-    React.useState(false);
   const [user, loading, error] = useAuthState(auth);
+  let navigate = useNavigate();
+
+  const onFinish = async (values: ILoginValues) => {
+    if (values.remember) rememberEmail(values.email);
+    const user = await loginWithEmailAndPassword(values.email, values.password);
+    if (user) {
+      navigate(HomeRoute.link());
+    } else {
+      logger.error("Failed to log in, check email and password");
+    }
+  };
+
+  const onFinishFailed = (errorInfo: any) => {
+    logger.error(errorInfo);
+  };
+
+  const rememberEmail = (email: string) => {
+    CookieSingleton.getInstance().setCookie(Cookie.EMAIL, email);
+  };
+
+  if (error) {
+    <Result
+      status="500"
+      title="Authentication Error"
+      subTitle="Sorry, something went wrong. Try refreshing the page"
+    />;
+  }
+
+  if (loading) {
+    return <Spin />;
+  }
+
+  if (user) {
+    //Already logged in
+    return <Navigate to={HomeRoute.link()} />;
+  }
 
   return (
-    <div className="loginPage">
-      <div className="loginPageLeft">
-        <img className="leftLogoSmall" src={LogoSmall} />
-      </div>
-      <div className="loginPageRight">
-        <Form
-          size="large"
-          labelCol={{ span: 8 }}
-          wrapperCol={{ span: 32 }}
-          layout="vertical"
-        >
-          <Title>Login</Title>
-          <Form.Item label="Email" required={true}>
-            <Input placeholder="Enter your email" />
-          </Form.Item>
-          <Form.Item label="Password" required={true}>
-            <Input.Password
-              placeholder="Enter your password"
-              iconRender={(visible) =>
-                visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
-              }
-            />
-          </Form.Item>
-          {showRememberMeCheckbox && (
-            <Form.Item wrapperCol={{ offset: 8, span: 32 }}>
-              <Checkbox>Remember Me</Checkbox>
-            </Form.Item>
-          )}
-          <Form.Item wrapperCol={{ offset: 0, span: 32 }}>
-            <Button type="primary" htmlType="submit" className="loginButton">
-              Login
-            </Button>
-          </Form.Item>
-          <Form.Item wrapperCol={{ offset: 0, span: 32 }}>
-            <Button type="link">Forgot password?</Button>
-          </Form.Item>
-        </Form>
-      </div>
-    </div>
+    <LoginPagePresentational
+      onFinish={onFinish}
+      onFinishFailed={onFinishFailed}
+    />
   );
 }

@@ -1,0 +1,12 @@
+.header {
+  padding-left: 10px !important;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.loadIcon > svg {
+  color: white;
+  font-size: large;
+  margin: 0 1em 0 1em;
+}

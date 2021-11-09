@@ -2,20 +2,34 @@ import { Layout } from "antd";
 import { Route, Routes } from "react-router-dom";
 
 import { appRoutes } from "routes";
-import { PrivateRoute } from "hocs/privateRoute";
+import { Sider } from "components/Sider/sider";
+import { RequireAuth } from "hocs/requireAuth";
+import { Header } from "components/Header/header";
+import { Footer } from "components/Footer/footer";
 
 import "./App.css";
 
 function App() {
   return (
     <Layout className="layout">
-      {/* <Sidebar /> */}
+      <Sider />
       <Layout>
-        {/* <Header /> */}
+        <Header />
         <Routes>
           {appRoutes.map((item, i) => {
+            if (!item.visible) return <></>;
             if (item.secureRoute) {
-              return <PrivateRoute elementRoute={item} key={i} />;
+              return (
+                <Route
+                  {...item.routeObject}
+                  key={i}
+                  element={
+                    <RequireAuth>
+                      <>{item.routeObject.element}</>
+                    </RequireAuth>
+                  }
+                />
+              );
             }
 
             return (
@@ -28,6 +42,7 @@ function App() {
           })}
         </Routes>
       </Layout>
+      <Footer />
     </Layout>
   );
 }

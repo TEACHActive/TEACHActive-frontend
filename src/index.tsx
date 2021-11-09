@@ -11,13 +11,13 @@ import "./index.css";
 import "antd/dist/antd.css";
 
 ReactDOM.render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <Provider store={store}>
-        <App />
-      </Provider>
-    </BrowserRouter>
-  </React.StrictMode>,
+  // <React.StrictMode> //Add this back when ant design updates to fix collapse sider issue https://github.com/ant-design/ant-design/issues/22493
+  <BrowserRouter>
+    <Provider store={store}>
+      <App />
+    </Provider>
+  </BrowserRouter>,
+  // </React.StrictMode>,
   document.getElementById("root")
 );
 

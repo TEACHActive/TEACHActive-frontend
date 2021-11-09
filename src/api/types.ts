@@ -1,4 +1,4 @@
-import { DateTime, DurationObjectUnits, DurationUnit } from "luxon";
+// import { DateTime, DurationObjectUnits, DurationUnit } from "luxon";
 
 export class Response<T> {
   success: boolean;
@@ -11,6 +11,16 @@ export class Response<T> {
     this.data = new responseType(data.data);
     this.error = data.error;
     this.statusCode = data.statusCode;
+  }
+}
+
+export class InstructorNameResponse {
+  name: string;
+  uid: string;
+
+  constructor(data: any) {
+    this.name = data.name;
+    this.uid = data.uid;
   }
 }
 
