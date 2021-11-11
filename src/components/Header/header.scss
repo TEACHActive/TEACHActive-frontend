@@ -1,4 +1,7 @@
-.header {
+@import "styles/colors";
+
+.ant-layout-header {
+  background-color: $background-color !important;
   padding-left: 10px !important;
   display: flex;
   justify-content: space-between;

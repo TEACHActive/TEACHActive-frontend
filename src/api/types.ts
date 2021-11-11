@@ -14,6 +14,12 @@ export class Response<T> {
   }
 }
 
+export enum LOADING_STATE {
+  DONE,
+  ERROR,
+  LOADING,
+}
+
 export class InstructorNameResponse {
   name: string;
   uid: string;

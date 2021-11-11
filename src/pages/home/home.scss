@@ -1,0 +1,78 @@
+@import "styles/colors";
+
+.homePage {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  height: 100%;
+  overflow: hidden;
+  padding: 1em;
+}
+
+.homeMenu {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.userMenuButton {
+  width: 3.5em;
+  height: 3.5em !important;
+  border-radius: 2em !important;
+  box-shadow: 2px 4px 20px #f0f0f0 !important;
+  margin-top: 10px;
+  margin-right: 10px;
+  visibility: visible !important;
+}
+
+.homePageTop {
+  display: flex;
+  justify-content: center;
+}
+
+.topMainLogo {
+  width: 60%;
+}
+
+.title {
+  font-family: "Lato", sans-serif;
+  color: $primary-font-color;
+  text-align: center;
+  font-size: 40px;
+  margin-bottom: -8px;
+  margin-top: 30px;
+}
+
+.subtitle {
+  font-family: "Lato", sans-serif;
+  color: $primary-font-color;
+  text-align: center;
+  font-size: 20px;
+}
+
+.homePageBottom {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+  gap: 30px;
+  margin: 20px;
+}
+
+.mainMenuButton {
+  height: 250px !important;
+  width: 250px;
+  min-width: 50px;
+  min-height: 50px;
+  background: $button-color !important;
+  box-shadow: 4px 7px 7px $button-box-shaddow-color !important;
+  font-family: "Lato", sans-serif;
+  border-radius: 15px;
+  display: block;
+}
+.mainMenuButton:hover {
+  box-shadow: 8px 15px 15px $button-box-shaddow-color !important;
+}
+
+.mainMenuIcon {
+  width: 80%;
+}

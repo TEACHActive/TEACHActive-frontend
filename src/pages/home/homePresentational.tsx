@@ -1,8 +1,9 @@
-import { Dropdown, Button, Menu } from "antd";
 import { Link } from "react-router-dom";
+import { Dropdown, Button, Menu } from "antd";
+import { UserOutlined } from "@ant-design/icons";
 
-import { LogoutButton } from "components/UserManagment/logoutButton";
 import { MetricsRoute, GoalsRoute, ProgressRoute } from "routes";
+import { LogoutButton } from "components/UserManagment/logoutButton";
 
 import goalsIcon from "images/goals.png";
 import MainLogo from "images/MainLogo.png";
@@ -10,7 +11,7 @@ import progressIcon from "images/progress.png";
 import dashboardIcon from "images/dashboard.png";
 import reflectionsIcon from "images/reflections.png";
 
-import "./home.css";
+import "./home.scss";
 
 export interface IHomePagePresentationalProps {
   instructorName: string;
@@ -35,7 +36,9 @@ export function HomePagePresentational(props: IHomePagePresentationalProps) {
       <div style={{ display: "flex", flexDirection: "column" }}>
         <div className="homeMenu">
           <Dropdown overlay={menu} placement="bottomRight">
-            <Button className="userMenuButton" />
+            <Button className="userMenuButton">
+              <UserOutlined style={{ fontSize: "18px" }} />
+            </Button>
           </Dropdown>
         </div>
 

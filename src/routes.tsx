@@ -63,6 +63,8 @@ export class ElementRoute implements IElementRoute {
   }
 }
 
+const iconFontSize = "20px";
+
 const homePath = "";
 export const HomeRoute: IElementRoute = new ElementRoute({
   routeObject: {
@@ -92,7 +94,7 @@ export const MetricsRoute: IElementRoute = new ElementRoute({
     ]),
   },
   name: "Metrics",
-  icon: <UserOutlined />,
+  icon: <UserOutlined style={{ fontSize: iconFontSize }} />,
   link: () => metricsPath,
   visible: true,
   secureRoute: true,
@@ -114,7 +116,7 @@ export const ProgressRoute: IElementRoute = new ElementRoute({
     ]),
   },
   name: "Progress",
-  icon: <UploadOutlined />,
+  icon: <UploadOutlined style={{ fontSize: iconFontSize }} />,
   link: () => progressPath,
   visible: true,
   secureRoute: true,
@@ -136,7 +138,7 @@ export const GoalsRoute: IElementRoute = new ElementRoute({
     ]),
   },
   name: "Goals",
-  icon: <BookOutlined />,
+  icon: <BookOutlined style={{ fontSize: iconFontSize }} />,
   link: () => goalsPath,
   visible: true,
   secureRoute: true,
@@ -158,7 +160,7 @@ export const SettingsRoute: IElementRoute = new ElementRoute({
     ]),
   },
   name: "Settings",
-  icon: <SettingOutlined />,
+  icon: <SettingOutlined style={{ fontSize: iconFontSize }} />,
   link: () => settingsPath,
   visible: true,
   secureRoute: true,

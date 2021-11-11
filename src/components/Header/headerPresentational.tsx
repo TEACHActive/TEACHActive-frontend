@@ -2,7 +2,7 @@ import { LoadingOutlined, ReloadOutlined } from "@ant-design/icons";
 import { Layout, Cascader, Select } from "antd";
 import { LogoutButton } from "components/UserManagment/logoutButton";
 
-import "./header.css";
+import "./header.scss";
 
 const { Header: AntHeader } = Layout;
 
