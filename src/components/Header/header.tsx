@@ -33,7 +33,7 @@ export function Header(props: IHeaderProps) {
     </AntHeader>;
   }
 
-  if (isLoading || isFetching || !data?.data) {
+  if (isLoading || isFetching) {
     return (
       <AntHeader className="header">
         <p>Loading...</p>

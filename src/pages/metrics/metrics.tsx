@@ -8,6 +8,7 @@ import { skipToken } from "@reduxjs/toolkit/query/react";
 import { useSelector } from "react-redux";
 import { selectSelectedSession } from "redux/sessionSlice";
 import { MetricsPagePresentational } from "./metricsPresentational";
+import { useGetAttendanceStatsForSessionQuery } from "api/services/attendance";
 
 export interface IMetricsPageProps {}
 
@@ -27,6 +28,10 @@ export function MetricsPage(props: IMetricsPageProps) {
     selectedSession?.id ?? skipToken
   );
 
+  const attendanceStatsForSessionRequest = useGetAttendanceStatsForSessionQuery(
+    selectedSession?.id ?? skipToken
+  );
+
   if (!selectedSession) {
     return <SelectASession />;
   }
@@ -36,6 +41,7 @@ export function MetricsPage(props: IMetricsPageProps) {
       session={selectedSession}
       armPoseDataRequest={armPoseDataRequest}
       armPoseTotalsInSecondsRequest={armPoseTotalsInSecondsRequest}
+      attendanceStatsForSessionRequest={attendanceStatsForSessionRequest}
     />
   );
 }

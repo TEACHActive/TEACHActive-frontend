@@ -38,7 +38,6 @@ export function RequireAuth({ children }: { children: JSX.Element }) {
     Cookie.AUTH_TOKEN_EXPIRE_DATETIME_ISO
   );
   if (!tokenExpireISO) {
-    logoutOfFirebase();
     return <Navigate to={LogInRoute.link()} state={{ from: location }} />;
   }
 
@@ -49,8 +48,6 @@ export function RequireAuth({ children }: { children: JSX.Element }) {
   const secondsUntilExpire = timeUntilExpire.seconds || 0;
 
   if (secondsUntilExpire <= 0) {
-    logoutOfFirebase();
-    message.info("You have been logged out after session expired");
     return <Navigate to={LogInRoute.link()} state={{ from: location }} />;
   }
 
