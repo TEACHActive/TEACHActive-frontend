@@ -13,6 +13,7 @@ export const store = configureStore({
     [ServiceAPI.pokemonApi.reducerPath]: ServiceAPI.pokemonApi.reducer,
     [ServiceAPI.sessionsApi.reducerPath]: ServiceAPI.sessionsApi.reducer,
     [ServiceAPI.armPoseApi.reducerPath]: ServiceAPI.armPoseApi.reducer,
+    [ServiceAPI.attendanceApi.reducerPath]: ServiceAPI.attendanceApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat([
@@ -20,6 +21,7 @@ export const store = configureStore({
       ServiceAPI.pokemonApi.middleware,
       ServiceAPI.sessionsApi.middleware,
       ServiceAPI.armPoseApi.middleware,
+      ServiceAPI.attendanceApi.middleware,
     ]),
 });
 
