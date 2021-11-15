@@ -1,21 +1,34 @@
-import "firebase/authController";
-import { User } from "firebase/auth";
-import { signInWithEmailAndPassword, signOut } from "firebase/auth";
+import {
+  signOut,
+  signInWithCustomToken,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 
 import { logger } from "logging";
 import { auth } from "firebase";
+import apiHandler from "api/handler";
+import { TokenResponse } from "./types";
 
 export const loginWithEmailAndPassword = async (
   email: string,
   password: string
-): Promise<User | null> => {
+): Promise<TokenResponse | null> => {
   try {
-    const userCredential = await signInWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
-    return userCredential.user;
+    const tokenResponse = await apiHandler.loginUser(email, password);
+
+    if (!tokenResponse?.firebaseToken) {
+      throw new Error("No firebase token returned");
+    }
+
+    // const userCreds = await signInWithEmailAndPassword(auth, email, password);
+
+    // console.log(
+    //   (await userCreds.user.getIdToken()) === tokenResponse?.firebaseToken
+    // );
+
+    await signInWithCustomToken(auth, tokenResponse?.firebaseToken); //Not working
+
+    return tokenResponse;
   } catch (error: any) {
     const errorCode = error.code;
     const errorMessage = error.message;

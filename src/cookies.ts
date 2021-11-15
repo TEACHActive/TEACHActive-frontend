@@ -23,7 +23,7 @@ export class CookieSingleton {
     });
   }
 
-  public getCookie(cookie: Cookie): string {
+  public getCookie(cookie: Cookie): any {
     return this.cookies.get(cookie);
   }
 
@@ -36,6 +36,8 @@ export enum Cookie {
   APP_VERSION = "APP_VERSION",
   EMAIL = "email",
   SIDER_COLLAPSE = "SIDER_COLLAPSE",
+  AUTH_TOKEN = "AUTH_TOKEN",
+  AUTH_TOKEN_EXPIRE_DATETIME_ISO = "AUTH_TOKEN_EXPIRE_DATETIME_ISO",
 }
 
 const UsedCookies = [Cookie.APP_VERSION, Cookie.EMAIL];

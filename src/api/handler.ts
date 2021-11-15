@@ -1,44 +1,52 @@
-import { IReflectionsAPIHandler } from "./reflectionsHandler";
-import reflectionsAPIHandler from "./reflectionsHandler";
-import { InstructorNameResponse, MethodType, Response } from "./types";
-import { getAxiosConfig, logAPIError } from "./util";
 import axios from "axios";
+
+import { TokenResponse } from "firebase/types";
+import { MethodType, Response } from "./types";
+import { getAxiosConfig, logAPIError } from "./util";
+import reflectionsAPIHandler from "./reflectionsHandler";
+import { IReflectionsAPIHandler } from "./reflectionsHandler";
 
 export interface IAPIHandler {
   reflectionsAPIHandler: IReflectionsAPIHandler;
-  getInstructorName(userUID: string): Promise<InstructorNameResponse | null>;
+  loginUser(email: string, password: string): Promise<TokenResponse | null>;
 }
 
 export class APIHandler implements IAPIHandler {
   reflectionsAPIHandler: IReflectionsAPIHandler;
+
+  loginUser = async (
+    email: string,
+    password: string
+  ): Promise<TokenResponse | null> => {
+    const config = getAxiosConfig(
+      MethodType.POST,
+      `/auth/login`,
+      {},
+      {
+        username: email,
+        password: password,
+      }
+    );
+
+    try {
+      const axiosResponse = await axios.request(config);
+      const response = new Response<TokenResponse>(
+        axiosResponse.data,
+        TokenResponse
+      ).data;
+
+      return response;
+    } catch (error) {
+      logAPIError("Failed to login user", true);
+      return null;
+    }
+  };
 
   constructor(
     _reflectionsAPIHandler: IReflectionsAPIHandler = reflectionsAPIHandler
   ) {
     this.reflectionsAPIHandler = _reflectionsAPIHandler;
   }
-
-  getInstructorName = async (
-    userUID: string
-  ): Promise<InstructorNameResponse | null> => {
-    const config = getAxiosConfig(
-      MethodType.GET,
-      `/teachactive/name/${userUID}`
-    );
-
-    try {
-      const axiosResponse = await axios.request(config);
-      const response = new Response<InstructorNameResponse>(
-        axiosResponse.data,
-        InstructorNameResponse
-      ).data;
-
-      return response;
-    } catch (error) {
-      logAPIError("Failed to get Instructor Name", true);
-      return null;
-    }
-  };
 }
 
 const apiHandler: IAPIHandler = new APIHandler();

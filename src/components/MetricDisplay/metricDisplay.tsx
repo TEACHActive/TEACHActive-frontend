@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 import { SessionMetricType, TREND } from "./metricDisplay.types";
@@ -12,13 +12,14 @@ export interface IMetricDisplayProps {
   metric: number;
   canEdit: boolean;
   trend?: TrendValues;
-  denominator: number;
+  denominator?: number;
   metricPrepend: string;
   trend_metric?: number;
   trend_metric_unit?: string;
   metricType: SessionMetricType;
-  // children: ReactNode;
-  // updateMetric: (newMetric: string) => Promise<boolean>;
+  updateMetric?: (newMetric: number) => Promise<boolean>;
+  loading: boolean;
+  children?: ReactNode;
 }
 
 export default function MetricDisplay(props: IMetricDisplayProps) {
@@ -26,7 +27,7 @@ export default function MetricDisplay(props: IMetricDisplayProps) {
   const [processing, setProcessing] = React.useState(false);
   const [editingMetric, setEditingMetric] = React.useState(false);
 
-  let icon: IconProp | null = null;
+  let icon: IconProp | undefined = undefined;
 
   if (props.trend) {
     if (props.trend === 0) {
@@ -37,7 +38,23 @@ export default function MetricDisplay(props: IMetricDisplayProps) {
       icon = "arrow-down";
     }
   }
-
-  return <></>;
-  // return <MetricDisplayPresentational />;
+  return (
+    <MetricDisplayPresentational
+      unit={props.unit}
+      icon={icon}
+      metric={props.metric}
+      canEdit={props.canEdit}
+      processing={false}
+      denominator={props.denominator}
+      trend_metric={props.trend_metric}
+      metricPrepend={props.metricPrepend}
+      trend_metric_unit={props.trend_metric_unit}
+      updateMetric={props.updateMetric}
+      setProcessing={setProcessing}
+      setNewMetric={setNewMetric}
+      editingMetric={editingMetric}
+      setEditingMetric={setEditingMetric}
+      loading={props.loading}
+    />
+  );
 }

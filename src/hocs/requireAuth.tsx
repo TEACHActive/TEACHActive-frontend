@@ -5,6 +5,9 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { useLocation, Navigate } from "react-router-dom";
 
 import { LogInRoute } from "routes";
+import { Cookie, CookieSingleton } from "cookies";
+import { DateTime } from "luxon";
+import { logoutOfFirebase } from "firebase/authController";
 
 export function RequireAuth({ children }: { children: JSX.Element }) {
   const [user, loading, error] = useAuthState(auth);
@@ -27,6 +30,27 @@ export function RequireAuth({ children }: { children: JSX.Element }) {
     // trying to go to when they were redirected. This allows us to send them
     // along to that page after they login, which is a nicer user experience
     // than dropping them off on the home page.
+    return <Navigate to={LogInRoute.link()} state={{ from: location }} />;
+  }
+
+  //Check that Bearer token isnt expired
+  const tokenExpireISO = CookieSingleton.getInstance().getCookie(
+    Cookie.AUTH_TOKEN_EXPIRE_DATETIME_ISO
+  );
+  if (!tokenExpireISO) {
+    logoutOfFirebase();
+    return <Navigate to={LogInRoute.link()} state={{ from: location }} />;
+  }
+
+  const timeUntilExpire = DateTime.fromISO(tokenExpireISO)
+    .diffNow("seconds")
+    .toObject();
+
+  const secondsUntilExpire = timeUntilExpire.seconds || 0;
+
+  if (secondsUntilExpire <= 0) {
+    logoutOfFirebase();
+    message.info("You have been logged out after session expired");
     return <Navigate to={LogInRoute.link()} state={{ from: location }} />;
   }
 

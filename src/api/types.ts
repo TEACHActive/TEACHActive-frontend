@@ -20,15 +20,15 @@ export enum LOADING_STATE {
   LOADING,
 }
 
-export class InstructorNameResponse {
-  name: string;
-  uid: string;
+// export class InstructorNameResponse {
+//   name: string;
+//   uid: string;
 
-  constructor(data: any) {
-    this.name = data.name;
-    this.uid = data.uid;
-  }
-}
+//   constructor(data: any) {
+//     this.name = data.name;
+//     this.uid = data.uid;
+//   }
+// }
 
 // export enum ArmPose {
 //   Other = "other",
