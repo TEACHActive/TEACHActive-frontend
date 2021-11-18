@@ -1,104 +1,176 @@
-import { Spin } from "antd";
+import React from "react";
+import { Button, Input, Typography } from "antd";
+import { QueryStatus } from "@reduxjs/toolkit/dist/query";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { Response } from "api/types";
 import { Session } from "api/services/sessions/types";
-import { ArmPoseStats, ArmPoseTotalsStats } from "api/services/armPose/types";
+import { InfoCard } from "components/InfoCard/infoCard";
+
+import { HandRaiseMetricDisplay } from "components/MetricDisplay/Metrics/handRasiseMetricDisplay";
+import { AttendanceMetricDisplay } from "components/MetricDisplay/Metrics/attendanceMetricDisplay";
+import { InstructorSpeechMetricDisplay } from "components/MetricDisplay/Metrics/instructorSpeechMetricDisplay";
+import { StudentSpeechMetricDisplay } from "components/MetricDisplay/Metrics/studentSpeechMetricDisplay";
+import { PerformanceMetricDisplay } from "components/MetricDisplay/Metrics/performanceMetricDisplay";
 
 import "./metrics.scss";
-import MetricDisplay from "components/MetricDisplay/metricDisplay";
-import { SessionMetricType } from "components/MetricDisplay/metricDisplay.types";
-import BlockContent from "components/BlockContent/blockContent";
-import { AttendanceStats } from "api/services/attendance/types";
+import { SitVsStand } from "components/Graphs/SitVsStand/sitVsStand";
+
+const { Title } = Typography;
 
 export interface IMetricsPagePresentationalProps {
   session: Session;
-  armPoseDataRequest: {
-    isLoading: boolean;
-    isFetching: boolean;
-    isError: boolean;
-    data?: Response<ArmPoseStats[]>;
-  };
-  armPoseTotalsInSecondsRequest: {
-    isLoading: boolean;
-    isFetching: boolean;
-    isError: boolean;
-    data?: Response<ArmPoseTotalsStats>;
-  };
-  attendanceStatsForSessionRequest: {
-    isLoading: boolean;
-    isFetching: boolean;
-    isError: boolean;
-    data?: Response<AttendanceStats>;
-  };
+  updateSessionName: (arg: { sessionId: string; name: string }) => any;
+  updateSessionNameResult: {
+    status: QueryStatus;
+    data?: undefined;
+    error?: undefined;
+    isLoading: false;
+    isSuccess: false;
+    isError: false;
+  } & any;
 }
 
 export function MetricsPagePresentational(
   props: IMetricsPagePresentationalProps
 ) {
-  const handRaiseMetric = (
-    <BlockContent
-      color={{
-        dark: "#E6AE05",
-        light: "#FFC107",
-      }}
-      name={"Hand Raises"}
-      help_text={
-        "The total number of seconds hand raises were detected during the class session"
-      }
-      has_alert={false}
-      icon={"hand-paper"}
-      style={{ marginTop: "2em", marginBottom: "2em" }}
-    >
-      <MetricDisplay
-        metric={
-          props.armPoseTotalsInSecondsRequest.data?.data?.handsRaised || 0
-        }
-        canEdit={false}
-        trend={undefined}
-        metricPrepend={""}
-        trend_metric={undefined}
-        metricType={SessionMetricType.HandRaises}
-        loading={
-          props.armPoseTotalsInSecondsRequest.isFetching ||
-          props.armPoseTotalsInSecondsRequest.isLoading
-        }
-      ></MetricDisplay>
-    </BlockContent>
-  );
-
-  const attendanceMetric = (
-    <BlockContent
-      color={{
-        dark: "#842ed1",
-        light: "#9534eb",
-      }}
-      name="Attendence"
-      help_text="Average number of students detected during the session"
-      has_alert={false}
-      icon={"users"}
-      style={{ marginTop: "2em", marginBottom: "2em" }}
-    >
-      <MetricDisplay
-        metric={
-          props.armPoseTotalsInSecondsRequest.data?.data?.handsRaised || 0
-        }
-        canEdit={false}
-        trend={undefined}
-        metricPrepend={"~"}
-        trend_metric={undefined}
-        metricType={SessionMetricType.Attendance}
-        loading={
-          props.armPoseTotalsInSecondsRequest.isFetching ||
-          props.armPoseTotalsInSecondsRequest.isLoading
-        }
-      ></MetricDisplay>
-    </BlockContent>
+  const [editingSessionName, setEditingSessionName] = React.useState(false);
+  const [newSessionName, setNewSessionName] = React.useState(
+    props.session.name || ""
   );
 
   return (
-    <div>
-      {handRaiseMetric}
-      {attendanceMetric}
+    <div className="metricPagePresentational">
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          marginBottom: "3em",
+          minHeight: "5em",
+          overflow: "auto",
+          height: "100%",
+        }}
+      >
+        {editingSessionName ? (
+          <div style={{ display: "flex" }}>
+            <Input
+              placeholder={props.session.name}
+              onChange={(event) => setNewSessionName(event.target.value)}
+            />
+            <Button type="primary" size="small">
+              <FontAwesomeIcon
+                icon="check"
+                size="1x"
+                color="blue"
+                onClick={(event) => {
+                  setEditingSessionName(false);
+                  props.updateSessionName({
+                    sessionId: props.session.id,
+                    name: newSessionName,
+                  });
+                  setNewSessionName("");
+                }}
+              />
+            </Button>
+            <Button type="default" size="small" danger>
+              <FontAwesomeIcon
+                icon="ban"
+                size="1x"
+                color="red"
+                onClick={(event) => {
+                  setEditingSessionName(false);
+                  setNewSessionName("");
+                }}
+              />
+            </Button>
+          </div>
+        ) : (
+          <>
+            <Title>
+              {props.updateSessionNameResult.status === QueryStatus.fulfilled
+                ? props.updateSessionNameResult.data.name
+                : props.session.name}
+            </Title>
+            {/* <FontAwesomeIcon
+              icon="edit"
+              size="1x"
+              onClick={(event) => {
+                event.stopPropagation();
+                setEditingSessionName(true);
+              }}
+              className="sessionTitleEdit"
+            /> */}
+          </>
+        )}
+      </div>
+
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-evenly",
+            alignItems: "center",
+            width: "100%",
+            flexWrap: "wrap",
+          }}
+        >
+          <HandRaiseMetricDisplay />
+          <InstructorSpeechMetricDisplay />
+          <StudentSpeechMetricDisplay />
+          <PerformanceMetricDisplay />
+          <AttendanceMetricDisplay />
+        </div>
+
+        <div
+          style={{
+            display: "flex",
+            marginTop: "3em",
+            overflowX: "auto",
+          }}
+        >
+          <InfoCard
+            color={{ light: "#ED80A2", dark: "#D1728F" }}
+            icon=""
+            title="Sit vs Stand"
+            helpWindowText="Sit vs stand data in session"
+            style={{ margin: ".5em" }}
+          >
+            <div className="infoCardContent">
+              <SitVsStand />
+            </div>
+          </InfoCard>
+          <InfoCard
+            color={{ light: "#ED80A2", dark: "#D1728F" }}
+            icon=""
+            title="Instructor Movement"
+            helpWindowText="Movement Patterns during class"
+            style={{ margin: ".5em" }}
+          >
+            <div className="infoCardContent">
+              {/* <InstructorMovement uid={user.uid} /> */}
+            </div>
+          </InfoCard>
+
+          <InfoCard
+            color={{ light: "#FAB558", dark: "#E09F4B" }}
+            icon=""
+            title=""
+            helpWindowText="Behavioral Engagement during class"
+            style={{ margin: ".5em" }}
+          >
+            <div className="infoCardContent">
+              {/* <BehavioralEngagement /> */}
+            </div>
+          </InfoCard>
+        </div>
+      </div>
     </div>
   );
 }

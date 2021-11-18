@@ -14,7 +14,7 @@ export const attendanceApi = createApi({
       Response<AttendanceStats>,
       string
     >({
-      query: (sessionId: string) => `${baseEndpoint}${sessionId}`,
+      query: (sessionId: string) => `${baseEndpoint}/${sessionId}`,
     }),
   }),
 });

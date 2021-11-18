@@ -1,3 +1,4 @@
+import React from "react";
 import { Form, Input, Button, Typography, Checkbox } from "antd";
 import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 
@@ -13,6 +14,7 @@ const { Title } = Typography;
 export interface ILoginPagePresentationalProps {
   onFinish: (values: ILoginValues) => void;
   onFinishFailed: (errorInfo: any) => void;
+  loggingIn: boolean;
 }
 
 export function LoginPagePresentational(props: ILoginPagePresentationalProps) {
@@ -62,7 +64,12 @@ export function LoginPagePresentational(props: ILoginPagePresentationalProps) {
             <Checkbox>Remember Me</Checkbox>
           </Form.Item>
           <Form.Item wrapperCol={{ offset: 0, span: 32 }}>
-            <Button className="loginButton" type="primary" htmlType="submit">
+            <Button
+              className="loginButton"
+              type="primary"
+              htmlType="submit"
+              loading={props.loggingIn}
+            >
               Login
             </Button>
           </Form.Item>

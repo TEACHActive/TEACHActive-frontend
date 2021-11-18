@@ -23,11 +23,6 @@ export function HeaderPresentational(props: IHeaderPresentationalProps) {
 
   const dispatch = useAppDispatch();
 
-  React.useEffect(() => {
-    const cascaderData = constructCascaderData(props.sessions);
-    setOptions(cascaderData);
-  }, []);
-
   const constructSelectData = (
     sessions: Session[]
   ): { label: string; value: string }[] => {
@@ -104,7 +99,14 @@ export function HeaderPresentational(props: IHeaderPresentationalProps) {
     );
   };
 
-  const _setSelectedSession = (sessionId: string, sessions: Session[]) => {
+  const _setSelectedSession = (
+    sessionId: string | null,
+    sessions: Session[]
+  ) => {
+    if (!sessionId) {
+      dispatch(setSelectedSession(undefined));
+      return;
+    }
     const matchingSession = sessions.find(
       (session) => session.id === sessionId
     );
@@ -142,7 +144,11 @@ export function HeaderPresentational(props: IHeaderPresentationalProps) {
     setOptions([...options]);
   };
 
-  console.log(props.sessions);
+  React.useEffect(() => {
+    const cascaderData = constructCascaderData(props.sessions);
+    setOptions(cascaderData);
+  }, [props.sessions]);
+
   const distinctUIDs = getDistinctUIDsFromSessions(props.sessions);
   const isAdmin = distinctUIDs.length > 1;
 
@@ -167,7 +173,12 @@ export function HeaderPresentational(props: IHeaderPresentationalProps) {
         cascaderOnChange={(
           value: CascaderValueType,
           _?: CascaderOptionType[] | undefined
-        ) => _setSelectedSession(value[1].toString(), props.sessions)}
+        ) =>
+          _setSelectedSession(
+            value[1] ? value[1].toString() : null,
+            props.sessions
+          )
+        }
         selectOptions={constructSelectData(props.sessions)}
         selectOnChange={(value: SelectValue) =>
           _setSelectedSession(value?.toString() || "", props.sessions)

@@ -21,7 +21,8 @@ export const armPoseApi = createApi({
       Response<ArmPoseTotalsStats>,
       string
     >({
-      query: (sessionId: string) => `${baseEndpoint}/data/${sessionId}`,
+      query: (sessionId: string) =>
+        `${baseEndpoint}/totals/seconds/${sessionId}`,
     }),
   }),
 });

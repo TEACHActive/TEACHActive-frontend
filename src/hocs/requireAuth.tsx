@@ -38,7 +38,7 @@ export function RequireAuth({ children }: { children: JSX.Element }) {
     Cookie.AUTH_TOKEN_EXPIRE_DATETIME_ISO
   );
   if (!tokenExpireISO) {
-    return <Navigate to={LogInRoute.link()} state={{ from: location }} />;
+    logoutOfFirebase();
   }
 
   const timeUntilExpire = DateTime.fromISO(tokenExpireISO)
@@ -48,7 +48,7 @@ export function RequireAuth({ children }: { children: JSX.Element }) {
   const secondsUntilExpire = timeUntilExpire.seconds || 0;
 
   if (secondsUntilExpire <= 0) {
-    return <Navigate to={LogInRoute.link()} state={{ from: location }} />;
+    logoutOfFirebase();
   }
 
   return children;

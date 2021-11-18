@@ -1,8 +1,4 @@
-import {
-  signOut,
-  signInWithCustomToken,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
+import { signOut, signInWithCustomToken } from "firebase/auth";
 
 import { logger } from "logging";
 import { auth } from "firebase";
@@ -20,13 +16,7 @@ export const loginWithEmailAndPassword = async (
       throw new Error("No firebase token returned");
     }
 
-    // const userCreds = await signInWithEmailAndPassword(auth, email, password);
-
-    // console.log(
-    //   (await userCreds.user.getIdToken()) === tokenResponse?.firebaseToken
-    // );
-
-    await signInWithCustomToken(auth, tokenResponse?.firebaseToken); //Not working
+    await signInWithCustomToken(auth, tokenResponse?.firebaseToken);
 
     return tokenResponse;
   } catch (error: any) {

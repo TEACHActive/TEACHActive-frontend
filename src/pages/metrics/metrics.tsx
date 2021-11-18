@@ -1,36 +1,28 @@
-import {
-  useGetArmPoseDataInSessionQuery,
-  useGetArmPoseTotalsInSecondsSessionQuery,
-} from "api/services/armPose";
-import { SelectASession } from "components/Session/selectASession";
-import React from "react";
-import { skipToken } from "@reduxjs/toolkit/query/react";
 import { useSelector } from "react-redux";
+
 import { selectSelectedSession } from "redux/sessionSlice";
+import { SelectASession } from "components/Session/selectASession";
 import { MetricsPagePresentational } from "./metricsPresentational";
-import { useGetAttendanceStatsForSessionQuery } from "api/services/attendance";
+import { useUpdateSessionNameMutation } from "api/services/sessions/sessions";
 
 export interface IMetricsPageProps {}
 
 export function MetricsPage(props: IMetricsPageProps) {
   const selectedSession = useSelector(selectSelectedSession);
 
-  const armPoseDataRequest = useGetArmPoseDataInSessionQuery(
-    selectedSession?.id
-      ? {
-          sessionId: selectedSession.id,
-          numSegments: 100,
-        }
-      : skipToken
-  );
+  const [
+    updateSessionName,
+    updateSessionNameResult,
+  ] = useUpdateSessionNameMutation();
 
-  const armPoseTotalsInSecondsRequest = useGetArmPoseTotalsInSecondsSessionQuery(
-    selectedSession?.id ?? skipToken
-  );
-
-  const attendanceStatsForSessionRequest = useGetAttendanceStatsForSessionQuery(
-    selectedSession?.id ?? skipToken
-  );
+  // const armPoseDataRequest = useGetArmPoseDataInSessionQuery(
+  //   selectedSession?.id
+  //     ? {
+  //         sessionId: selectedSession.id,
+  //         numSegments: 100,
+  //       }
+  //     : skipToken
+  // );
 
   if (!selectedSession) {
     return <SelectASession />;
@@ -39,9 +31,8 @@ export function MetricsPage(props: IMetricsPageProps) {
   return (
     <MetricsPagePresentational
       session={selectedSession}
-      armPoseDataRequest={armPoseDataRequest}
-      armPoseTotalsInSecondsRequest={armPoseTotalsInSecondsRequest}
-      attendanceStatsForSessionRequest={attendanceStatsForSessionRequest}
+      updateSessionName={updateSessionName} //todo get working
+      updateSessionNameResult={updateSessionNameResult}
     />
   );
 }

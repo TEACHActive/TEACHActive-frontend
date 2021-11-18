@@ -1,21 +1,25 @@
 import { Input, Button, Spin } from "antd";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { IMetricTypeDisplayable } from "./metricDisplay.types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import "./metricDisplay.css";
 
-export interface IMetricDisplayPresentationalProps {
+export interface IMetricDisplayPresentationalProps<
+  T extends IMetricTypeDisplayable
+> {
   unit?: string;
   icon?: IconProp;
-  metric: number;
+  metric: T;
   canEdit: boolean;
   processing: boolean;
   denominator?: number;
   trend_metric?: number;
-  metricPrepend: string;
+  metricPrepend?: string;
   editingMetric: boolean;
   trend_metric_unit?: string;
   loading: boolean;
+  isError: boolean;
 
   updateMetric?: (newMetric: number) => Promise<boolean>;
   setProcessing: (value: boolean) => void;
@@ -23,8 +27,8 @@ export interface IMetricDisplayPresentationalProps {
   setEditingMetric: (val: boolean) => void;
 }
 
-export function MetricDisplayPresentational(
-  props: IMetricDisplayPresentationalProps
+export function MetricDisplayPresentational<T extends IMetricTypeDisplayable>(
+  props: IMetricDisplayPresentationalProps<T>
 ) {
   const content = (
     <>
@@ -48,7 +52,9 @@ export function MetricDisplayPresentational(
           }}
         >
           <Input
-            placeholder={props.metric ? props.metric.toString() : ""}
+            placeholder={
+              props.metric ? props.metric.getValue()?.toString() : ""
+            }
             onChange={(event) => props.setNewMetric(event.target.value)}
             disabled={props.processing}
           />
@@ -92,12 +98,7 @@ export function MetricDisplayPresentational(
         <Spin />
       ) : (
         <h1 className="metric-text">
-          {props.metricPrepend}
-          {props.metric === undefined
-            ? "-"
-            : props.metric % 1 !== 0
-            ? props.metric.toFixed(2)
-            : props.metric}
+          {props.metricPrepend} {props.metric.getValueNode()}
         </h1>
       )}
 
@@ -134,9 +135,10 @@ export function MetricDisplayPresentational(
           width: "100%",
         }}
       >
-        {content}
+        {props.isError ? <h1>Error</h1> : content}
       </div>
       {/* {props.children} Todo: Re add this */}
+      {/* Todo: Display error better */}
     </div>
   );
 }

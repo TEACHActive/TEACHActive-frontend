@@ -1,28 +1,35 @@
 import React, { ReactNode } from "react";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
-import { SessionMetricType, TREND } from "./metricDisplay.types";
+import {
+  IMetricTypeDisplayable,
+  SessionMetricType,
+  TREND,
+} from "./metricDisplay.types";
 import { MetricDisplayPresentational } from "./metricDisplayPresentational";
 
 type TrendKeys = keyof typeof TREND;
 type TrendValues = typeof TREND[TrendKeys];
 
-export interface IMetricDisplayProps {
+export interface IMetricDisplayProps<T extends IMetricTypeDisplayable> {
   unit?: string;
-  metric: number;
+  metric: T;
   canEdit: boolean;
   trend?: TrendValues;
   denominator?: number;
-  metricPrepend: string;
+  metricPrepend?: string;
   trend_metric?: number;
   trend_metric_unit?: string;
   metricType: SessionMetricType;
   updateMetric?: (newMetric: number) => Promise<boolean>;
   loading: boolean;
+  isError: boolean;
   children?: ReactNode;
 }
 
-export default function MetricDisplay(props: IMetricDisplayProps) {
+export default function MetricDisplay<T extends IMetricTypeDisplayable>(
+  props: IMetricDisplayProps<T>
+) {
   const [newMetric, setNewMetric] = React.useState("");
   const [processing, setProcessing] = React.useState(false);
   const [editingMetric, setEditingMetric] = React.useState(false);
@@ -38,8 +45,9 @@ export default function MetricDisplay(props: IMetricDisplayProps) {
       icon = "arrow-down";
     }
   }
+  // return <></>;
   return (
-    <MetricDisplayPresentational
+    <MetricDisplayPresentational<T>
       unit={props.unit}
       icon={icon}
       metric={props.metric}
@@ -55,6 +63,7 @@ export default function MetricDisplay(props: IMetricDisplayProps) {
       editingMetric={editingMetric}
       setEditingMetric={setEditingMetric}
       loading={props.loading}
+      isError={props.isError}
     />
   );
 }

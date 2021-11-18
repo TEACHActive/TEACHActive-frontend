@@ -5,6 +5,7 @@ import { useLocation } from "react-router-dom";
 import { appRoutes } from "routes";
 import { HeaderPresentational } from "./headerPresentational";
 import { useGetSessionsQuery } from "api/services/sessions/sessions";
+import { skipToken } from "@reduxjs/toolkit/dist/query";
 
 const { Header: AntHeader } = Layout;
 
@@ -14,7 +15,9 @@ export function Header(props: IHeaderProps) {
   let location = useLocation();
   const [showHeader, setShowHeader] = React.useState(false);
 
-  const { data, isLoading, isFetching, isError } = useGetSessionsQuery();
+  const { data, isLoading, isFetching, isError } = useGetSessionsQuery(
+    showHeader ?? skipToken
+  );
 
   React.useEffect(() => {
     const matchingRoute = appRoutes.find(

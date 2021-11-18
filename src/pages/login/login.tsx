@@ -1,3 +1,5 @@
+import React from "react";
+import { DateTime } from "luxon";
 import { Spin, Result } from "antd";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { Navigate, useNavigate } from "react-router-dom";
@@ -11,7 +13,6 @@ import { logger } from "logging";
 import { HomeRoute } from "routes";
 import { Cookie, CookieSingleton } from "cookies";
 import { LoginPagePresentational } from "./loginPresentational";
-import { DateTime } from "luxon";
 
 export interface ILoginPageProps {}
 
@@ -22,10 +23,12 @@ export interface ILoginValues {
 }
 
 export function LoginPage(props: ILoginPageProps) {
+  const [loggingIn, setLoggingIn] = React.useState(false);
   const [user, loading, error] = useAuthState(auth);
   let navigate = useNavigate();
 
   const onFinish = async (values: ILoginValues) => {
+    setLoggingIn(true);
     if (values.remember) rememberEmail(values.email);
     const tokenResponse = await loginWithEmailAndPassword(
       values.email,
@@ -38,7 +41,6 @@ export function LoginPage(props: ILoginPageProps) {
     const tokenExpireDateTime = DateTime.fromJSDate(new Date()).plus({
       seconds: tokenResponse?.expiresInSeconds,
     });
-    console.log("tokenExpireDateTime", tokenExpireDateTime.toISO());
 
     CookieSingleton.getInstance().setCookie(
       Cookie.AUTH_TOKEN_EXPIRE_DATETIME_ISO,
@@ -49,10 +51,12 @@ export function LoginPage(props: ILoginPageProps) {
     } else {
       // logger.error("Failed to log in, check email and password");
     }
+    setLoggingIn(false);
   };
 
   const onFinishFailed = (errorInfo: any) => {
     logger.error(errorInfo);
+    setLoggingIn(false);
   };
 
   const rememberEmail = (email: string) => {
@@ -86,6 +90,7 @@ export function LoginPage(props: ILoginPageProps) {
     <LoginPagePresentational
       onFinish={onFinish}
       onFinishFailed={onFinishFailed}
+      loggingIn={loggingIn}
     />
   );
 }
