@@ -21,10 +21,6 @@ export function HandRaiseMetricDisplay(props: IHandRaiseMetricDisplayProps) {
     selectedSession?.id ?? skipToken
   );
 
-  console.log(selectedSession);
-
-  console.log(data);
-
   return (
     <BlockContent
       color={{

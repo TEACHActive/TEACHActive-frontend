@@ -1,0 +1,22 @@
+.classroomHeatmapHolder {
+  width: 40em;
+  height: 40em;
+  position: relative;
+}
+
+.instructorMovementChart {
+  height: 20px;
+  width: 100%;
+  /* border: 2px solid black; */
+  position: absolute;
+  top: 25px;
+  left: 0;
+  z-index: 100;
+}
+
+.classroomImage {
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}

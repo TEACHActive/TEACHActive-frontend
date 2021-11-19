@@ -10,10 +10,14 @@ import {
 import * as React from "react";
 import apiHandler from "api/handler";
 import { useCallback } from "react";
-import { message, Spin } from "antd";
+import { message, Result, Spin } from "antd";
 import { useSelector } from "react-redux";
 import { DurationObjectUnits } from "luxon";
 import { selectSelectedSession } from "redux/sessionSlice";
+import { useGetSitStandDataInSessionQuery } from "api/services/sitStand";
+import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { SitStandInFrame } from "api/services/sitStand/types";
+import { SitStand } from "api/services/sessions/types";
 
 export interface ISitVsStandProps {}
 
@@ -24,6 +28,17 @@ const toPercent = (decimal: number, fixed = 0) =>
 
 export function SitVsStand(props: ISitVsStandProps) {
   const selectedSession = useSelector(selectSelectedSession);
+
+  const {
+    isLoading,
+    isError,
+    isFetching,
+    data,
+  } = useGetSitStandDataInSessionQuery(
+    selectedSession
+      ? { sessionId: selectedSession.id, numSegments: 20 }
+      : skipToken
+  );
 
   //   const [loading, setLoading] = React.useState(true);
   //   const [sitStandData, setSitStandData] = React.useState<
@@ -114,11 +129,24 @@ export function SitVsStand(props: ISitVsStandProps) {
   //     return <Spin />;
   //   }
 
+  if (isFetching || isLoading) {
+    return <Spin />;
+  }
+  if (isError || !data?.data) {
+    return (
+      <Result status="error" subTitle="Error when fetching sit vs stand data" />
+    );
+  }
+
+  const sitStandData = data.data.map(
+    (sitStandData) => new SitStandInFrame(sitStandData)
+  );
+
   return (
     <AreaChart
       width={400}
       height={300}
-      data={[]}
+      data={sitStandData}
       stackOffset="expand"
       margin={{
         top: 10,
@@ -128,7 +156,7 @@ export function SitVsStand(props: ISitVsStandProps) {
       }}
     >
       <CartesianGrid strokeDasharray="3 3" />
-      <XAxis dataKey="minutes">
+      <XAxis dataKey="timeDiff.minutes">
         <Label
           value="Minutes elapsed in session"
           offset={0}
@@ -146,21 +174,21 @@ export function SitVsStand(props: ISitVsStandProps) {
       <RechartsTooltip />
       <Area
         type="monotone"
-        dataKey="unknownNumber"
+        dataKey={SitStand.Error}
         stackId="1"
         stroke="#f0000"
         fill="#ff0000"
       />
       <Area
         type="monotone"
-        dataKey="standNumber"
+        dataKey={SitStand.Stand}
         stackId="1"
         stroke="#2bc44f"
         fill="#2bc44f"
       />
       <Area
         type="monotone"
-        dataKey="sitNumber"
+        dataKey={SitStand.Sit}
         stackId="1"
         stroke="#1e7fc7"
         fill="#1e7fc7"

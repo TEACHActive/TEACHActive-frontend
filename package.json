@@ -19,6 +19,7 @@
     "antd": "^4.16.13",
     "axios": "^0.24.0",
     "firebase": "^9.2.0",
+    "heatmap.js": "^2.0.5",
     "history": "^5.1.0",
     "luxon": "^2.0.2",
     "moment": "^2.29.1",
@@ -74,6 +75,7 @@
     "@storybook/node-logger": "^6.3.12",
     "@storybook/preset-create-react-app": "^3.2.0",
     "@storybook/react": "^6.3.12",
+    "@types/heatmap.js": "^2.0.37",
     "@types/luxon": "^2.0.5",
     "@types/react-router-dom": "^5.3.2"
   },

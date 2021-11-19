@@ -1,7 +1,7 @@
 import { Layout, Menu } from "antd";
 import { useNavigate } from "react-router-dom";
 
-import { ElementRoute } from "routes";
+import { ElementRoute, HomeRoute } from "routes";
 
 import MainLogoGray from "images/MainLogo-Gray.png";
 import LogoSmallGray from "images/LogoSmall-Gray.png";
@@ -9,6 +9,7 @@ import MainLogoWhite from "images/MainLogo-Gray.png";
 import LogoSmallWhite from "images/LogoSmall-Gray.png";
 
 import "./sider.scss";
+import { Link } from "react-router-dom";
 
 const { Sider: AntSider } = Layout;
 
@@ -35,13 +36,13 @@ export function SiderPresentational(props: ISiderPresentationalProps) {
       className="sider"
     >
       {props.collapsed ? (
-        <div className="logo logoSmall">
+        <Link className="logo logoSmall" to={HomeRoute.link()}>
           <img src={LogoSmall} alt="TEACHActive Logo" />
-        </div>
+        </Link>
       ) : (
-        <div className="logo logoMain">
+        <Link className="logo logoMain" to={HomeRoute.link()}>
           <img src={MainLogo} alt="TEACHActive Main Logo" />
-        </div>
+        </Link>
       )}
       <Menu mode="inline" theme="dark" className="siderMenu">
         {props.menuItems.map((menuItem, i) => (

@@ -3457,6 +3457,11 @@
   resolved "https://registry.yarnpkg.com/@types/estree/-/estree-0.0.39.tgz#e177e699ee1b8c22d23174caaa7422644389509f"
   integrity sha512-EYNwp3bU+98cpU4lAWYYL7Zz+2gryWH1qbdDTidVd6hkiR6weksdbMadyXKXNPEkQFhXM+hVO9ZygomHXp+AIw==
 
+"@types/geojson@*":
+  version "7946.0.8"
+  resolved "https://registry.yarnpkg.com/@types/geojson/-/geojson-7946.0.8.tgz#30744afdb385e2945e22f3b033f897f76b1f12ca"
+  integrity sha512-1rkryxURpr6aWP7R786/UQOkJ3PcpQiWkAXBmdWc7ryFWqN6a4xfK7BtjXvFBKO9LjQ+MWQSWxYeZX1OApnArA==
+
 "@types/glob-base@^0.3.0":
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/@types/glob-base/-/glob-base-0.3.0.tgz#a581d688347e10e50dd7c17d6f2880a10354319d"
@@ -3483,6 +3488,13 @@
   integrity sha512-wLEm0QvaoawEDoTRwzTXp4b4jpwiJDvR5KMnFnVodm3scufTlBOWRD6N1OBf9TZMhjlNsSfcO5V+7AF4+Vy+9g==
   dependencies:
     "@types/unist" "*"
+
+"@types/heatmap.js@^2.0.37":
+  version "2.0.37"
+  resolved "https://registry.yarnpkg.com/@types/heatmap.js/-/heatmap.js-2.0.37.tgz#f8c003925b288fa39f926990a123fefeb831ccba"
+  integrity sha512-Zd1m6WaRSPnXcR1fETGnIvyRSE2rcQK21S0zIU/LWjwsrNyKBA3xdckrQhQpIdG+UTeu7WODv237s30Ky7IVXg==
+  dependencies:
+    "@types/leaflet" "^0"
 
 "@types/history@*":
   version "4.7.9"
@@ -3550,6 +3562,13 @@
   version "0.0.29"
   resolved "https://registry.yarnpkg.com/@types/json5/-/json5-0.0.29.tgz#ee28707ae94e11d2b827bcbe5270bcea7f3e71ee"
   integrity sha1-7ihweulOEdK4J7y+UnC86n8+ce4=
+
+"@types/leaflet@^0":
+  version "0.7.35"
+  resolved "https://registry.yarnpkg.com/@types/leaflet/-/leaflet-0.7.35.tgz#5eb474dee4ce4b126292cd0ba4db5e09190649a2"
+  integrity sha512-BK+pa9a9dYC1qJyYQulqkRI9N+ZnV4ycAmNSOUmom7C6xaAdmrhOoiCiDMhSQklyjPpasy3KWRTkTRTJuDbBSw==
+  dependencies:
+    "@types/geojson" "*"
 
 "@types/long@^4.0.1":
   version "4.0.1"
@@ -8616,6 +8635,11 @@ he@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/he/-/he-1.2.0.tgz#84ae65fa7eafb165fddb61566ae14baf05664f0f"
   integrity sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==
+
+heatmap.js@^2.0.5:
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/heatmap.js/-/heatmap.js-2.0.5.tgz#466d3b86513f5d49112a49d25700ab2730149153"
+  integrity sha1-Rm07hlE/XUkRKknSVwCrJzAUkVM=
 
 hex-color-regex@^1.1.0:
   version "1.1.0"

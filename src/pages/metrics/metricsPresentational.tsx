@@ -14,6 +14,8 @@ import { PerformanceMetricDisplay } from "components/MetricDisplay/Metrics/perfo
 
 import "./metrics.scss";
 import { SitVsStand } from "components/Graphs/SitVsStand/sitVsStand";
+import { InstructorMovement } from "components/Graphs/InstructorMovement/instructorMovement";
+import { BehavioralEngagement } from "components/Graphs/BehavioralEngagement/behavioralEngagement";
 
 const { Title } = Typography;
 
@@ -154,7 +156,7 @@ export function MetricsPagePresentational(
             style={{ margin: ".5em" }}
           >
             <div className="infoCardContent">
-              {/* <InstructorMovement uid={user.uid} /> */}
+              <InstructorMovement />
             </div>
           </InfoCard>
 
@@ -166,7 +168,7 @@ export function MetricsPagePresentational(
             style={{ margin: ".5em" }}
           >
             <div className="infoCardContent">
-              {/* <BehavioralEngagement /> */}
+              <BehavioralEngagement />
             </div>
           </InfoCard>
         </div>

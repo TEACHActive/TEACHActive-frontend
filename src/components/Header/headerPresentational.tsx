@@ -49,7 +49,7 @@ export function HeaderPresentational(props: IHeaderPresentationalProps) {
               size="small"
             />
             <Tooltip placement="right" title={uid}>
-              User {i + 1}
+              User {uid.slice(0, 4)}
             </Tooltip>
           </div>
         ),
@@ -81,7 +81,7 @@ export function HeaderPresentational(props: IHeaderPresentationalProps) {
             size={16}
           />
           <Tooltip placement="bottom" title={uid}>
-            User {distinctUIDs.findIndex((val) => val === uid) + 1}
+            User {distinctUIDs.find((val) => val === uid)?.slice(0, 4)}
           </Tooltip>
         </div>
         {selectedOptions.length > 1 && (

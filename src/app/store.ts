@@ -17,6 +17,8 @@ export const store = configureStore({
     [ServiceAPI.performanceApi.reducerPath]: ServiceAPI.performanceApi.reducer,
     [ServiceAPI.speechApi.reducerPath]: ServiceAPI.speechApi.reducer,
     [ServiceAPI.reflectionsApi.reducerPath]: ServiceAPI.reflectionsApi.reducer,
+    [ServiceAPI.movementApi.reducerPath]: ServiceAPI.movementApi.reducer,
+    [ServiceAPI.sitStandApi.reducerPath]: ServiceAPI.sitStandApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat([
@@ -27,6 +29,8 @@ export const store = configureStore({
       ServiceAPI.attendanceApi.middleware,
       ServiceAPI.speechApi.middleware,
       ServiceAPI.reflectionsApi.middleware,
+      ServiceAPI.movementApi.middleware,
+      ServiceAPI.sitStandApi.middleware,
     ]),
 });
 

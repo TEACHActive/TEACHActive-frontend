@@ -38,6 +38,7 @@ export function RequireAuth({ children }: { children: JSX.Element }) {
     Cookie.AUTH_TOKEN_EXPIRE_DATETIME_ISO
   );
   if (!tokenExpireISO) {
+    message.info("Reached time limit, you were logged out to ensure security");
     logoutOfFirebase();
   }
 
@@ -48,6 +49,7 @@ export function RequireAuth({ children }: { children: JSX.Element }) {
   const secondsUntilExpire = timeUntilExpire.seconds || 0;
 
   if (secondsUntilExpire <= 0) {
+    message.info("Reached time limit, you were logged out to ensure security");
     logoutOfFirebase();
   }
 
