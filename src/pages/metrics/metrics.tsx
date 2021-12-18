@@ -1,31 +1,65 @@
+import { Layout } from "antd";
 import { useSelector } from "react-redux";
+import { useAppDispatch } from "app/hooks";
 
-import { selectSelectedSession } from "redux/sessionSlice";
 import { SelectASession } from "components/Session/selectASession";
 import { MetricsPagePresentational } from "./metricsPresentational";
-import { useUpdateSessionNameMutation } from "api/services/sessions/sessions";
+import { selectSelectedSession, setSelectedSession } from "redux/sessionSlice";
+import {
+  _useGetSessionsQuery,
+  _useUpdateSessionNameMutation,
+} from "api/services/sessions";
+import { ISession } from "api/services/sessions/types";
+
+const { Header: AntHeader } = Layout;
 
 export interface IMetricsPageProps {}
 
 export function MetricsPage(props: IMetricsPageProps) {
   const selectedSession = useSelector(selectSelectedSession);
 
-  const [
+  const { data, isLoading, isFetching, isError } = _useGetSessionsQuery(true);
+
+  const dispatch = useAppDispatch();
+
+  const {
     updateSessionName,
     updateSessionNameResult,
-  ] = useUpdateSessionNameMutation();
+  } = _useUpdateSessionNameMutation();
 
-  // const armPoseDataRequest = useGetArmPoseDataInSessionQuery(
-  //   selectedSession?.id
-  //     ? {
-  //         sessionId: selectedSession.id,
-  //         numSegments: 100,
-  //       }
-  //     : skipToken
-  // );
+  if (isLoading || isFetching) {
+    return (
+      <AntHeader className="header">
+        <p>Loading...</p>
+      </AntHeader>
+    );
+  }
+
+  if (isError || !data) {
+    return (
+      <AntHeader className="header">
+        <p>Error...</p>
+      </AntHeader>
+    );
+  }
 
   if (!selectedSession) {
     return <SelectASession />;
+    // const lastSession: ISession | null =
+    //   data.length > 0
+    //     ? {
+    //         id: data[0].id,
+    //         name: data[0].name,
+    //         userUID: data[0].userUID,
+    //         performance: data[0].performance,
+    //         createdAtISO: data[0].createdAtISO,
+    //       }
+    //     : null;
+    // if (!lastSession) {
+    //   return <SelectASession />;
+    // }
+    // dispatch(setSelectedSession(lastSession));
+    // return <h2>Loading Session...</h2>;
   }
 
   return (

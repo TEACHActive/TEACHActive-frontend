@@ -1,17 +1,16 @@
 import { auth } from "firebase";
 import { logger } from "logging";
+import { DateTime } from "luxon";
 import { message, Spin } from "antd";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useLocation, Navigate } from "react-router-dom";
 
-import { LogInRoute } from "routes";
+import { LogInRoute, LogoutRoute } from "routes";
 import { Cookie, CookieSingleton } from "cookies";
-import { DateTime } from "luxon";
-import { logoutOfFirebase } from "firebase/authController";
 
 export function RequireAuth({ children }: { children: JSX.Element }) {
   const [user, loading, error] = useAuthState(auth);
-  let location = useLocation();
+  const location = useLocation();
 
   if (loading) {
     return <Spin />;
@@ -38,10 +37,8 @@ export function RequireAuth({ children }: { children: JSX.Element }) {
     Cookie.AUTH_TOKEN_EXPIRE_DATETIME_ISO
   );
   if (!tokenExpireISO) {
-    message.info("Reached time limit, you were logged out to ensure security");
-    logoutOfFirebase();
-    CookieSingleton.getInstance().setCookie(Cookie.AUTH_TOKEN,"");
-    CookieSingleton.getInstance().setCookie(Cookie.AUTH_TOKEN_EXPIRE_DATETIME_ISO,"");
+    //redirect to an interminant loggedout page
+    return <Navigate to={LogoutRoute.link()} state={{ from: location }} />;
   }
 
   const timeUntilExpire = DateTime.fromISO(tokenExpireISO)
@@ -51,10 +48,7 @@ export function RequireAuth({ children }: { children: JSX.Element }) {
   const secondsUntilExpire = timeUntilExpire.seconds || 0;
 
   if (secondsUntilExpire <= 0) {
-    message.info("Reached time limit, you were logged out to ensure security");
-    logoutOfFirebase();
-    CookieSingleton.getInstance().setCookie(Cookie.AUTH_TOKEN,"");
-    CookieSingleton.getInstance().setCookie(Cookie.AUTH_TOKEN_EXPIRE_DATETIME_ISO,"");
+    return <Navigate to={LogoutRoute.link()} state={{ from: location }} />;
   }
 
   return children;

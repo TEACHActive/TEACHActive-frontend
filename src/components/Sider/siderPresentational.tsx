@@ -20,7 +20,7 @@ export interface ISiderPresentationalProps {
 }
 
 export function SiderPresentational(props: ISiderPresentationalProps) {
-  let navigate = useNavigate();
+  const navigate = useNavigate();
 
   const useDefaultColors = false;
   const MainLogo = useDefaultColors ? MainLogoWhite : MainLogoGray;

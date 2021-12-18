@@ -18,3 +18,7 @@ export const baseQuery = fetchBaseQuery({
     return headers;
   },
 });
+
+export const getCameraFPS = () => {
+  return 15;
+};

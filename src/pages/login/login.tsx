@@ -1,18 +1,15 @@
 import React from "react";
 import { DateTime } from "luxon";
 import { Spin, Result } from "antd";
+import { useNavigate } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { Navigate, useNavigate } from "react-router-dom";
 
 import { auth } from "firebase";
-import {
-  logoutOfFirebase,
-  loginWithEmailAndPassword,
-} from "firebase/authController";
 import { logger } from "logging";
-import { HomeRoute } from "routes";
+import { HomeRoute, LogoutRoute } from "routes";
 import { Cookie, CookieSingleton } from "cookies";
 import { LoginPagePresentational } from "./loginPresentational";
+import { loginWithEmailAndPassword } from "firebase/authController";
 
 export interface ILoginPageProps {}
 
@@ -25,7 +22,8 @@ export interface ILoginValues {
 export function LoginPage(props: ILoginPageProps) {
   const [loggingIn, setLoggingIn] = React.useState(false);
   const [user, loading, error] = useAuthState(auth);
-  let navigate = useNavigate();
+
+  const navigate = useNavigate();
 
   const onFinish = async (values: ILoginValues) => {
     setLoggingIn(true);
@@ -46,11 +44,6 @@ export function LoginPage(props: ILoginPageProps) {
       Cookie.AUTH_TOKEN_EXPIRE_DATETIME_ISO,
       tokenExpireDateTime.toISO()
     );
-    if (user) {
-      navigate(HomeRoute.link());
-    } else {
-      // logger.error("Failed to log in, check email and password");
-    }
     setLoggingIn(false);
   };
 
@@ -63,6 +56,19 @@ export function LoginPage(props: ILoginPageProps) {
     CookieSingleton.getInstance().setCookie(Cookie.EMAIL, email);
   };
 
+  React.useEffect(() => {
+    const token = CookieSingleton.getInstance().getCookie(Cookie.AUTH_TOKEN);
+
+    if (user) {
+      //Already logged in
+      if (!token) {
+        //Token expired, log user out
+        navigate(LogoutRoute.link());
+      }
+      navigate(HomeRoute.link());
+    }
+  }, [user]);
+
   if (loading) {
     return <Spin />;
   }
@@ -73,17 +79,6 @@ export function LoginPage(props: ILoginPageProps) {
       title="Authentication Error"
       subTitle="Sorry, something went wrong. Try refreshing the page"
     />;
-  }
-
-  const token = CookieSingleton.getInstance().getCookie(Cookie.AUTH_TOKEN);
-
-  if (user) {
-    //Already logged in
-    if (!token) {
-      //Token expired, log user out
-      logoutOfFirebase();
-    }
-    return <Navigate to={HomeRoute.link()} />;
   }
 
   return (

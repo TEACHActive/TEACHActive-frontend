@@ -1,10 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { RootState } from "../app/store";
-import { Session } from "api/services/sessions/types";
+import { getCameraFPS } from "api/services/util";
+import { ISession, Session } from "api/services/sessions/types";
 
 export interface SessionState {
-  selectedSession: Session | undefined;
+  selectedSession?: ISession;
 }
 
 const initialState: SessionState = {
@@ -31,8 +32,24 @@ export const sessionSlice = createSlice({
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
     // Use the PayloadAction type to declare the contents of `action.payload`
-    setSelectedSession: (state, action: PayloadAction<Session | undefined>) => {
-      state.selectedSession = action.payload;
+    setSelectedSession: (
+      state,
+      action: PayloadAction<ISession | undefined>
+    ) => {
+      if (!action.payload) {
+        //Setting selected session to undefined
+        state.selectedSession = action.payload;
+      } else {
+        //Dehydrate the session before putting it in the store
+        const { id, name, userUID, performance, createdAtISO } = action.payload;
+        state.selectedSession = {
+          id: id,
+          name: name,
+          userUID: userUID,
+          createdAtISO: createdAtISO,
+          performance: performance,
+        };
+      }
     },
   },
 });
@@ -44,7 +61,9 @@ export const { setSelectedSession } = sessionSlice.actions;
 // // in the slice file. For example: `useSelector((state: RootState) => state.counter.value)`
 
 export const selectSelectedSession = (state: RootState) =>
-  state.session.selectedSession;
+  state.session.selectedSession
+    ? new Session(state.session.selectedSession, getCameraFPS())
+    : undefined; //Hydrate the session
 
 // // We can also write thunks by hand, which may contain both sync and async logic.
 // // Here's an example of conditionally dispatching actions based on current state.

@@ -19,9 +19,10 @@ export class SitStandInFrame {
     this[SitStand.Stand] = data[SitStand.Stand];
     this[SitStand.Error] = data[SitStand.Error];
     this.frameNumber = data.frameNumber;
+
     this.timestamp = {
-      begin: data.timestamp.begin,
-      end: data.timestamp.end,
+      begin: DateTime.fromISO(data.timestamp.begin),
+      end: DateTime.fromISO(data.timestamp.end),
     };
     this.timeDiff = {
       minutes: parseInt(data.timeDiff.minutes),

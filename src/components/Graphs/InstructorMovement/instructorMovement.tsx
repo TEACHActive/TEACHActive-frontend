@@ -1,6 +1,5 @@
 import {
   Line,
-  Area,
   XAxis,
   YAxis,
   Label,
@@ -11,10 +10,9 @@ import {
 import { useSelector } from "react-redux";
 import { DurationObjectUnits } from "luxon";
 import { selectSelectedSession } from "redux/sessionSlice";
-import { useGetInstructorMovementInSessionQuery } from "api/services/movement";
+import { _useGetInstructorMovementInSessionQuery } from "api/services/movement";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { Result, Spin } from "antd";
-import { InstructorMovementFrame } from "api/services/movement/types";
 import { Heatmap } from "./heatmap";
 
 // import Heatmap from "./heatmap";
@@ -37,16 +35,15 @@ export function InstructorMovement(props: IInstructorMovementProps) {
     isLoading,
     isFetching,
     isError,
-  } = useGetInstructorMovementInSessionQuery(
-    selectedSession
-      ? { sessionId: selectedSession.id, numSegments: 50 }
-      : skipToken
+  } = _useGetInstructorMovementInSessionQuery(
+    { sessionId: selectedSession?.id || "", numSegments: 50 },
+    selectedSession ? null : skipToken
   );
 
   if (isLoading || isFetching) {
     return <Spin />;
   }
-  if (isError || !data?.data) {
+  if (isError || !data) {
     return (
       <Result
         status="error"
@@ -55,15 +52,9 @@ export function InstructorMovement(props: IInstructorMovementProps) {
     );
   }
 
-  const movementData = data.data.map(
-    (frame) => new InstructorMovementFrame(frame)
-  );
-
-  console.log(movementData);
-
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
-      <ComposedChart width={500} height={300} data={movementData}>
+      <ComposedChart width={500} height={300} data={data}>
         <Line
           type="basis"
           dataKey="instructor.avg.xPos"
@@ -100,7 +91,7 @@ export function InstructorMovement(props: IInstructorMovementProps) {
         />
       </ComposedChart>
       <div style={{ margin: "2em" }}>
-        <Heatmap data={movementData.map((im) => im.instructor.avg.xPos)} />
+        <Heatmap data={data.map((im) => im.instructor.avg.xPos)} />
       </div>
     </div>
   );

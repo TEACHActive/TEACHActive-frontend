@@ -7,17 +7,13 @@ import {
   CartesianGrid,
   Tooltip as RechartsTooltip,
 } from "recharts";
-import * as React from "react";
-import apiHandler from "api/handler";
-import { useCallback } from "react";
-import { message, Result, Spin } from "antd";
+import { Result, Spin } from "antd";
 import { useSelector } from "react-redux";
-import { DurationObjectUnits } from "luxon";
-import { selectSelectedSession } from "redux/sessionSlice";
-import { useGetSitStandDataInSessionQuery } from "api/services/sitStand";
-import { skipToken } from "@reduxjs/toolkit/dist/query";
-import { SitStandInFrame } from "api/services/sitStand/types";
 import { SitStand } from "api/services/sessions/types";
+import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { selectSelectedSession } from "redux/sessionSlice";
+import { SitStandInFrame } from "api/services/sitStand/types";
+import { _useGetSitStandDataInSessionQuery } from "api/services/sitStand";
 
 export interface ISitVsStandProps {}
 
@@ -34,113 +30,36 @@ export function SitVsStand(props: ISitVsStandProps) {
     isError,
     isFetching,
     data,
-  } = useGetSitStandDataInSessionQuery(
-    selectedSession
-      ? { sessionId: selectedSession.id, numSegments: 20 }
-      : skipToken
+  } = _useGetSitStandDataInSessionQuery(
+    { sessionId: selectedSession?.id || "", numSegments: 20 },
+    selectedSession ? null : skipToken
   );
-
-  //   const [loading, setLoading] = React.useState(true);
-  //   const [sitStandData, setSitStandData] = React.useState<
-  //     {
-  //       sitNumber: number;
-  //       standNumber: number;
-  //       errorNumber: number;
-  //       startTimeDiff: {
-  //         [unit: string]: keyof DurationObjectUnits;
-  //       };
-  //     }[]
-  //   >([]);
-  //   const getSitVsStand = useCallback(async (sessionId: string) => {
-  //     setLoading(true);
-  //     const sitVsStandData = await apiHandler.getStudentSitVsStandInSession(
-  //       sessionId
-  //     );
-  //     // console.log(sitVsStandData?.slice(0, 1000));
-
-  //     if (sitVsStandData) {
-  //       const chunkLength = sitVsStandData.length / defaultResolution;
-
-  //       const chunkedEngagementData = chunkArray(sitVsStandData, chunkLength);
-  //       // console.log(chunkedEngagementData);
-
-  //       const test = chunkedEngagementData
-  //         .map((chunk) => {
-  //           const startTimeDiff = chunk[0].timeDiff;
-  //           // const chunkLength = chunk.length;
-  //           const initialFrameNumber = chunk[0].frameNumber;
-  //           return chunk.reduce(
-  //             (acc, curr) => {
-  //               return {
-  //                 ...acc,
-  //                 sitNumber: acc.sitNumber + curr.sitNumber,
-  //                 standNumber: acc.standNumber + curr.standNumber,
-  //                 errorNumber: acc.errorNumber + curr.errorNumber,
-  //                 totalFrameNumberSum: acc.totalFrameNumberSum + curr.frameNumber,
-  //                 chunkNumberFrames: acc.chunkNumberFrames + 1,
-  //               };
-  //             },
-  //             {
-  //               sitNumber: 0,
-  //               standNumber: 0,
-  //               errorNumber: 0,
-  //               startTimeDiff: startTimeDiff,
-  //               totalFrameNumberSum: 0,
-  //               chunkNumberFrames: 0,
-  //               initialFrameNumber: initialFrameNumber,
-  //             }
-  //           );
-  //         })
-  //         .map((chunk, i, array) => {
-  //           return {
-  //             ...chunk,
-  //             sitNumber: Math.round(chunk.sitNumber / 15),
-  //             standNumber: Math.round(chunk.standNumber / 15),
-  //             unknownNumber: Math.round(chunk.errorNumber / 15),
-  //             frameNumber: chunk.totalFrameNumberSum / chunkLength,
-  //             minutes: Math.round(
-  //               (parseInt(array[array.length - 1].startTimeDiff.minutes) /
-  //                 array.length) *
-  //                 i
-  //             ),
-  //             // minutes: Math.round(
-  //             //   (chunk.totalFrameNumberSum - chunk.initialFrameNumber) /
-  //             //     chunk.chunkNumberFrames /
-  //             //     15 /
-  //             //     60
-  //             // ),
-  //           };
-  //         });
-
-  //       console.log(test);
-
-  //       setSitStandData(test);
-  //     }
-  //     setLoading(false);
-  //   }, []);
-
-  //   React.useEffect(() => {
-  //     // console.log("reloading sit vs stand with id " + selectedSession.id);
-
-  //     getSitVsStand(selectedSession.id);
-  //   }, [getSitVsStand, selectedSession]);
-
-  //   if (loading) {
-  //     return <Spin />;
-  //   }
 
   if (isFetching || isLoading) {
     return <Spin />;
   }
-  if (isError || !data?.data) {
+  if (isError || !data) {
     return (
       <Result status="error" subTitle="Error when fetching sit vs stand data" />
     );
   }
 
-  const sitStandData = data.data.map(
-    (sitStandData) => new SitStandInFrame(sitStandData)
-  );
+  const initalTimestamp = new SitStandInFrame(data[0]).timestamp.end;
+
+  const sitStandData = data
+    .map((frame) => new SitStandInFrame(frame))
+    .sort((a, b) => a.timestamp.end.toMillis() - b.timestamp.end.toMillis())
+    .map((sitStandData, i, arr) => {
+      if (i === 0) return sitStandData;
+      const timeDiffMins = sitStandData.timestamp.end
+        .diff(initalTimestamp, "minutes")
+        .toObject().minutes;
+      if (i === 1)
+        console.log(sitStandData.timestamp.end, arr[i - 1].timestamp.end);
+
+      sitStandData.timeDiff.minutes = Math.round(timeDiffMins || 0);
+      return sitStandData;
+    });
 
   return (
     <AreaChart

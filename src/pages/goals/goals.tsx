@@ -2,36 +2,18 @@ import { useSelector } from "react-redux";
 
 import { selectSelectedSession } from "redux/sessionSlice";
 import GoalsPagePresentational from "./goalsPresentational";
-import {
-  // useCreateReflectionForSessionMutation,
-  useGetReflectionForSessionUpsertMutation,
-} from "api/services/reflections";
 import { SelectASession } from "components/Session/selectASession";
+import { _useGetReflectionForSessionUpsertMutation } from "api/services/reflections";
 
 export interface IGoalsPageProps {}
 
 export function GoalsPage(props: IGoalsPageProps) {
   const selectedSession = useSelector(selectSelectedSession);
 
-  const [
-    getReflectionsForSession,
-    getReflectionsForSessionResult,
-  ] = useGetReflectionForSessionUpsertMutation();
-
-  // const reflectionRequest = useGetReflectionForSessionUpsertMutation(
-  //   selectedSession?.id ?? skipToken
-  // );
-
-  // const [
-  //   createReflectionForSession,
-  //   createReflectionForSessionResult,
-  // ] = useCreateReflectionForSessionMutation();
-
-  // const speechTotalsInSecondsForSessionRequest = useGetSpeechTotalsInSecondsQuery(
-  //   selectedSession?.id
-  //     ? { sessionId: selectedSession?.id, minSpeakingAmp: 0 }
-  //     : skipToken
-  // );
+  const {
+    getReflectionForSessionUpsert,
+    getReflectionForSessionResult,
+  } = _useGetReflectionForSessionUpsertMutation();
 
   if (!selectedSession) {
     return <SelectASession />;
@@ -39,10 +21,9 @@ export function GoalsPage(props: IGoalsPageProps) {
 
   return (
     <GoalsPagePresentational
-      getReflectionsForSession={getReflectionsForSession}
-      getReflectionsForSessionResult={getReflectionsForSessionResult}
+      getReflectionsForSession={getReflectionForSessionUpsert}
+      getReflectionsForSessionResult={getReflectionForSessionResult}
       sessionId={selectedSession.id}
-      // createReflectionForSession={createReflectionForSession}
     />
   );
 }

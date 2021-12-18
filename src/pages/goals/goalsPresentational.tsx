@@ -2,7 +2,6 @@ import React from "react";
 import { Collapse, Result, Spin } from "antd";
 import { QueryStatus } from "@reduxjs/toolkit/dist/query";
 
-import { Response } from "api/types";
 import { Reflection, ReflectionSection } from "api/services/reflections/types";
 
 import { SectionForm } from "components/SectionForm/sectionForm";
@@ -22,11 +21,11 @@ export interface IGoalsPagePresentationalProps {
   getReflectionsForSessionResult: {
     status: QueryStatus;
     data?: Reflection;
-    error?: undefined;
-    isLoading: false;
-    isSuccess: false;
-    isError: false;
-  } & any;
+    error?: any;
+    isLoading: boolean;
+    isSuccess: boolean;
+    isError: boolean;
+  };
 }
 
 /**
@@ -71,20 +70,15 @@ export default function GoalsPagePresentational(
     comment: <p>{/* During this section there were <strong></strong> */}</p>,
   });
 
-  const {
-    isLoading,
-    isFetching,
-    isError,
-    data,
-  } = props.getReflectionsForSessionResult;
+  const { isLoading, isError, data } = props.getReflectionsForSessionResult;
 
-  if (isLoading || isFetching || !data) return <Spin />;
+  if (isLoading || !data) return <Spin />;
   if (isError)
     return <Result status="500" title="Error fetching reflections" />;
 
   return (
     <Collapse accordion className="goalsCollapse">
-      {data.data.reflectionSections.map(
+      {data.reflectionSections.map(
         (reflectionSection: ReflectionSection, i: number) => {
           const metricMap = reflectionSectionMetricMap.get(
             reflectionSection.name

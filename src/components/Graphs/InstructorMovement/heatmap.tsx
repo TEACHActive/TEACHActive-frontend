@@ -60,7 +60,7 @@ export function Heatmap(props: IHeatmapProps) {
       // for data initialization
       heatmapInstance.setData(data);
     }
-  }, []);
+  }, [props.data]);
 
   // console.log(props.data);
 

@@ -10,10 +10,20 @@ export const userApi = createApi({
   reducerPath: "userApi",
   baseQuery: baseQuery,
   endpoints: (builder) => ({
-    getUser: builder.query<Response<User>, string>({
+    getUser: builder.query<User | null, string>({
       query: () => `${baseEndpoint}`,
+      transformResponse: (response: Response<User>) => {
+        return response.data;
+      },
     }),
   }),
 });
 
-export const { useGetUserQuery } = userApi;
+export function _useGetUserQuery(sessionId: string) {
+  const result = userApi.useGetUserQuery(sessionId);
+
+  return {
+    ...result,
+    data: result.isSuccess && result.data ? new User(result.data) : null,
+  };
+}

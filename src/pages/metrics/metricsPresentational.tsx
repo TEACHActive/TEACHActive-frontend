@@ -3,24 +3,24 @@ import { Button, Input, Typography } from "antd";
 import { QueryStatus } from "@reduxjs/toolkit/dist/query";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { Session } from "api/services/sessions/types";
+import { ISession } from "api/services/sessions/types";
 import { InfoCard } from "components/InfoCard/infoCard";
 
-import { HandRaiseMetricDisplay } from "components/MetricDisplay/Metrics/handRasiseMetricDisplay";
-import { AttendanceMetricDisplay } from "components/MetricDisplay/Metrics/attendanceMetricDisplay";
-import { InstructorSpeechMetricDisplay } from "components/MetricDisplay/Metrics/instructorSpeechMetricDisplay";
-import { StudentSpeechMetricDisplay } from "components/MetricDisplay/Metrics/studentSpeechMetricDisplay";
-import { PerformanceMetricDisplay } from "components/MetricDisplay/Metrics/performanceMetricDisplay";
-
-import "./metrics.scss";
 import { SitVsStand } from "components/Graphs/SitVsStand/sitVsStand";
 import { InstructorMovement } from "components/Graphs/InstructorMovement/instructorMovement";
+import { HandRaiseMetricDisplay } from "components/MetricDisplay/Metrics/handRasiseMetricDisplay";
 import { BehavioralEngagement } from "components/Graphs/BehavioralEngagement/behavioralEngagement";
+import { AttendanceMetricDisplay } from "components/MetricDisplay/Metrics/attendanceMetricDisplay";
+import { PerformanceMetricDisplay } from "components/MetricDisplay/Metrics/performanceMetricDisplay";
+import { StudentSpeechMetricDisplay } from "components/MetricDisplay/Metrics/studentSpeechMetricDisplay";
+import { InstructorSpeechMetricDisplay } from "components/MetricDisplay/Metrics/instructorSpeechMetricDisplay";
+
+import "./metrics.scss";
 
 const { Title } = Typography;
 
 export interface IMetricsPagePresentationalProps {
-  session: Session;
+  session: ISession;
   updateSessionName: (arg: { sessionId: string; name: string }) => any;
   updateSessionNameResult: {
     status: QueryStatus;

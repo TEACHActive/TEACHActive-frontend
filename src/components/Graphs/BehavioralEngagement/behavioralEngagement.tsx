@@ -1,4 +1,8 @@
+import React from "react";
+import { useSelector } from "react-redux";
 import { Checkbox, Result, Spin } from "antd";
+import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { CheckboxValueType } from "antd/lib/checkbox/Group";
 import {
   XAxis,
   YAxis,
@@ -8,17 +12,14 @@ import {
   CartesianGrid,
   Tooltip as RechartsTooltip,
 } from "recharts";
-import { CheckboxValueType } from "antd/lib/checkbox/Group";
-import { SessionMetricType } from "components/MetricDisplay/metricDisplay.types";
-import React from "react";
+
 import { ArmPose } from "api/services/sessions/types";
-import { useGetArmPoseDataInSessionQuery } from "api/services/armPose";
-import { useSelector } from "react-redux";
-import { selectSelectedSession } from "redux/sessionSlice";
-import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { ArmPoseStats } from "api/services/armPose/types";
-import { useGetCombinedSpeechDataInSessionQuery } from "api/services/speech";
+import { selectSelectedSession } from "redux/sessionSlice";
 import { CombinedSpeechFrame } from "api/services/speech/types";
+import { _useGetArmPoseDataInSessionQuery } from "api/services/armPose";
+import { _useGetCombinedSpeechDataInSessionQuery } from "api/services/speech";
+import { SessionMetricType } from "components/MetricDisplay/metricDisplay.types";
 
 export interface IBehavioralEngagementProps {}
 
@@ -51,16 +52,18 @@ export function BehavioralEngagement(props: IBehavioralEngagementProps) {
 
   const selectedSession = useSelector(selectSelectedSession);
 
-  const getArmPoseDataInSessionResult = useGetArmPoseDataInSessionQuery(
-    selectedSession
-      ? { sessionId: selectedSession.id, numSegments: 20 }
-      : skipToken
+  const getArmPoseDataInSessionResult = _useGetArmPoseDataInSessionQuery(
+    { sessionId: selectedSession?.id || "", numSegments: 20 },
+    selectedSession ? null : skipToken
   );
 
-  const getCombinedSpeechDataInSessionResult = useGetCombinedSpeechDataInSessionQuery(
-    selectedSession
-      ? { sessionId: selectedSession.id, minSpeakingAmp: 0, numSegments: 20 }
-      : skipToken
+  const getCombinedSpeechDataInSessionResult = _useGetCombinedSpeechDataInSessionQuery(
+    {
+      sessionId: selectedSession?.id || "",
+      minSpeakingAmp: 0,
+      numSegments: 20,
+    },
+    selectedSession ? null : skipToken
   );
 
   const onChange = (checkedValue: CheckboxValueType[]) => {
@@ -140,20 +143,20 @@ export function BehavioralEngagement(props: IBehavioralEngagementProps) {
 
   const armPoseError =
     getArmPoseDataInSessionResult.isError ||
-    !getArmPoseDataInSessionResult.data?.data;
+    !getArmPoseDataInSessionResult.data;
   const speechError =
     getCombinedSpeechDataInSessionResult.isError ||
-    !getCombinedSpeechDataInSessionResult.data?.data;
+    !getCombinedSpeechDataInSessionResult.data;
 
   if (armPoseError || speechError) {
     return <Result status="error" subTitle="Error occured when getting data" />;
   }
 
-  const armPoseData = getArmPoseDataInSessionResult!.data!.data!.map(
+  const armPoseData = getArmPoseDataInSessionResult.data.map(
     (armPoseStats) => new ArmPoseStats(armPoseStats)
   );
 
-  const combinedSpeechData = getCombinedSpeechDataInSessionResult!.data!.data!.map(
+  const combinedSpeechData = getCombinedSpeechDataInSessionResult.data.map(
     (combinedSpeechFrame) => new CombinedSpeechFrame(combinedSpeechFrame)
   );
 

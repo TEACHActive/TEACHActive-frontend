@@ -1,4 +1,4 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
+import { createApi, skipToken } from "@reduxjs/toolkit/query/react";
 
 import { baseQuery } from "../util";
 import { Response } from "api/types";
@@ -11,23 +11,58 @@ export const armPoseApi = createApi({
   baseQuery: baseQuery,
   endpoints: (builder) => ({
     getArmPoseDataInSession: builder.query<
-      Response<ArmPoseStats[]>,
+      ArmPoseStats[],
       { sessionId: string; numSegments: number }
     >({
       query: (arg: { sessionId: string; numSegments: number }) =>
         `${baseEndpoint}/data/${arg.sessionId}?numSegments=${arg.numSegments}`,
+      transformResponse: (response: Response<ArmPoseStats[]>) => {
+        return response.data || [];
+      },
     }),
     getArmPoseTotalsInSecondsSession: builder.query<
-      Response<ArmPoseTotalsStats>,
+      ArmPoseTotalsStats | null,
       string
     >({
       query: (sessionId: string) =>
         `${baseEndpoint}/totals/seconds/${sessionId}`,
+      transformResponse: (response: Response<ArmPoseTotalsStats>) => {
+        return response.data;
+      },
     }),
   }),
 });
 
-export const {
-  useGetArmPoseDataInSessionQuery,
-  useGetArmPoseTotalsInSecondsSessionQuery,
-} = armPoseApi;
+export function _useGetArmPoseDataInSessionQuery(
+  arg: {
+    sessionId: string;
+    numSegments: number;
+  },
+  skip: typeof skipToken | null
+) {
+  const result = armPoseApi.useGetArmPoseDataInSessionQuery(
+    skip || { sessionId: arg.sessionId, numSegments: arg.numSegments }
+  );
+
+  return {
+    ...result,
+    data:
+      result.isSuccess && result.data
+        ? result.data.map((data) => new ArmPoseStats(data))
+        : [],
+  };
+}
+
+export function _useGetArmPoseTotalsInSecondsSessionQuery(
+  sessionId: string | typeof skipToken
+) {
+  const result = armPoseApi.useGetArmPoseTotalsInSecondsSessionQuery(sessionId);
+
+  return {
+    ...result,
+    data:
+      result.isSuccess && result.data
+        ? new ArmPoseTotalsStats(result.data)
+        : null,
+  };
+}

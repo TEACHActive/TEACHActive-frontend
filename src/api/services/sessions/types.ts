@@ -1,10 +1,20 @@
 import { DateTime, Duration } from "luxon";
 
-export class Session {
+export interface ISession {
+  id: string;
+  name?: string;
+  userUID: string;
+  createdAt?: DateTime | undefined;
+  createdAtISO: string;
+  performance?: number;
+}
+
+export class Session implements ISession {
   id: string;
   name?: string;
   userUID: string;
   createdAt: DateTime;
+  createdAtISO: string;
   performance?: number;
 
   constructor(data: any, fps: number) {
@@ -12,10 +22,11 @@ export class Session {
     this.name = data.name;
     this.userUID = data.userUID;
     this.createdAt = DateTime.fromISO(data.createdAt);
+    this.createdAtISO = data.createdAt;
     this.performance = data.performance;
   }
 
-  static equal(left: Session, right: Session): boolean {
+  static equal(left: ISession, right: ISession): boolean {
     return left.id === right.id;
   }
 }

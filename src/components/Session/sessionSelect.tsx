@@ -3,22 +3,22 @@ import Cascader, {
   CascaderValueType,
 } from "antd/lib/cascader";
 import Select, { SelectValue } from "antd/lib/select";
+import { ISession } from "api/services/sessions/types";
 import { LogoutButton } from "components/UserManagment/logoutButton";
 import * as React from "react";
 
 export interface ISessionSelectProps {
+  selectedSession?: ISession;
   isAdmin: boolean;
   cascaderOptions: CascaderOptionType[];
   cascaderDisplayRender: (
     label: string[],
-    selectedOptions?: CascaderOptionType[] | undefined
+    selectedOptions?: CascaderOptionType[]
   ) => React.ReactNode;
-  cascaderLoadData: (
-    selectedOptions?: CascaderOptionType[] | undefined
-  ) => void;
+  cascaderLoadData: (selectedOptions?: CascaderOptionType[]) => void;
   cascaderOnChange: (
     value: CascaderValueType,
-    selectedOptions?: CascaderOptionType[] | undefined
+    selectedOptions?: CascaderOptionType[]
   ) => void;
   selectOptions: {
     label: string;

@@ -5,7 +5,7 @@ import MetricDisplay from "../metricDisplay";
 import { selectSelectedSession } from "redux/sessionSlice";
 import BlockContent from "components/BlockContent/blockContent";
 import { MetricNumberType, SessionMetricType } from "../metricDisplay.types";
-import { useGetAttendanceStatsForSessionQuery } from "api/services/attendance";
+import { _useGetAttendanceStatsForSessionQuery } from "api/services/attendance";
 
 export interface IAttendanceMetricDisplayProps {}
 
@@ -17,7 +17,7 @@ export function AttendanceMetricDisplay(props: IAttendanceMetricDisplayProps) {
     isFetching,
     isLoading,
     // isSuccess,
-  } = useGetAttendanceStatsForSessionQuery(selectedSession?.id ?? skipToken);
+  } = _useGetAttendanceStatsForSessionQuery(selectedSession?.id ?? skipToken);
   return (
     <BlockContent
       color={{
@@ -31,7 +31,7 @@ export function AttendanceMetricDisplay(props: IAttendanceMetricDisplayProps) {
       style={{ marginTop: "2em", marginBottom: "2em" }}
     >
       <MetricDisplay<MetricNumberType>
-        metric={new MetricNumberType(data?.data?.max)}
+        metric={new MetricNumberType(data?.max)}
         canEdit={false}
         trend={undefined}
         metricPrepend={"~"}

@@ -1,4 +1,4 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
+import { createApi, skipToken } from "@reduxjs/toolkit/query/react";
 
 import { baseQuery } from "../util";
 import { Response } from "api/types";
@@ -11,14 +11,17 @@ export const speechApi = createApi({
   baseQuery: baseQuery,
   endpoints: (builder) => ({
     getSpeechTotalsInSeconds: builder.query<
-      Response<SpeechSessionTotals>,
+      SpeechSessionTotals | null,
       { sessionId: string; minSpeakingAmp: number }
     >({
       query: (arg: { sessionId: string; minSpeakingAmp: number }) =>
         `${baseEndpoint}/totals/seconds/${arg.sessionId}?minSpeakingAmp=${arg.minSpeakingAmp}`,
+      transformResponse: (response: Response<SpeechSessionTotals>) => {
+        return response.data;
+      },
     }),
     getCombinedSpeechDataInSession: builder.query<
-      Response<CombinedSpeechFrame[]>,
+      CombinedSpeechFrame[],
       { sessionId: string; minSpeakingAmp: number; numSegments: number }
     >({
       query: (arg: {
@@ -27,11 +30,50 @@ export const speechApi = createApi({
         numSegments: number;
       }) =>
         `${baseEndpoint}/data/${arg.sessionId}?minSpeakingAmp=${arg.minSpeakingAmp}?numSegments=${arg.numSegments}`,
+      transformResponse: (response: Response<CombinedSpeechFrame[]>) => {
+        return response.data || [];
+      },
     }),
   }),
 });
 
-export const {
-  useGetSpeechTotalsInSecondsQuery,
-  useGetCombinedSpeechDataInSessionQuery,
-} = speechApi;
+export function _useGetSpeechTotalsInSecondsQuery(
+  arg: { sessionId: string; minSpeakingAmp: number },
+  skip: typeof skipToken | null
+) {
+  const result = speechApi.useGetSpeechTotalsInSecondsQuery(
+    skip ?? {
+      sessionId: arg.sessionId,
+      minSpeakingAmp: arg.minSpeakingAmp,
+    }
+  );
+
+  return {
+    ...result,
+    data:
+      result.isSuccess && result.data
+        ? new SpeechSessionTotals(result.data)
+        : null,
+  };
+}
+
+export function _useGetCombinedSpeechDataInSessionQuery(
+  arg: { sessionId: string; minSpeakingAmp: number; numSegments: number },
+  skip: typeof skipToken | null
+) {
+  const result = speechApi.useGetCombinedSpeechDataInSessionQuery(
+    skip || {
+      sessionId: arg.sessionId,
+      minSpeakingAmp: arg.minSpeakingAmp,
+      numSegments: arg.numSegments,
+    }
+  );
+
+  return {
+    ...result,
+    data:
+      result.isSuccess && result.data
+        ? result.data.map((data) => new CombinedSpeechFrame(data))
+        : [],
+  };
+}

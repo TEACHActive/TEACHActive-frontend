@@ -4,7 +4,7 @@ import { useLocation } from "react-router-dom";
 
 import { appRoutes } from "routes";
 import { HeaderPresentational } from "./headerPresentational";
-import { useGetSessionsQuery } from "api/services/sessions/sessions";
+import { _useGetSessionsQuery } from "api/services/sessions";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 
 const { Header: AntHeader } = Layout;
@@ -15,7 +15,7 @@ export function Header(props: IHeaderProps) {
   let location = useLocation();
   const [showHeader, setShowHeader] = React.useState(false);
 
-  const { data, isLoading, isFetching, isError } = useGetSessionsQuery(
+  const { data, isLoading, isFetching, isError } = _useGetSessionsQuery(
     showHeader ?? skipToken
   );
 
@@ -30,12 +30,6 @@ export function Header(props: IHeaderProps) {
     return <></>;
   }
 
-  if (isError) {
-    <AntHeader className="header">
-      <p>Error...</p>
-    </AntHeader>;
-  }
-
   if (isLoading || isFetching) {
     return (
       <AntHeader className="header">
@@ -44,7 +38,15 @@ export function Header(props: IHeaderProps) {
     );
   }
 
-  const sessions = data?.data || [];
+  if (isError || !data) {
+    return (
+      <AntHeader className="header">
+        <p>Error...</p>
+      </AntHeader>
+    );
+  }
 
-  return <HeaderPresentational sessions={sessions} />;
+  console.log(data);
+
+  return <HeaderPresentational sessions={data} />;
 }

@@ -191,6 +191,25 @@ export const LogInRoute: IElementRoute = new ElementRoute({
   },
 });
 
+const logoutPath = "logout";
+export const LogoutRoute: IElementRoute = new ElementRoute({
+  routeObject: {
+    path: logoutPath,
+    element: <Page.LogoutPage />,
+  },
+  name: "Log Out",
+  icon: <VideoCameraOutlined />,
+  link: () => "/logout",
+  visible: true,
+  secureRoute: false,
+  showInSidebar: false,
+  pathExtras: {
+    showSider: false,
+    showHeader: false,
+    showFooter: false,
+  },
+});
+
 const error404Path = "*";
 export const Error404Route: IElementRoute = new ElementRoute({
   routeObject: {
@@ -218,4 +237,5 @@ export const appRoutes: IElementRoute[] = [
   SettingsRoute,
   LogInRoute,
   Error404Route,
+  LogoutRoute,
 ];

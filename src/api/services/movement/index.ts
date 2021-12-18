@@ -1,4 +1,4 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
+import { createApi, skipToken } from "@reduxjs/toolkit/query/react";
 
 import { baseQuery } from "../util";
 import { Response } from "api/types";
@@ -11,21 +11,34 @@ export const movementApi = createApi({
   baseQuery: baseQuery,
   endpoints: (builder) => ({
     getInstructorMovementInSession: builder.query<
-      Response<InstructorMovementFrame[]>,
+      InstructorMovementFrame[],
       { sessionId: string; numSegments: number }
     >({
       query: (arg: { sessionId: string; numSegments: number }) =>
         `${baseEndpoint}/instructor/${arg.sessionId}?numSegments=${arg.numSegments}`,
-      // transformResponse: (response: {
-      //   data: Response<InstructorMovementFrame[]>;
-      // }) =>
-      //   response.data.data
-      //     ? response.data.data.map(
-      //         (frame) => new InstructorMovementFrame(frame)
-      //       )
-      //     : [],
+      transformResponse: (response: Response<InstructorMovementFrame[]>) => {
+        return response.data || [];
+      },
     }),
   }),
 });
 
-export const { useGetInstructorMovementInSessionQuery } = movementApi;
+export function _useGetInstructorMovementInSessionQuery(
+  arg: { sessionId: string; numSegments: number },
+  skip: typeof skipToken | null
+) {
+  const result = movementApi.useGetInstructorMovementInSessionQuery(
+    skip ?? {
+      sessionId: arg.sessionId,
+      numSegments: arg.numSegments,
+    }
+  );
+
+  return {
+    ...result,
+    data:
+      result.isSuccess && result.data
+        ? result.data.map((data) => new InstructorMovementFrame(data))
+        : [],
+  };
+}

@@ -1,6 +1,5 @@
 import { DateTime } from "luxon";
 import { ArmPose } from "../sessions/types";
-
 export class ArmPoseStats {
   [ArmPose.ArmsCrossed]: ArmPoseStat;
   [ArmPose.Error]: ArmPoseStat;

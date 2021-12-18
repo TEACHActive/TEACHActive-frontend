@@ -5,7 +5,7 @@ import MetricDisplay from "../metricDisplay";
 import { selectSelectedSession } from "redux/sessionSlice";
 import BlockContent from "components/BlockContent/blockContent";
 import { MetricNumberType, SessionMetricType } from "../metricDisplay.types";
-import { useGetArmPoseTotalsInSecondsSessionQuery } from "api/services/armPose";
+import { _useGetArmPoseTotalsInSecondsSessionQuery } from "api/services/armPose";
 
 export interface IHandRaiseMetricDisplayProps {}
 
@@ -17,7 +17,7 @@ export function HandRaiseMetricDisplay(props: IHandRaiseMetricDisplayProps) {
     isFetching,
     isLoading,
     // isSuccess,
-  } = useGetArmPoseTotalsInSecondsSessionQuery(
+  } = _useGetArmPoseTotalsInSecondsSessionQuery(
     selectedSession?.id ?? skipToken
   );
 
@@ -36,7 +36,7 @@ export function HandRaiseMetricDisplay(props: IHandRaiseMetricDisplayProps) {
       style={{ marginTop: "2em", marginBottom: "2em" }}
     >
       <MetricDisplay<MetricNumberType>
-        metric={new MetricNumberType(data?.data?.handsRaised)}
+        metric={new MetricNumberType(data?.handsRaised)}
         canEdit={false}
         trend={undefined}
         metricPrepend={""}
