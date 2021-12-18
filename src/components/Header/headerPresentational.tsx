@@ -78,7 +78,7 @@ export function HeaderPresentational(props: IHeaderPresentationalProps) {
     }
     let augmentedSelectedOptions = [...selectedOptions!];
 
-    //Todo: update cascader and select to show selected session if already set
+    //TODO: update cascader and select to show selected session if already set
 
     const uid = augmentedSelectedOptions[0].value || "";
 

@@ -34,7 +34,7 @@ export function PerformanceMetricDisplay(
     >
       <MetricDisplay<MetricNumberType>
         metric={new MetricNumberType(data?.performance)}
-        canEdit={false} //Todo
+        canEdit={false} // TODO: ?
         trend={undefined}
         unit="%"
         trend_metric={undefined}

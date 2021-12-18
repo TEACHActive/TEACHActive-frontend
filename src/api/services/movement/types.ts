@@ -53,7 +53,7 @@ export class InstructorMovementFrame {
     };
   };
   constructor(data: any) {
-    //Todo add error handling
+    //TODO add error handling
     this.timestamp = {
       begin: DateTime.fromISO(data.timestamp.begin),
       end: DateTime.fromISO(data.timestamp.end),

@@ -76,7 +76,7 @@ export function SectionForm(props: ISectionFormProps) {
             question.onSelected.multiChoiceQuestion?.hasOther &&
             question.onSelected.multiChoiceQuestion?.otherSelected
           ) {
-            multipleSelectedCheckboxes.push("other"); ///Todo?
+            multipleSelectedCheckboxes.push("other"); // TODO: ?
           }
 
           initialValues.set(question.id, {

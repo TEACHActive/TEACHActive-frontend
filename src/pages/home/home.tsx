@@ -13,7 +13,7 @@ export function HomePage(props: IHomePageProps) {
   const { data, error, isLoading } = _useGetUserQuery(user?.uid || "");
 
   const WrappedComponent = (
-    <HomePagePresentational instructorName={data?.name || ""} /> //Todo?
+    <HomePagePresentational instructorName={data?.name || ""} /> // TODO: ?
   );
 
   return WithQueryResult(WrappedComponent, data, error, isLoading);

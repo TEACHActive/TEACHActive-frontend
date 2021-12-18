@@ -66,7 +66,7 @@ export function MetricDisplayPresentational<T extends IMetricTypeDisplayable>(
                 color="blue"
                 onClick={async (event) => {
                   props.setProcessing(true);
-                  //Todo: Reimpliment
+                  //TODO: Reimpliment
                   // const success = await props.updateMetric();
                   // if (success) {
                   //   props.setNewMetric("");
@@ -137,8 +137,8 @@ export function MetricDisplayPresentational<T extends IMetricTypeDisplayable>(
       >
         {props.isError ? <h1>Error</h1> : content}
       </div>
-      {/* {props.children} Todo: Re add this */}
-      {/* Todo: Display error better */}
+      {/* {props.children} TODO: Re add this */}
+      {/* TODO: Display error better */}
     </div>
   );
 }
