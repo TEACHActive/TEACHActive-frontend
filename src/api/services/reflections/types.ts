@@ -137,13 +137,13 @@ export class ReflectionSectionQuestion {
 export class ReflectionSection {
   _id: string;
   name: string;
-  title: string;
+  // title: string;
   questions: ReflectionSectionQuestion[];
 
   constructor(data: any) {
     this._id = data._id;
     this.name = data.name;
-    this.title = data.title;
+    // this.title = data.title;
     this.questions = data.questions.map(
       (question: any) => new ReflectionSectionQuestion(question)
     );

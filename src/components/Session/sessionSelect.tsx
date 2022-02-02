@@ -34,6 +34,11 @@ export function SessionSelect(props: ISessionSelectProps) {
         {props.isAdmin ? (
           <>
             <Cascader
+              defaultValue={
+                props.selectedSession?.id
+                  ? [props.selectedSession?.id]
+                  : undefined
+              } //TODO: Determine if this fixes the issue of cascader being unset sometimes
               options={props.cascaderOptions}
               style={{ width: "200px" }}
               displayRender={props.cascaderDisplayRender}
@@ -43,6 +48,7 @@ export function SessionSelect(props: ISessionSelectProps) {
           </>
         ) : (
           <Select
+            defaultValue={props.selectedSession?.id} //TODO: Determine if this fixes the issue of select being unset sometimes
             options={props.selectOptions}
             style={{ width: "200px" }}
             onChange={props.selectOnChange}

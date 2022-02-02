@@ -46,7 +46,5 @@ export function Header(props: IHeaderProps) {
     );
   }
 
-  console.log(data);
-
   return <HeaderPresentational sessions={data} />;
 }

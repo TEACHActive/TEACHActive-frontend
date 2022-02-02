@@ -208,9 +208,7 @@ export function HeaderPresentational(props: IHeaderPresentationalProps) {
   React.useEffect(() => {
     const cascaderData = constructCascaderData(props.sessions);
     setOptions(cascaderData);
-    console.log(options);
     if (selectedSession) {
-      console.log(99999);
       //Update header if selected session is already set
     }
   }, [props.sessions, selectedSession]);
@@ -253,37 +251,4 @@ export function HeaderPresentational(props: IHeaderPresentationalProps) {
       />
     </AntHeader>
   );
-  // return (
-  //   <AntHeader className="header">
-  //     <div>
-  //       {props.isAdmin ? (
-  //         <>
-  //           <Cascader
-  //             options={props.cascaderData}
-  //             style={{ width: "200px" }}
-  //             displayRender={props.displayRender}
-  //             loadData={props.loadData}
-  //             onChange={(
-  //               value: CascaderValueType,
-  //               _?: CascaderOptionType[] | undefined
-  //             ) =>
-  //               props.setSelectedSession(value[1].toString(), props.sessions)
-  //             }
-  //           />
-  //         </>
-  //       ) : (
-  //         <Select
-  //           options={props.selectData}
-  //           style={{ width: "200px" }}
-  //           onChange={(value: SelectValue, _: any) =>
-  //             props.setSelectedSession(value?.toString() || "", props.sessions)
-  //           }
-  //         />
-  //       )}
-  //     </div>
-  //     <div>
-  //       <LogoutButton type="default" />
-  //     </div>
-  //   </AntHeader>
-  // );
 }
