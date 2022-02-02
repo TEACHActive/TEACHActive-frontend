@@ -12,7 +12,6 @@ const falsyPrimitives = {
 };
 
 //=====Load .env Variables=====
-//=============================
 
 //=====Firebase=====
 //==================
@@ -94,4 +93,10 @@ export const TEACHACTIVE_BACKEND_PORT_DEV: number = parseInt(
 if (!TEACHACTIVE_BACKEND_PORT_DEV) {
   // If unset will default to 0 and !0 = false
   envLoadError("REACT_APP_TEACHACTIVE_BACKEND_PORT_DEV");
+}
+
+export const QUALTRICS_REFLECTION_URL: string =
+  process.env.REACT_APP_QUALTRICS_REFLECTION_URL || falsyPrimitives.string;
+if (!QUALTRICS_REFLECTION_URL) {
+  envLoadError("REACT_APP_QUALTRICS_REFLECTION_URL");
 }

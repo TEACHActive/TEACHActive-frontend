@@ -1,18 +1,6 @@
 import React from "react";
-import { Collapse, Result, Spin } from "antd";
-import { QueryStatus } from "@reduxjs/toolkit/dist/query";
+import { Collapse } from "antd";
 
-// import { SectionForm } from "components/SectionForm/sectionForm";
-// import { SessionMetricType } from "components/MetricDisplay/metricDisplay.types";
-// import { HandRaiseMetricDisplay } from "components/MetricDisplay/Metrics/handRasiseMetricDisplay";
-// import { StudentSpeechMetricDisplay } from "components/MetricDisplay/Metrics/studentSpeechMetricDisplay";
-// import { InstructorSpeechMetricDisplay } from "components/MetricDisplay/Metrics/instructorSpeechMetricDisplay";
-import * as Question from "../../components/Questions";
-import { Reflection } from "api/services/reflections/types";
-import { HandRaisesSection } from "./sectionPanels/handRaises";
-import { StudentSpeechSection } from "./sectionPanels/studentSpeech";
-import { InstructorSpeechSection } from "./sectionPanels/instructorSpeech";
-import { InstructorMovementSection } from "./sectionPanels/instructorMovement";
 import { SessionMetricType } from "components/MetricDisplay/metricDisplay.types";
 import { HandRaiseMetricDisplay } from "components/MetricDisplay/Metrics/handRasiseMetricDisplay";
 import { InstructorMovement } from "components/Graphs/InstructorMovement/instructorMovement";
@@ -20,21 +8,12 @@ import { InstructorSpeechMetricDisplay } from "components/MetricDisplay/Metrics/
 import { StudentSpeechMetricDisplay } from "components/MetricDisplay/Metrics/studentSpeechMetricDisplay";
 
 import "./goals.scss";
+import { QUALTRICS_REFLECTION_URL } from "variables/enviromentVariables";
 
 const { Panel } = Collapse;
 
 export interface IGoalsPagePresentationalProps {
-  // createReflectionForSession: (sessionId: string) => any;
-  // getReflectionsForSession: (sessionId: string) => any;
   sessionId: string;
-  // getReflectionsForSessionResult: {
-  //   status: QueryStatus;
-  //   data?: Reflection;
-  //   error?: any;
-  //   isLoading: boolean;
-  //   isSuccess: boolean;
-  //   isError: boolean;
-  // };
   userUID?: string;
 }
 
@@ -50,52 +29,10 @@ export default function GoalsPagePresentational(
     // props.getReflectionsForSession(props.sessionId);
   }, [props.sessionId]);
 
-  // const reflectionSectionMetricMap = new Map<
-  //   string,
-  //   { title: string; metricDisplay: React.ReactNode; comment: React.ReactNode }
-  // >();
-
-  // reflectionSectionMetricMap.set(SessionMetricType.HandRaises, {
-  //   title: "Hand Raises",
-  //   metricDisplay: <HandRaiseMetricDisplay />,
-  //   comment: (
-  //     <p>
-  //       {/* During this section there were <strong></strong> seconds of hand raises */}
-  //     </p>
-  //   ),
-  // });
-  // reflectionSectionMetricMap.set(SessionMetricType.InstructorSpeech, {
-  //   title: "Instructor Speech",
-  //   metricDisplay: <InstructorSpeechMetricDisplay />,
-  //   comment: <p>{/* During this section there were <strong></strong> */}</p>,
-  // });
-  // reflectionSectionMetricMap.set(SessionMetricType.StudentSpeech, {
-  //   title: "Student Speech",
-  //   metricDisplay: <StudentSpeechMetricDisplay />,
-  //   comment: <p>{/* During this section there were <strong></strong> */}</p>,
-  // });
-  // reflectionSectionMetricMap.set("instructorMovement", {
-  //   title: "Instructor Movement",
-  //   metricDisplay: <StudentSpeechMetricDisplay />,
-  //   comment: <p>{/* During this section there were <strong></strong> */}</p>,
-  // });
-
-  const onSectionFinish = (sectionName: string, values: any) => {
-    console.log(sectionName, values);
-  };
-
-  const onSectionFail = (sectionName: string) => {};
-
-  // const { isLoading, isError, data } = props.getReflectionsForSessionResult;
-
-  // if (isLoading || !data) return <Spin />;
-  // if (isError)
-  //   return <Result status="500" title="Error fetching reflections" />;
-
   const qualtricsIFrameWidth = "100%",
     qualtricsIFrameHeight = "500em";
-  const qualtricsLink =
-    "https://iastate.qualtrics.com/jfe/form/SV_8CzGWuq3dOk1OaG";
+
+  const qualtricsLink = QUALTRICS_REFLECTION_URL;
 
   return (
     <Collapse accordion className="goalsCollapse">
