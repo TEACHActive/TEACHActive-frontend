@@ -8,8 +8,19 @@
     }
   }
   .ant-layout-sider-trigger {
-    background-color: darken($background-color, 2);
+    background-color: darken($background-color, 0);
+    color: black;
+    font-size: larger;
+    font-weight: bolder;
   }
+  .ant-layout-sider-trigger:hover {
+    background-color: darken($background-color, 10);
+  }
+}
+
+.collapseIcon {
+  font-size: 2em;
+  padding: 8px;
 }
 
 .logo {
@@ -28,7 +39,33 @@
   height: 3.5em;
 }
 
-.siderMenuItem {
+.siderMenuItem--expanded {
   font-size: large;
   color: $primary-font-color !important;
+  display: flex;
+  flex-direction: column;
+  height: 100px !important;
+  padding: 10px !important;
+  padding-top: 20px !important;
+  margin: 0px !important;
+}
+
+.siderMenuItem--collapsed {
+  font-size: large;
+  color: $primary-font-color !important;
+  position: relative;
+  right: 20px !important;
+  padding: 25px !important;
+  height: 80px !important;
+}
+
+.ant-menu-item-selected {
+  background-color: white !important;
+  .ant-menu-title-content,
+  .ant-menu-item-icon {
+    color: black !important;
+  }
+}
+.ant-menu-item-active {
+  background-color: darken($background-color, 10) !important;
 }

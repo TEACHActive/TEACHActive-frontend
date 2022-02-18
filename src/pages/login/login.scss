@@ -1,10 +1,12 @@
+@import "styles/colors";
+
 .loginPage {
   height: 100%;
   display: flex;
 }
 
 .loginPageLeft {
-  background-image: linear-gradient(to right, #00b4b898, white);
+  background-image: linear-gradient(to right, $background-color, white);
   display: flex;
   justify-content: center;
   align-items: center;

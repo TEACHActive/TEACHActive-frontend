@@ -1,11 +1,11 @@
 @import "styles/colors";
 
-.ant-layout-header {
-  background-color: $background-color !important;
+.header {
   padding-left: 10px !important;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background-color: $background-color !important;
 }
 
 .loadIcon > svg {

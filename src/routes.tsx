@@ -3,10 +3,11 @@
  */
 import React from "react";
 import {
-  BookOutlined,
   UserOutlined,
-  UploadOutlined,
+  MessageOutlined,
   SettingOutlined,
+  DashboardOutlined,
+  LineChartOutlined,
   VideoCameraOutlined,
 } from "@ant-design/icons";
 import { RouteObject } from "react-router-dom";
@@ -63,7 +64,7 @@ export class ElementRoute implements IElementRoute {
   }
 }
 
-const iconFontSize = "20px";
+const iconFontSize = "30px";
 
 const homePath = "";
 export const HomeRoute: IElementRoute = new ElementRoute({
@@ -94,7 +95,7 @@ export const MetricsRoute: IElementRoute = new ElementRoute({
     ]),
   },
   name: "Metrics",
-  icon: <UserOutlined style={{ fontSize: iconFontSize }} />,
+  icon: <DashboardOutlined style={{ fontSize: iconFontSize }} />,
   link: () => metricsPath,
   visible: true,
   secureRoute: true,
@@ -116,7 +117,7 @@ export const ProgressRoute: IElementRoute = new ElementRoute({
     ]),
   },
   name: "Progress",
-  icon: <UploadOutlined style={{ fontSize: iconFontSize }} />,
+  icon: <LineChartOutlined style={{ fontSize: iconFontSize }} />,
   link: () => progressPath,
   visible: true,
   secureRoute: true,
@@ -138,7 +139,7 @@ export const GoalsRoute: IElementRoute = new ElementRoute({
     ]),
   },
   name: "Goals",
-  icon: <BookOutlined style={{ fontSize: iconFontSize }} />,
+  icon: <MessageOutlined style={{ fontSize: iconFontSize }} />,
   link: () => goalsPath,
   visible: true,
   secureRoute: true,

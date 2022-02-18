@@ -6,7 +6,7 @@ import { IForgotPasswordValues } from "./forgotPassword";
 
 import LogoSmall from "images/LogoSmall.png";
 
-import "./forgotPassword.css";
+import "./forgotPassword.scss";
 
 const { Title } = Typography;
 

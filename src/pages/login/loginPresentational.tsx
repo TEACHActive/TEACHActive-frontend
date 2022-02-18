@@ -8,7 +8,7 @@ import * as Route from "routes";
 
 import LogoSmall from "images/LogoSmall.png";
 
-import "./login.css";
+import "./login.scss";
 
 const { Title } = Typography;
 
