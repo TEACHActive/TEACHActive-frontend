@@ -210,6 +210,25 @@ export const LogoutRoute: IElementRoute = new ElementRoute({
   },
 });
 
+const forgotPasswordPath = "forgot-password";
+export const ForgotPasswordRoute: IElementRoute = new ElementRoute({
+  routeObject: {
+    path: forgotPasswordPath,
+    element: <Page.ForgotPasswordPage />,
+  },
+  name: "Forgot Password",
+  icon: <VideoCameraOutlined />,
+  link: () => `/${forgotPasswordPath}`,
+  visible: true,
+  secureRoute: false,
+  showInSidebar: false,
+  pathExtras: {
+    showSider: false,
+    showHeader: false,
+    showFooter: false,
+  },
+});
+
 const error404Path = "*";
 export const Error404Route: IElementRoute = new ElementRoute({
   routeObject: {
@@ -238,4 +257,5 @@ export const appRoutes: IElementRoute[] = [
   LogInRoute,
   Error404Route,
   LogoutRoute,
+  ForgotPasswordRoute,
 ];

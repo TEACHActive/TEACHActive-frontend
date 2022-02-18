@@ -6,6 +6,7 @@ import { MetricsPage } from "./metrics/metrics";
 import { ProgressPage } from "./progress/progress";
 import { Error404Page } from "./error404/error404";
 import { SettingsPage } from "./settings/settings";
+import { ForgotPasswordPage } from "./forgotPassword/forgotPassword";
 
 export {
   HomePage,
@@ -16,4 +17,5 @@ export {
   ProgressPage,
   Error404Page,
   SettingsPage,
+  ForgotPasswordPage,
 };

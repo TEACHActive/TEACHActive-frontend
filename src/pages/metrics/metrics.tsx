@@ -20,7 +20,7 @@ export function MetricsPage(props: IMetricsPageProps) {
 
   const { data, isLoading, isFetching, isError } = _useGetSessionsQuery(true);
 
-  const dispatch = useAppDispatch();
+  // const dispatch = useAppDispatch();
 
   const {
     updateSessionName,

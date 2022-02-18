@@ -1,14 +1,14 @@
 import React from "react";
 import { Collapse } from "antd";
 
+import { QUALTRICS_REFLECTION_URL } from "variables/enviromentVariables";
 import { SessionMetricType } from "components/MetricDisplay/metricDisplay.types";
-import { HandRaiseMetricDisplay } from "components/MetricDisplay/Metrics/handRasiseMetricDisplay";
 import { InstructorMovement } from "components/Graphs/InstructorMovement/instructorMovement";
-import { InstructorSpeechMetricDisplay } from "components/MetricDisplay/Metrics/instructorSpeechMetricDisplay";
+import { HandRaiseMetricDisplay } from "components/MetricDisplay/Metrics/handRasiseMetricDisplay";
 import { StudentSpeechMetricDisplay } from "components/MetricDisplay/Metrics/studentSpeechMetricDisplay";
+import { InstructorSpeechMetricDisplay } from "components/MetricDisplay/Metrics/instructorSpeechMetricDisplay";
 
 import "./goals.scss";
-import { QUALTRICS_REFLECTION_URL } from "variables/enviromentVariables";
 
 const { Panel } = Collapse;
 
@@ -19,7 +19,6 @@ export interface IGoalsPagePresentationalProps {
 
 /**
  * Page for setting goals and logging reflections
- * Note: This component would benifit from using Formik
  * @param props
  */
 export default function GoalsPagePresentational(
@@ -50,10 +49,6 @@ export default function GoalsPagePresentational(
           height={qualtricsIFrameHeight}
           width={qualtricsIFrameWidth}
         />
-        {/* <HandRaisesSection
-          onFinish={onSectionFinish}
-          onFinishFailed={onSectionFail}
-        /> */}
       </Panel>
       {/* SessionMetricType.InstructorSpeech */}
       <Panel
@@ -62,10 +57,6 @@ export default function GoalsPagePresentational(
         style={{ fontSize: "large", fontWeight: "bolder" }}
       >
         <InstructorSpeechMetricDisplay />
-        {/* <InstructorSpeechSection
-          onFinish={onSectionFinish}
-          onFinishFailed={onSectionFail}
-        /> */}
         <iframe
           src={`${qualtricsLink}?uid=${props.userUID || ""}&sessionID=${
             props.sessionId
@@ -88,10 +79,6 @@ export default function GoalsPagePresentational(
           height={qualtricsIFrameHeight}
           width={qualtricsIFrameWidth}
         />
-        {/* <StudentSpeechSection
-          onFinish={onSectionFinish}
-          onFinishFailed={onSectionFail}
-        /> */}
       </Panel>
       {/* "instructorMovement" */}
       <Panel
@@ -107,33 +94,7 @@ export default function GoalsPagePresentational(
           height={qualtricsIFrameHeight}
           width={qualtricsIFrameWidth}
         />
-        {/* <InstructorMovementSection
-          onFinish={onSectionFinish}
-          onFinishFailed={onSectionFail}
-        /> */}
       </Panel>
-      {/* {data.reflectionSections.map(
-        (reflectionSection: ReflectionSection, i: number) => {
-          const metricMap = reflectionSectionMetricMap.get(
-            reflectionSection.name
-          );
-
-          return (
-            <Panel
-              header={reflectionSection.title}
-              key={i}
-              style={{ fontSize: "large", fontWeight: "bolder" }}
-            >
-              <SectionForm
-                section={reflectionSection}
-                metricDisplay={metricMap?.metricDisplay}
-                comment={metricMap?.comment}
-                sessionId={props.sessionId}
-              />
-            </Panel>
-          );
-        }
-      )} */}
     </Collapse>
   );
 }

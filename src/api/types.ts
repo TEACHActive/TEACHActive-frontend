@@ -4,13 +4,13 @@ export class Response<T> {
   success: boolean;
   data: T | null;
   error: string;
-  // statusCode: number;
+  statusCode: number;
 
   constructor(data: any, private responseType: new (data: any) => T) {
     this.success = data.success;
     this.data = new responseType(data.data);
     this.error = data.error;
-    // this.statusCode = data.statusCode;
+    this.statusCode = data.statusCode;
   }
 }
 

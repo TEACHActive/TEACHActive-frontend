@@ -31,7 +31,7 @@ export function SitVsStand(props: ISitVsStandProps) {
     isFetching,
     data,
   } = _useGetSitStandDataInSessionQuery(
-    { sessionId: selectedSession?.id || "", numSegments: 20 },
+    { sessionId: selectedSession?.id || "", numSegments: 10 },
     selectedSession ? null : skipToken
   );
 
@@ -54,8 +54,8 @@ export function SitVsStand(props: ISitVsStandProps) {
       const timeDiffMins = sitStandData.timestamp.end
         .diff(initalTimestamp, "minutes")
         .toObject().minutes;
-      if (i === 1)
-        console.log(sitStandData.timestamp.end, arr[i - 1].timestamp.end);
+      // if (i === 1)
+      //   console.log(sitStandData.timestamp.end, arr[i - 1].timestamp.end);
 
       sitStandData.timeDiff.minutes = Math.round(timeDiffMins || 0);
       return sitStandData;

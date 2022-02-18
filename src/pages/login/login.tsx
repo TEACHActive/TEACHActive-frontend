@@ -1,11 +1,12 @@
 import React from "react";
 import { DateTime } from "luxon";
-import { Spin, Result } from "antd";
+import { Spin, Result, message } from "antd";
 import { useNavigate } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
 
 import { auth } from "firebase";
 import { logger } from "logging";
+import { validateEmail } from "../../util";
 import { HomeRoute, LogoutRoute } from "routes";
 import { Cookie, CookieSingleton } from "cookies";
 import { LoginPagePresentational } from "./loginPresentational";
@@ -27,7 +28,15 @@ export function LoginPage(props: ILoginPageProps) {
 
   const onFinish = async (values: ILoginValues) => {
     setLoggingIn(true);
-    if (values.remember) rememberEmail(values.email);
+    if (!validateEmail(values.email)) {
+      message.error("Invalid Email Address");
+      return;
+    }
+    if (values.remember) {
+      rememberEmail(values.email);
+    } else {
+      forgetEmail();
+    }
     const tokenResponse = await loginWithEmailAndPassword(
       values.email,
       values.password
@@ -54,6 +63,9 @@ export function LoginPage(props: ILoginPageProps) {
 
   const rememberEmail = (email: string) => {
     CookieSingleton.getInstance().setCookie(Cookie.EMAIL, email);
+  };
+  const forgetEmail = () => {
+    CookieSingleton.getInstance().setCookie(Cookie.EMAIL, "");
   };
 
   React.useEffect(() => {

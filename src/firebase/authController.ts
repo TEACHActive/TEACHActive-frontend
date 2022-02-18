@@ -1,4 +1,8 @@
-import { signOut, signInWithCustomToken } from "firebase/auth";
+import {
+  signOut,
+  signInWithCustomToken,
+  sendPasswordResetEmail,
+} from "firebase/auth";
 
 import { logger } from "logging";
 import { auth } from "firebase";
@@ -33,6 +37,21 @@ export const logoutOfFirebase = async (): Promise<boolean> => {
     return true;
   } catch (error) {
     logger.error(error);
+    return false;
+  }
+};
+
+export const sendPasswordReset = async (email: string): Promise<boolean> => {
+  try {
+    const result = await sendPasswordResetEmail(auth, email);
+    return true;
+  } catch (e) {
+    let error: any = e;
+    const errorCode = error.code;
+    const errorMessage = error.message;
+
+    console.error("There was an error sending the password reset");
+    console.error(errorCode + ": " + errorMessage);
     return false;
   }
 };

@@ -33,7 +33,7 @@ const menu = (
 export function HomePagePresentational(props: IHomePagePresentationalProps) {
   return (
     <div className="homePage">
-      <div style={{ display: "flex", flexDirection: "column" }}>
+      <div>
         <div className="homeMenu">
           <Dropdown overlay={menu} placement="bottomRight">
             <Button className="userMenuButton">

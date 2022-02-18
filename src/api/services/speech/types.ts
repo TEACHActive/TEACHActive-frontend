@@ -23,9 +23,9 @@ export class CombinedSpeechFrame {
     begin: DateTime;
     end: DateTime;
   };
-  timeDiff: {
-    minutes: number;
-  };
+  // timeDiff: {
+  //   minutes: number;
+  // };
   frameNumber: {
     begin: number;
     avg: number;
@@ -38,14 +38,14 @@ export class CombinedSpeechFrame {
   };
 
   constructor(data: any) {
-    //TODO add error handling
+    //TODO: add error handling
     this.timestamp = {
       begin: DateTime.fromISO(data.timestamp.begin),
       end: DateTime.fromISO(data.timestamp.end),
     };
-    this.timeDiff = {
-      minutes: parseInt(data.timeDiff.minutes),
-    };
+    // this.timeDiff = {
+    //   minutes: parseInt(data.timeDiff.minutes),
+    // };
     this.frameNumber = {
       begin: data.frameNumber.begin,
       avg: data.frameNumber.avg,

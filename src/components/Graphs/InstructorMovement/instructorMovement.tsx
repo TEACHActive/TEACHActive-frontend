@@ -53,46 +53,54 @@ export function InstructorMovement(props: IInstructorMovementProps) {
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column" }}>
-      <ComposedChart width={500} height={300} data={data}>
-        <Line
-          type="basis"
-          dataKey="instructor.avg.xPos"
-          stroke="#8884d8"
-          strokeWidth={2}
-          connectNulls={true}
-          dot={false}
-        />
-        {/* <Area
+    <>
+      <div style={{ display: "flex", flexDirection: "column" }}>
+        {/* <ComposedChart
+          width={300}
+          height={500}
+          data={data}
+          style={{ transform: "rotate(90deg)", width: "", height: "" }}
+        > */}
+        <ComposedChart width={500} height={300} data={data}>
+          <Line
+            type="basis"
+            dataKey="instructor.avg.xPos"
+            stroke="#8884d8"
+            strokeWidth={2}
+            connectNulls={true}
+            dot={false}
+          />
+          {/* <Area
           type="monotone"
           dataKey="podiumPos"
           stroke="#8884d8"
           dot={false}
           strokeWidth={2}
         /> */}
-        <CartesianGrid stroke="#ccc" strokeDasharray="3 3" />
-        <XAxis dataKey="timeDiffMinutes">
-          <Label
-            value="Minutes elapsed in session"
-            offset={0}
-            position="insideBottom"
+          <CartesianGrid stroke="#ccc" strokeDasharray="3 3" />
+          <XAxis dataKey="timeDiffMinutes">
+            <Label
+              value="Minutes elapsed in session"
+              offset={0}
+              position="insideBottom"
+            />
+          </XAxis>
+          <Tooltip />
+          <YAxis
+            dataKey="instructor.avg.xPos"
+            domain={["dataMin", "dataMax"]}
+            label={{
+              value: "Left <==> Right",
+              angle: -90,
+              position: "insideBottomLeft",
+            }}
+            tick={false}
           />
-        </XAxis>
-        <Tooltip />
-        <YAxis
-          dataKey="instructor.avg.xPos"
-          domain={["dataMin", "dataMax"]}
-          label={{
-            value: "Left <==> Right",
-            angle: -90,
-            position: "insideBottomLeft",
-          }}
-          tick={false}
-        />
-      </ComposedChart>
+        </ComposedChart>
+      </div>
       <div style={{ margin: "2em" }}>
         <Heatmap data={data.map((im) => im.instructor.avg.xPos)} />
       </div>
-    </div>
+    </>
   );
 }

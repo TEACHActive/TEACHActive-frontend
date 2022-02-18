@@ -29,7 +29,7 @@ export const speechApi = createApi({
         minSpeakingAmp: number;
         numSegments: number;
       }) =>
-        `${baseEndpoint}/data/${arg.sessionId}?minSpeakingAmp=${arg.minSpeakingAmp}?numSegments=${arg.numSegments}`,
+        `${baseEndpoint}/data/${arg.sessionId}?minSpeakingAmp=${arg.minSpeakingAmp}&numSegments=${arg.numSegments}`,
       transformResponse: (response: Response<CombinedSpeechFrame[]>) => {
         return response.data || [];
       },

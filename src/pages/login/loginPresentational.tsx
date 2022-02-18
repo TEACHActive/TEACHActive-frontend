@@ -1,9 +1,10 @@
-import React from "react";
+import { Link } from "react-router-dom";
 import { Form, Input, Button, Typography, Checkbox } from "antd";
 import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 
 import { ILoginValues } from "./login";
 import { Cookie, CookieSingleton } from "cookies";
+import * as Route from "routes";
 
 import LogoSmall from "images/LogoSmall.png";
 
@@ -73,9 +74,11 @@ export function LoginPagePresentational(props: ILoginPagePresentationalProps) {
               Login
             </Button>
           </Form.Item>
-          {/* <Form.Item wrapperCol={{ offset: 0, span: 32 }}>
-            <Button type="link">Forgot password?</Button>
-          </Form.Item> */}
+          <Form.Item wrapperCol={{ offset: 0, span: 32 }}>
+            <Link to={Route.ForgotPasswordRoute.link()}>
+              <Button type="link">Forgot password?</Button>
+            </Link>
+          </Form.Item>
         </Form>
       </div>
     </div>
