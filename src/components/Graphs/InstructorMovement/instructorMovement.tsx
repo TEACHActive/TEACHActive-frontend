@@ -7,13 +7,14 @@ import {
   CartesianGrid,
   ComposedChart,
 } from "recharts";
+import { Result, Spin } from "antd";
 import { useSelector } from "react-redux";
 import { DurationObjectUnits } from "luxon";
+import { skipToken } from "@reduxjs/toolkit/dist/query";
+
+import { Heatmap } from "./heatmap";
 import { selectSelectedSession } from "redux/sessionSlice";
 import { _useGetInstructorMovementInSessionQuery } from "api/services/movement";
-import { skipToken } from "@reduxjs/toolkit/dist/query";
-import { Result, Spin } from "antd";
-import { Heatmap } from "./heatmap";
 
 // import Heatmap from "./heatmap";
 
@@ -36,7 +37,7 @@ export function InstructorMovement(props: IInstructorMovementProps) {
     isFetching,
     isError,
   } = _useGetInstructorMovementInSessionQuery(
-    { sessionId: selectedSession?.id || "", numSegments: 50 },
+    { sessionId: selectedSession?.id || "", numSegments: 20 },
     selectedSession ? null : skipToken
   );
 
@@ -52,6 +53,13 @@ export function InstructorMovement(props: IInstructorMovementProps) {
     );
   }
 
+  const chartData = data.map((a) => {
+    return {
+      xPos: Math.round((a.instructor.avg.xPos + Number.EPSILON) * 100) / 100,
+      timeDiffMinutes: a.timeDiffMinutes,
+    };
+  });
+
   return (
     <>
       <div style={{ display: "flex", flexDirection: "column" }}>
@@ -61,10 +69,10 @@ export function InstructorMovement(props: IInstructorMovementProps) {
           data={data}
           style={{ transform: "rotate(90deg)", width: "", height: "" }}
         > */}
-        <ComposedChart width={500} height={300} data={data}>
+        <ComposedChart width={500} height={300} data={chartData}>
           <Line
             type="basis"
-            dataKey="instructor.avg.xPos"
+            dataKey="xPos"
             stroke="#8884d8"
             strokeWidth={2}
             connectNulls={true}
@@ -87,7 +95,7 @@ export function InstructorMovement(props: IInstructorMovementProps) {
           </XAxis>
           <Tooltip />
           <YAxis
-            dataKey="instructor.avg.xPos"
+            dataKey="xPos"
             domain={["dataMin", "dataMax"]}
             label={{
               value: "Left <==> Right",

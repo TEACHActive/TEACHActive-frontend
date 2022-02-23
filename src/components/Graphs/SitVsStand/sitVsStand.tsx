@@ -31,7 +31,7 @@ export function SitVsStand(props: ISitVsStandProps) {
     isFetching,
     data,
   } = _useGetSitStandDataInSessionQuery(
-    { sessionId: selectedSession?.id || "", numSegments: 10 },
+    { sessionId: selectedSession?.id || "", numSegments: 5 },
     selectedSession ? null : skipToken
   );
 
@@ -50,14 +50,18 @@ export function SitVsStand(props: ISitVsStandProps) {
     .map((frame) => new SitStandInFrame(frame))
     .sort((a, b) => a.timestamp.end.toMillis() - b.timestamp.end.toMillis())
     .map((sitStandData, i, arr) => {
-      if (i === 0) return sitStandData;
-      const timeDiffMins = sitStandData.timestamp.end
-        .diff(initalTimestamp, "minutes")
-        .toObject().minutes;
-      // if (i === 1)
-      //   console.log(sitStandData.timestamp.end, arr[i - 1].timestamp.end);
+      sitStandData[SitStand.Sit] =
+        Math.round((sitStandData[SitStand.Sit] + Number.EPSILON) * 100) / 100;
+      sitStandData[SitStand.Stand] =
+        Math.round((sitStandData[SitStand.Stand] + Number.EPSILON) * 100) / 100;
+      sitStandData[SitStand.Error] =
+        Math.round((sitStandData[SitStand.Error] + Number.EPSILON) * 100) / 100;
+      // if (i === 0) return sitStandData;
+      // const timeDiffMins = sitStandData.timestamp.end
+      //   .diff(initalTimestamp, "minutes")
+      //   .toObject().minutes;
 
-      sitStandData.timeDiff.minutes = Math.round(timeDiffMins || 0);
+      // sitStandData.timeDiff.minutes = Math.round(timeDiffMins || 0);
       return sitStandData;
     });
 

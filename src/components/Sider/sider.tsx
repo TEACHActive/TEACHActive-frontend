@@ -1,8 +1,8 @@
-import { Cookie, CookieSingleton } from "cookies";
 import React from "react";
 import { useLocation } from "react-router-dom";
 
 import { appRoutes } from "routes";
+import { Cookie, CookieSingleton } from "cookies";
 import { SiderPresentational } from "./siderPresentational";
 
 export interface ISiderProps {}
