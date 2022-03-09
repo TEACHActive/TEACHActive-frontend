@@ -2,14 +2,13 @@ import { Layout } from "antd";
 import { useSelector } from "react-redux";
 import { useAppDispatch } from "app/hooks";
 
+import { selectSelectedSession } from "redux/sessionSlice";
 import { SelectASession } from "components/Session/selectASession";
 import { MetricsPagePresentational } from "./metricsPresentational";
-import { selectSelectedSession, setSelectedSession } from "redux/sessionSlice";
 import {
   _useGetSessionsQuery,
   _useUpdateSessionNameMutation,
 } from "api/services/sessions";
-import { ISession } from "api/services/sessions/types";
 
 const { Header: AntHeader } = Layout;
 
