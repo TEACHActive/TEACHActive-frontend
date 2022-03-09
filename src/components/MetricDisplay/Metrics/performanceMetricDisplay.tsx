@@ -7,19 +7,20 @@ import BlockContent from "components/BlockContent/blockContent";
 import { _useGetPerformanceForSessionQuery } from "api/services/performance";
 import { MetricNumberType, SessionMetricType } from "../metricDisplay.types";
 
-export interface IPerformanceMetricDisplayProps {}
+export interface IPerformanceMetricDisplayProps {
+  sessionId?: string;
+}
 
 export function PerformanceMetricDisplay(
   props: IPerformanceMetricDisplayProps
 ) {
-  const selectedSession = useSelector(selectSelectedSession);
   const {
     data,
     isError,
     isFetching,
     isLoading,
     // isSuccess,
-  } = _useGetPerformanceForSessionQuery(selectedSession?.id ?? skipToken);
+  } = _useGetPerformanceForSessionQuery(props.sessionId ?? skipToken);
   return (
     <BlockContent
       color={{

@@ -12,25 +12,35 @@ export const movementApi = createApi({
   endpoints: (builder) => ({
     getInstructorMovementInSession: builder.query<
       InstructorMovementFrame[],
-      { sessionId: string; numSegments: number }
+      { sessionId: string; chunkSizeInMinutes: number }
     >({
-      query: (arg: { sessionId: string; numSegments: number }) =>
-        `${baseEndpoint}/instructor/${arg.sessionId}?numSegments=${arg.numSegments}`,
+      query: (arg: { sessionId: string; chunkSizeInMinutes: number }) =>
+        `${baseEndpoint}/instructor/${arg.sessionId}?chunkSizeInMinutes=${arg.chunkSizeInMinutes}`,
       transformResponse: (response: Response<InstructorMovementFrame[]>) => {
         return response.data || [];
+      },
+    }),
+    getInstructorFoundPercentageInSession: builder.query<
+      number,
+      { sessionId: string }
+    >({
+      query: (arg: { sessionId: string }) =>
+        `${baseEndpoint}/instructor/found-percentage/${arg.sessionId}`,
+      transformResponse: (response: Response<number>) => {
+        return response.data || -1;
       },
     }),
   }),
 });
 
 export function _useGetInstructorMovementInSessionQuery(
-  arg: { sessionId: string; numSegments: number },
+  arg: { sessionId: string; chunkSizeInMinutes: number },
   skip: typeof skipToken | null
 ) {
   const result = movementApi.useGetInstructorMovementInSessionQuery(
     skip ?? {
       sessionId: arg.sessionId,
-      numSegments: arg.numSegments,
+      chunkSizeInMinutes: arg.chunkSizeInMinutes,
     }
   );
 
@@ -40,5 +50,21 @@ export function _useGetInstructorMovementInSessionQuery(
       result.isSuccess && result.data
         ? result.data.map((data) => new InstructorMovementFrame(data))
         : [],
+  };
+}
+
+export function _useGetInstructorFoundPercentageInSessionQuery(
+  arg: { sessionId: string },
+  skip: typeof skipToken | null
+) {
+  const result = movementApi.useGetInstructorFoundPercentageInSessionQuery(
+    skip ?? {
+      sessionId: arg.sessionId,
+    }
+  );
+
+  return {
+    ...result,
+    data: result.data,
   };
 }

@@ -129,16 +129,16 @@ export const ProgressRoute: IElementRoute = new ElementRoute({
   },
 });
 
-const goalsPath = "goals";
+const goalsPath = "reflections";
 export const GoalsRoute: IElementRoute = new ElementRoute({
   routeObject: {
     path: goalsPath,
     element: WithBreadcrumbs({ children: <Page.GoalsPage /> }, [
       <Link to={HomeRoute.link()}>Home</Link>,
-      "Goals",
+      "Reflections",
     ]),
   },
-  name: "Goals",
+  name: "Reflections",
   icon: <MessageOutlined style={{ fontSize: iconFontSize }} />,
   link: () => goalsPath,
   visible: true,
@@ -254,7 +254,7 @@ export const appRoutes: IElementRoute[] = [
   MetricsRoute,
   ProgressRoute,
   GoalsRoute,
-  SettingsRoute,
+  // SettingsRoute,
   LogInRoute,
   Error404Route,
   LogoutRoute,

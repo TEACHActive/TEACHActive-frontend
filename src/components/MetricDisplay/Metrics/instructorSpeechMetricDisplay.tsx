@@ -7,12 +7,14 @@ import BlockContent from "components/BlockContent/blockContent";
 import { _useGetSpeechTotalsInSecondsQuery } from "api/services/speech";
 import { MetricNumberType, SessionMetricType } from "../metricDisplay.types";
 
-export interface IInstructorSpeechMetricDisplayProps {}
+export interface IInstructorSpeechMetricDisplayProps {
+  sessionId?: string;
+}
 
 export function InstructorSpeechMetricDisplay(
   props: IInstructorSpeechMetricDisplayProps
 ) {
-  const selectedSession = useSelector(selectSelectedSession);
+  // const selectedSession = useSelector(selectSelectedSession);
   const {
     data,
     isError,
@@ -20,8 +22,8 @@ export function InstructorSpeechMetricDisplay(
     isLoading,
     // isSuccess,
   } = _useGetSpeechTotalsInSecondsQuery(
-    { sessionId: selectedSession?.id || "", minSpeakingAmp: 0 },
-    selectedSession ? null : skipToken
+    { sessionId: props.sessionId || "", minSpeakingAmp: 0 },
+    props.sessionId ? null : skipToken
   );
   return (
     <BlockContent

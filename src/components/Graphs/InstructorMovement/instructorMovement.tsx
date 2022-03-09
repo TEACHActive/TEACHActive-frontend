@@ -37,7 +37,7 @@ export function InstructorMovement(props: IInstructorMovementProps) {
     isFetching,
     isError,
   } = _useGetInstructorMovementInSessionQuery(
-    { sessionId: selectedSession?.id || "", numSegments: 20 },
+    { sessionId: selectedSession?.id || "", chunkSizeInMinutes: 5 },
     selectedSession ? null : skipToken
   );
 
@@ -106,9 +106,9 @@ export function InstructorMovement(props: IInstructorMovementProps) {
           />
         </ComposedChart>
       </div>
-      <div style={{ margin: "2em" }}>
+      {/* <div style={{ margin: "2em" }}>
         <Heatmap data={data.map((im) => im.instructor.avg.xPos)} />
-      </div>
+      </div> */}
     </>
   );
 }

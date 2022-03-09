@@ -31,7 +31,7 @@ export function SitVsStand(props: ISitVsStandProps) {
     isFetching,
     data,
   } = _useGetSitStandDataInSessionQuery(
-    { sessionId: selectedSession?.id || "", numSegments: 5 },
+    { sessionId: selectedSession?.id || "", chunkSizeInMinutes: 5 },
     selectedSession ? null : skipToken
   );
 
@@ -44,8 +44,6 @@ export function SitVsStand(props: ISitVsStandProps) {
     );
   }
 
-  const initalTimestamp = new SitStandInFrame(data[0]).timestamp.end;
-
   const sitStandData = data
     .map((frame) => new SitStandInFrame(frame))
     .sort((a, b) => a.timestamp.end.toMillis() - b.timestamp.end.toMillis())
@@ -56,12 +54,6 @@ export function SitVsStand(props: ISitVsStandProps) {
         Math.round((sitStandData[SitStand.Stand] + Number.EPSILON) * 100) / 100;
       sitStandData[SitStand.Error] =
         Math.round((sitStandData[SitStand.Error] + Number.EPSILON) * 100) / 100;
-      // if (i === 0) return sitStandData;
-      // const timeDiffMins = sitStandData.timestamp.end
-      //   .diff(initalTimestamp, "minutes")
-      //   .toObject().minutes;
-
-      // sitStandData.timeDiff.minutes = Math.round(timeDiffMins || 0);
       return sitStandData;
     });
 

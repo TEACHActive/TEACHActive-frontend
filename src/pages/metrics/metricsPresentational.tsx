@@ -7,6 +7,7 @@ import { ISession } from "api/services/sessions/types";
 import { InfoCard } from "components/InfoCard/infoCard";
 
 import { SitVsStand } from "components/Graphs/SitVsStand/sitVsStand";
+import { DetectInvalidSession } from "components/DetectInvalidSession/detectInvalidSession";
 import { InstructorMovement } from "components/Graphs/InstructorMovement/instructorMovement";
 import { HandRaiseMetricDisplay } from "components/MetricDisplay/Metrics/handRasiseMetricDisplay";
 import { BehavioralEngagement } from "components/Graphs/BehavioralEngagement/behavioralEngagement";
@@ -16,6 +17,8 @@ import { StudentSpeechMetricDisplay } from "components/MetricDisplay/Metrics/stu
 import { InstructorSpeechMetricDisplay } from "components/MetricDisplay/Metrics/instructorSpeechMetricDisplay";
 
 import "./metrics.scss";
+import { useSelector } from "react-redux";
+import { selectSelectedSession } from "redux/sessionSlice";
 
 const { Title } = Typography;
 
@@ -35,6 +38,7 @@ export interface IMetricsPagePresentationalProps {
 export function MetricsPagePresentational(
   props: IMetricsPagePresentationalProps
 ) {
+  const selectedSession = useSelector(selectSelectedSession);
   const [editingSessionName, setEditingSessionName] = React.useState(false);
   const [newSessionName, setNewSessionName] = React.useState(
     props.session.name || ""
@@ -42,6 +46,7 @@ export function MetricsPagePresentational(
 
   return (
     <div className="metricPagePresentational">
+      <DetectInvalidSession />
       <div
         style={{
           display: "flex",
@@ -64,13 +69,14 @@ export function MetricsPagePresentational(
                 icon="check"
                 size="1x"
                 color="blue"
-                onClick={(event) => {
+                onClick={async (event) => {
                   setEditingSessionName(false);
-                  props.updateSessionName({
+                  const result = await props.updateSessionName({
                     sessionId: props.session.id,
                     name: newSessionName,
                   });
-                  setNewSessionName("");
+
+                  setNewSessionName(result.data.data.name); // Todo: Constrain return type to make this less gross
                 }}
               />
             </Button>
@@ -81,19 +87,15 @@ export function MetricsPagePresentational(
                 color="red"
                 onClick={(event) => {
                   setEditingSessionName(false);
-                  setNewSessionName("");
+                  setNewSessionName(newSessionName);
                 }}
               />
             </Button>
           </div>
         ) : (
           <>
-            <Title>
-              {props.updateSessionNameResult.status === QueryStatus.fulfilled
-                ? props.updateSessionNameResult.data.name
-                : props.session.name}
-            </Title>
-            {/* <FontAwesomeIcon
+            <Title>{newSessionName ?? props.session.name}</Title>
+            <FontAwesomeIcon
               icon="edit"
               size="1x"
               onClick={(event) => {
@@ -101,7 +103,7 @@ export function MetricsPagePresentational(
                 setEditingSessionName(true);
               }}
               className="sessionTitleEdit"
-            /> */}
+            />
           </>
         )}
       </div>
@@ -123,25 +125,24 @@ export function MetricsPagePresentational(
             flexWrap: "wrap",
           }}
         >
-          <HandRaiseMetricDisplay />
-          <InstructorSpeechMetricDisplay />
-          <StudentSpeechMetricDisplay />
-          <PerformanceMetricDisplay />
-          <AttendanceMetricDisplay />
+          <HandRaiseMetricDisplay sessionId={selectedSession?.id} />
+          <InstructorSpeechMetricDisplay sessionId={selectedSession?.id} />
+          <StudentSpeechMetricDisplay sessionId={selectedSession?.id} />
+          <PerformanceMetricDisplay sessionId={selectedSession?.id} />
+          <AttendanceMetricDisplay sessionId={selectedSession?.id} />
         </div>
 
         <div
           style={{
             display: "flex",
             marginTop: "3em",
-            overflowX: "auto",
+            flexWrap: "wrap",
           }}
         >
           <InfoCard
             color={{ light: "#ED80A2", dark: "#D1728F" }}
-            icon=""
             title="Sit vs Stand"
-            helpWindowText="Sit vs stand data in session"
+            helpWindowContent={<p>Sit vs stand data in session</p>}
             style={{ margin: ".5em" }}
           >
             <div className="infoCardContent">
@@ -150,10 +151,14 @@ export function MetricsPagePresentational(
           </InfoCard>
           <InfoCard
             color={{ light: "#ED80A2", dark: "#D1728F" }}
-            icon=""
             title="Instructor Movement"
-            helpWindowText="Movement Patterns during class"
-            style={{ margin: ".5em" }}
+            helpWindowContent={<p>Movement Patterns during class</p>}
+            style={{
+              margin: ".5em",
+              overflowY: "auto",
+              overflowX: "hidden",
+              height: "100%",
+            }}
           >
             <div className="infoCardContent">
               <InstructorMovement />
@@ -162,15 +167,16 @@ export function MetricsPagePresentational(
 
           <InfoCard
             color={{ light: "#FAB558", dark: "#E09F4B" }}
-            icon=""
-            title=""
-            helpWindowText="Behavioral Engagement during class"
+            title="Classroom Dynamics"
+            helpWindowContent={<p>Behavioral Engagement during class</p>}
             style={{ margin: ".5em" }}
           >
             <div className="infoCardContent">
               <BehavioralEngagement />
             </div>
           </InfoCard>
+
+          {/* Todo: Add a seperate card for audio? */}
         </div>
       </div>
     </div>

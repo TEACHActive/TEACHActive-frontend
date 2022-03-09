@@ -28,7 +28,7 @@ export function HeaderPresentational(props: IHeaderPresentationalProps) {
 
   const constructSelectData = (
     sessions: ISession[]
-  ): { label: string; value: string }[] => {
+  ): { label: string; value: string; dateTime: DateTime }[] => {
     return sessions.map((session) => {
       return {
         label:
@@ -36,6 +36,7 @@ export function HeaderPresentational(props: IHeaderPresentationalProps) {
           DateTime.fromISO(session.createdAtISO).toLocaleString() ||
           session.id,
         value: session.id,
+        dateTime: DateTime.fromISO(session.createdAtISO),
       };
     });
   };
@@ -209,7 +210,7 @@ export function HeaderPresentational(props: IHeaderPresentationalProps) {
     const cascaderData = constructCascaderData(props.sessions);
     setOptions(cascaderData);
     if (selectedSession) {
-      //Update header if selected session is already set
+      // Todo: Update header if selected session is already set
     }
   }, [props.sessions, selectedSession]);
 

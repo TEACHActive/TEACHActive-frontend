@@ -1,3 +1,4 @@
+import * as React from "react";
 import Cascader, {
   CascaderOptionType,
   CascaderValueType,
@@ -5,7 +6,10 @@ import Cascader, {
 import Select, { SelectValue } from "antd/lib/select";
 import { ISession } from "api/services/sessions/types";
 import { LogoutButton } from "components/UserManagment/logoutButton";
-import * as React from "react";
+import { Tooltip } from "antd";
+import { DateTime } from "luxon";
+
+const { Option } = Select;
 
 export interface ISessionSelectProps {
   selectedSession?: ISession;
@@ -23,6 +27,7 @@ export interface ISessionSelectProps {
   selectOptions: {
     label: string;
     value: string;
+    dateTime: DateTime;
   }[];
   selectOnChange: (value: SelectValue) => void;
 }
@@ -49,10 +54,21 @@ export function SessionSelect(props: ISessionSelectProps) {
         ) : (
           <Select
             defaultValue={props.selectedSession?.id} //TODO: Determine if this fixes the issue of select being unset sometimes
-            options={props.selectOptions}
+            // options={props.selectOptions}
             style={{ width: "200px" }}
             onChange={props.selectOnChange}
-          />
+          >
+            {props.selectOptions.map((selectOption) => (
+              <Option value={selectOption.value}>
+                <Tooltip
+                  placement="right"
+                  title={selectOption.dateTime.toLocaleString()}
+                >
+                  {selectOption.label}
+                </Tooltip>
+              </Option>
+            ))}
+          </Select>
         )}
       </div>
       <div>

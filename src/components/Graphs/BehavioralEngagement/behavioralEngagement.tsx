@@ -53,7 +53,7 @@ export function BehavioralEngagement(props: IBehavioralEngagementProps) {
   const selectedSession = useSelector(selectSelectedSession);
 
   const getArmPoseDataInSessionResult = _useGetArmPoseDataInSessionQuery(
-    { sessionId: selectedSession?.id || "", numSegments: 20 },
+    { sessionId: selectedSession?.id || "", chunkSizeInMinutes: 5 },
     selectedSession ? null : skipToken
   );
 

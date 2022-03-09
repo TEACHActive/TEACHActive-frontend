@@ -7,19 +7,18 @@ import BlockContent from "components/BlockContent/blockContent";
 import { MetricNumberType, SessionMetricType } from "../metricDisplay.types";
 import { _useGetArmPoseTotalsInSecondsSessionQuery } from "api/services/armPose";
 
-export interface IHandRaiseMetricDisplayProps {}
+export interface IHandRaiseMetricDisplayProps {
+  sessionId?: string;
+}
 
 export function HandRaiseMetricDisplay(props: IHandRaiseMetricDisplayProps) {
-  const selectedSession = useSelector(selectSelectedSession);
   const {
     data,
     isError,
     isFetching,
     isLoading,
     // isSuccess,
-  } = _useGetArmPoseTotalsInSecondsSessionQuery(
-    selectedSession?.id ?? skipToken
-  );
+  } = _useGetArmPoseTotalsInSecondsSessionQuery(props.sessionId ?? skipToken);
 
   return (
     <BlockContent

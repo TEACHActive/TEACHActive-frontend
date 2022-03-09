@@ -12,10 +12,10 @@ export const armPoseApi = createApi({
   endpoints: (builder) => ({
     getArmPoseDataInSession: builder.query<
       ArmPoseStats[],
-      { sessionId: string; numSegments: number }
+      { sessionId: string; chunkSizeInMinutes: number }
     >({
-      query: (arg: { sessionId: string; numSegments: number }) =>
-        `${baseEndpoint}/data/${arg.sessionId}?numSegments=${arg.numSegments}`,
+      query: (arg: { sessionId: string; chunkSizeInMinutes: number }) =>
+        `${baseEndpoint}/data/${arg.sessionId}?chunkSizeInMinutes=${arg.chunkSizeInMinutes}`,
       transformResponse: (response: Response<ArmPoseStats[]>) => {
         return response.data || [];
       },
@@ -36,12 +36,15 @@ export const armPoseApi = createApi({
 export function _useGetArmPoseDataInSessionQuery(
   arg: {
     sessionId: string;
-    numSegments: number;
+    chunkSizeInMinutes: number;
   },
   skip: typeof skipToken | null
 ) {
   const result = armPoseApi.useGetArmPoseDataInSessionQuery(
-    skip || { sessionId: arg.sessionId, numSegments: arg.numSegments }
+    skip || {
+      sessionId: arg.sessionId,
+      chunkSizeInMinutes: arg.chunkSizeInMinutes,
+    }
   );
 
   return {

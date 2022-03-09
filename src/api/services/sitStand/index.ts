@@ -12,10 +12,10 @@ export const sitStandApi = createApi({
   endpoints: (builder) => ({
     getSitStandDataInSession: builder.query<
       SitStandInFrame[],
-      { sessionId: string; numSegments: number }
+      { sessionId: string; chunkSizeInMinutes: number }
     >({
-      query: (arg: { sessionId: string; numSegments: number }) =>
-        `${baseEndpoint}/data/${arg.sessionId}?numSegments=${arg.numSegments}`,
+      query: (arg: { sessionId: string; chunkSizeInMinutes: number }) =>
+        `${baseEndpoint}/data/${arg.sessionId}?chunkSizeInMinutes=${arg.chunkSizeInMinutes}`,
       transformResponse: (response: Response<SitStandInFrame[]>) => {
         return response.data || [];
       },
@@ -24,13 +24,13 @@ export const sitStandApi = createApi({
 });
 
 export function _useGetSitStandDataInSessionQuery(
-  arg: { sessionId: string; numSegments: number },
+  arg: { sessionId: string; chunkSizeInMinutes: number },
   skip: typeof skipToken | null
 ) {
   const result = sitStandApi.useGetSitStandDataInSessionQuery(
     skip ?? {
       sessionId: arg.sessionId,
-      numSegments: arg.numSegments,
+      chunkSizeInMinutes: arg.chunkSizeInMinutes,
     }
   );
 

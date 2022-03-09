@@ -7,17 +7,18 @@ import BlockContent from "components/BlockContent/blockContent";
 import { MetricNumberType, SessionMetricType } from "../metricDisplay.types";
 import { _useGetAttendanceStatsForSessionQuery } from "api/services/attendance";
 
-export interface IAttendanceMetricDisplayProps {}
+export interface IAttendanceMetricDisplayProps {
+  sessionId?: string;
+}
 
 export function AttendanceMetricDisplay(props: IAttendanceMetricDisplayProps) {
-  const selectedSession = useSelector(selectSelectedSession);
   const {
     data,
     isError,
     isFetching,
     isLoading,
     // isSuccess,
-  } = _useGetAttendanceStatsForSessionQuery(selectedSession?.id ?? skipToken);
+  } = _useGetAttendanceStatsForSessionQuery(props.sessionId ?? skipToken);
   return (
     <BlockContent
       color={{

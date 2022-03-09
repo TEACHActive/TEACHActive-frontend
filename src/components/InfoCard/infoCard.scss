@@ -20,14 +20,8 @@
   border-radius: 2px;
 }
 
-.InfoCard--title {
-  position: absolute;
-  right: 10px;
-  top: 5%;
-  max-width: 150px;
-}
-
 .InfoCard--card {
-  width: 100%;
+  min-height: 450px !important;
   margin: 1em;
+  overflow: visible !important;
 }
