@@ -64,7 +64,7 @@ export function MetricsPage(props: IMetricsPageProps) {
   return (
     <MetricsPagePresentational
       session={selectedSession}
-      updateSessionName={updateSessionName} //todo get working
+      updateSessionName={updateSessionName}
       updateSessionNameResult={updateSessionNameResult}
     />
   );

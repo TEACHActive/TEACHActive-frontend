@@ -44,6 +44,10 @@ export function MetricsPagePresentational(
     props.session.name || ""
   );
 
+  React.useEffect(() => {
+    setNewSessionName(props.session.name || "");
+  }, [props.session]);
+
   return (
     <div className="metricPagePresentational">
       <DetectInvalidSession />
@@ -69,7 +73,7 @@ export function MetricsPagePresentational(
                 icon="check"
                 size="1x"
                 color="blue"
-                onClick={async (event) => {
+                onClick={async (_) => {
                   setEditingSessionName(false);
                   const result = await props.updateSessionName({
                     sessionId: props.session.id,
