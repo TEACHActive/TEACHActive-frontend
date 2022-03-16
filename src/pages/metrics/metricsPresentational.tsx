@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Input, Typography } from "antd";
+import { Button, Input, message, Typography } from "antd";
 import { QueryStatus } from "@reduxjs/toolkit/dist/query";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -75,6 +75,10 @@ export function MetricsPagePresentational(
                     sessionId: props.session.id,
                     name: newSessionName,
                   });
+
+                  if (result.error) {
+                    message.error(result.error.data.errorMessage);
+                  }
 
                   setNewSessionName(result.data.data.name); // Todo: Constrain return type to make this less gross
                 }}
