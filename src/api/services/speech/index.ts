@@ -22,14 +22,14 @@ export const speechApi = createApi({
     }),
     getCombinedSpeechDataInSession: builder.query<
       CombinedSpeechFrame[],
-      { sessionId: string; minSpeakingAmp: number; numSegments: number }
+      { sessionId: string; minSpeakingAmp: number; chunkSizeInMinutes: number }
     >({
       query: (arg: {
         sessionId: string;
         minSpeakingAmp: number;
-        numSegments: number;
+        chunkSizeInMinutes: number;
       }) =>
-        `${baseEndpoint}/data/${arg.sessionId}?minSpeakingAmp=${arg.minSpeakingAmp}&numSegments=${arg.numSegments}`,
+        `${baseEndpoint}/data/${arg.sessionId}?minSpeakingAmp=${arg.minSpeakingAmp}&chunkSizeInMinutes=${arg.chunkSizeInMinutes}`,
       transformResponse: (response: Response<CombinedSpeechFrame[]>) => {
         return response.data || [];
       },
@@ -58,14 +58,18 @@ export function _useGetSpeechTotalsInSecondsQuery(
 }
 
 export function _useGetCombinedSpeechDataInSessionQuery(
-  arg: { sessionId: string; minSpeakingAmp: number; numSegments: number },
+  arg: {
+    sessionId: string;
+    minSpeakingAmp: number;
+    chunkSizeInMinutes: number;
+  },
   skip: typeof skipToken | null
 ) {
   const result = speechApi.useGetCombinedSpeechDataInSessionQuery(
     skip || {
       sessionId: arg.sessionId,
       minSpeakingAmp: arg.minSpeakingAmp,
-      numSegments: arg.numSegments,
+      chunkSizeInMinutes: arg.chunkSizeInMinutes,
     }
   );
 

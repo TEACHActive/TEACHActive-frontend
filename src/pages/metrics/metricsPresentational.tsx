@@ -1,12 +1,14 @@
 import React from "react";
+import { useSelector } from "react-redux";
+import { useAppDispatch } from "app/hooks";
 import { Button, Input, message, Typography } from "antd";
 import { QueryStatus } from "@reduxjs/toolkit/dist/query";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { ISession } from "api/services/sessions/types";
 import { InfoCard } from "components/InfoCard/infoCard";
-
 import { SitVsStand } from "components/Graphs/SitVsStand/sitVsStand";
+import { selectSelectedSession, updateSessionName } from "redux/sessionSlice";
 import { DetectInvalidSession } from "components/DetectInvalidSession/detectInvalidSession";
 import { InstructorMovement } from "components/Graphs/InstructorMovement/instructorMovement";
 import { HandRaiseMetricDisplay } from "components/MetricDisplay/Metrics/handRasiseMetricDisplay";
@@ -17,22 +19,14 @@ import { StudentSpeechMetricDisplay } from "components/MetricDisplay/Metrics/stu
 import { InstructorSpeechMetricDisplay } from "components/MetricDisplay/Metrics/instructorSpeechMetricDisplay";
 
 import "./metrics.scss";
-import { useSelector } from "react-redux";
-import { selectSelectedSession } from "redux/sessionSlice";
 
 const { Title } = Typography;
 
 export interface IMetricsPagePresentationalProps {
   session: ISession;
   updateSessionName: (arg: { sessionId: string; name: string }) => any;
-  updateSessionNameResult: {
-    status: QueryStatus;
-    data?: undefined;
-    error?: undefined;
-    isLoading: false;
-    isSuccess: false;
-    isError: false;
-  } & any;
+  refetchSessions: () => void;
+  // setSelectedSessionById: (id: string) => void;
 }
 
 export function MetricsPagePresentational(
@@ -43,6 +37,8 @@ export function MetricsPagePresentational(
   const [newSessionName, setNewSessionName] = React.useState(
     props.session.name || ""
   );
+
+  const dispatch = useAppDispatch();
 
   React.useEffect(() => {
     setNewSessionName(props.session.name || "");
@@ -84,7 +80,9 @@ export function MetricsPagePresentational(
                     message.error(result.error.data.errorMessage);
                   }
 
-                  setNewSessionName(result.data.data.name); // Todo: Constrain return type to make this less gross
+                  // props.setSelectedSessionById()
+                  props.refetchSessions();
+                  dispatch(updateSessionName(newSessionName));
                 }}
               />
             </Button>
@@ -102,7 +100,7 @@ export function MetricsPagePresentational(
           </div>
         ) : (
           <>
-            <Title>{newSessionName ?? props.session.name}</Title>
+            <Title>{props.session.name}</Title>
             <FontAwesomeIcon
               icon="edit"
               size="1x"
@@ -140,13 +138,7 @@ export function MetricsPagePresentational(
           <AttendanceMetricDisplay sessionId={selectedSession?.id} />
         </div>
 
-        <div
-          style={{
-            display: "flex",
-            marginTop: "3em",
-            flexWrap: "wrap",
-          }}
-        >
+        <div className="infoCards">
           <InfoCard
             color={{ light: "#ED80A2", dark: "#D1728F" }}
             title="Sit vs Stand"

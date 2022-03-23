@@ -1,8 +1,6 @@
-import { useSelector } from "react-redux";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 
 import MetricDisplay from "../metricDisplay";
-import { selectSelectedSession } from "redux/sessionSlice";
 import BlockContent from "components/BlockContent/blockContent";
 import { _useGetPerformanceForSessionQuery } from "api/services/performance";
 import { MetricNumberType, SessionMetricType } from "../metricDisplay.types";

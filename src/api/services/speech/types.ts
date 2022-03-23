@@ -1,4 +1,5 @@
 import { DateTime } from "luxon";
+import { normalize } from "../../../util";
 
 enum Speaker {
   Instructor = "instructor",
@@ -23,9 +24,9 @@ export class CombinedSpeechFrame {
     begin: DateTime;
     end: DateTime;
   };
-  // timeDiff: {
-  //   minutes: number;
-  // };
+  timeDiff: {
+    minutes: number;
+  };
   frameNumber: {
     begin: number;
     avg: number;
@@ -36,6 +37,8 @@ export class CombinedSpeechFrame {
     [Speaker.Student]: number;
     [Speaker.Instructor]: number;
   };
+  maxAmp: number;
+  minAmp: number;
 
   constructor(data: any) {
     //TODO: add error handling
@@ -43,9 +46,9 @@ export class CombinedSpeechFrame {
       begin: DateTime.fromISO(data.timestamp.begin),
       end: DateTime.fromISO(data.timestamp.end),
     };
-    // this.timeDiff = {
-    //   minutes: parseInt(data.timeDiff.minutes),
-    // };
+    this.timeDiff = {
+      minutes: parseInt(data.timeDiff.minutes),
+    };
     this.frameNumber = {
       begin: data.frameNumber.begin,
       avg: data.frameNumber.avg,
@@ -56,5 +59,7 @@ export class CombinedSpeechFrame {
       [Speaker.Student]: data.speakerInSeconds[Speaker.Student],
       [Speaker.Instructor]: data.speakerInSeconds[Speaker.Instructor],
     };
+    this.maxAmp = data.maxAmp;
+    this.minAmp = data.minAmp;
   }
 }

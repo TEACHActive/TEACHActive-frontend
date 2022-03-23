@@ -51,10 +51,19 @@ export const sessionSlice = createSlice({
         };
       }
     },
+    updateSessionName: (state, action: PayloadAction<string | undefined>) => {
+      state.selectedSession = {
+        id: state.selectedSession?.id || "",
+        name: action.payload,
+        userUID: state.selectedSession?.userUID || "",
+        createdAtISO: state.selectedSession?.createdAtISO || "",
+        performance: state.selectedSession?.performance,
+      };
+    },
   },
 });
 
-export const { setSelectedSession } = sessionSlice.actions;
+export const { setSelectedSession, updateSessionName } = sessionSlice.actions;
 
 // // The function below is called a selector and allows us to select a value from
 // // the state. Selectors can also be defined inline where they're used instead of

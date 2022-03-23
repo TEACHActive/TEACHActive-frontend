@@ -98,7 +98,10 @@ export function MetricDisplayPresentational<T extends IMetricTypeDisplayable>(
         <Spin />
       ) : (
         <h1 className="metric-text">
-          {props.metricPrepend} {props.metric.getValueNode()}
+          {props.metricPrepend}{" "}
+          {props.metric.getValueNode() === -1
+            ? "-"
+            : props.metric.getValueNode()}
         </h1>
       )}
 

@@ -61,7 +61,7 @@ export function BehavioralEngagement(props: IBehavioralEngagementProps) {
     {
       sessionId: selectedSession?.id || "",
       minSpeakingAmp: 0,
-      numSegments: 20,
+      chunkSizeInMinutes: 5,
     },
     selectedSession ? null : skipToken
   );
@@ -187,6 +187,7 @@ export function BehavioralEngagement(props: IBehavioralEngagementProps) {
       />
     );
     selectedData = combinedSpeechData;
+
     if (studentSpeechChecked && instructorSpeechChecked) {
       // TODO: ?
       //   const studentData = studentSpeechEngagementData || [];
@@ -198,7 +199,6 @@ export function BehavioralEngagement(props: IBehavioralEngagementProps) {
       //         i < studentData.length ? studentData[i].avgAmplitude : 0,
       //     };
       //   });
-      // console.log(data);
 
       line = (
         <Line
@@ -217,7 +217,7 @@ export function BehavioralEngagement(props: IBehavioralEngagementProps) {
       yAxis = (
         <YAxis
           type="number"
-          domain={[0, 1]}
+          // range={[0, 1]}
           label={{
             value: "Amplitude",
             angle: -90,
