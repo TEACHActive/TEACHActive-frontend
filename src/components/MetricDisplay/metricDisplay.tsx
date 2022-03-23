@@ -21,7 +21,7 @@ export interface IMetricDisplayProps<T extends IMetricTypeDisplayable> {
   trend_metric?: number;
   trend_metric_unit?: string;
   metricType: SessionMetricType;
-  updateMetric?: (newMetric: number) => Promise<boolean>;
+  updateMetric?: (newMetric: number) => Promise<string>;
   loading: boolean;
   isError: boolean;
   children?: ReactNode;
@@ -60,6 +60,7 @@ export default function MetricDisplay<T extends IMetricTypeDisplayable>(
       updateMetric={props.updateMetric}
       setProcessing={setProcessing}
       setNewMetric={setNewMetric}
+      newMetric={parseFloat(newMetric)}
       editingMetric={editingMetric}
       setEditingMetric={setEditingMetric}
       loading={props.loading}

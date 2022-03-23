@@ -2,7 +2,10 @@ import { skipToken } from "@reduxjs/toolkit/dist/query";
 
 import MetricDisplay from "../metricDisplay";
 import BlockContent from "components/BlockContent/blockContent";
-import { _useGetPerformanceForSessionQuery } from "api/services/performance";
+import {
+  _useGetPerformanceForSessionQuery,
+  _useUpdatePerformanceForSessionMutation,
+} from "api/services/performance";
 import { MetricNumberType, SessionMetricType } from "../metricDisplay.types";
 
 export interface IPerformanceMetricDisplayProps {
@@ -18,7 +21,35 @@ export function PerformanceMetricDisplay(
     isFetching,
     isLoading,
     // isSuccess,
+    refetch,
   } = _useGetPerformanceForSessionQuery(props.sessionId ?? skipToken);
+
+  const {
+    updatePerformanceForSession,
+  } = _useUpdatePerformanceForSessionMutation();
+
+  const updatePerformance = async (value: number): Promise<string> => {
+    if (!props.sessionId) {
+      // Todo add more here to explain to user why reject
+      return Promise.reject("");
+    }
+    // const parsedValue = parseFloat(value);
+    // // Validate that performance is a number
+    // if (typeof value !== "number") {
+    //   return Promise.reject("Value is not a number");
+    // }
+    // Validate that performance is between 0 - 100
+    if (value < 0 || value > 100) {
+      return Promise.reject("Value out of bounds for performance");
+    }
+    await updatePerformanceForSession({
+      sessionId: props.sessionId,
+      performance: value,
+    });
+    refetch();
+    return Promise.resolve("");
+  };
+
   return (
     <BlockContent
       color={{
@@ -33,7 +64,8 @@ export function PerformanceMetricDisplay(
     >
       <MetricDisplay<MetricNumberType>
         metric={new MetricNumberType(data?.performance)}
-        canEdit={false} // TODO: ?
+        canEdit={true}
+        updateMetric={updatePerformance}
         trend={undefined}
         unit="%"
         trend_metric={undefined}

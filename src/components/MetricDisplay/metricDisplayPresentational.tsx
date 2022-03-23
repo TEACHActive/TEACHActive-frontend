@@ -1,4 +1,4 @@
-import { Input, Button, Spin } from "antd";
+import { Input, Button, Spin, message } from "antd";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { IMetricTypeDisplayable } from "./metricDisplay.types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -20,8 +20,9 @@ export interface IMetricDisplayPresentationalProps<
   trend_metric_unit?: string;
   loading: boolean;
   isError: boolean;
+  newMetric: number;
 
-  updateMetric?: (newMetric: number) => Promise<boolean>;
+  updateMetric?: (newMetric: number) => Promise<string>;
   setProcessing: (value: boolean) => void;
   setNewMetric: (newMetric: string) => void;
   setEditingMetric: (val: boolean) => void;
@@ -66,11 +67,16 @@ export function MetricDisplayPresentational<T extends IMetricTypeDisplayable>(
                 color="blue"
                 onClick={async (event) => {
                   props.setProcessing(true);
-                  //TODO: Reimpliment
-                  // const success = await props.updateMetric();
-                  // if (success) {
-                  //   props.setNewMetric("");
-                  // }
+                  if (props.updateMetric) {
+                    try {
+                      const updateMessage = await props.updateMetric(
+                        props.newMetric
+                      );
+                      props.setNewMetric("");
+                    } catch (e) {
+                      message.error(e as string);
+                    }
+                  }
                   props.setEditingMetric(false);
                   props.setProcessing(false);
                 }}

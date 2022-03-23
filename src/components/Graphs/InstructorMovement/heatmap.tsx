@@ -65,11 +65,12 @@ export function Heatmap(props: IHeatmapProps) {
   // console.log(props.data);
 
   return (
-    <div style={{ display: "flex" }}>
-      <div className="classroomHeatmapHolder">
-        <div className="instructorMovementChart" />
-        <img className="classroomImage" src={ClassroomImage} />
-      </div>
-    </div>
+    <div className="instructorMovementChart" />
+    // <div style={{ display: "flex" }}>
+    //   <div className="classroomHeatmapHolder">
+    //     <div className="instructorMovementChart" />
+    //     <img className="classroomImage" src={ClassroomImage} />
+    //   </div>
+    // </div>
   );
 }

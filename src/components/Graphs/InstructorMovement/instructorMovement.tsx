@@ -106,9 +106,9 @@ export function InstructorMovement(props: IInstructorMovementProps) {
           />
         </ComposedChart>
       </div>
-      {/* <div style={{ margin: "2em" }}>
+      <div style={{ margin: "2em" }}>
         <Heatmap data={data.map((im) => im.instructor.avg.xPos)} />
-      </div> */}
+      </div>
     </>
   );
 }

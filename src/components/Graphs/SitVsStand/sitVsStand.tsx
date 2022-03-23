@@ -83,8 +83,8 @@ export function SitVsStand(props: ISitVsStandProps) {
         label={{
           value: "Percentage of students in each state",
           angle: -90,
-          position: "center",
         }}
+        width={100}
       />
       <RechartsTooltip />
       <Area
