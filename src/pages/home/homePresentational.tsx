@@ -2,7 +2,12 @@ import { Link } from "react-router-dom";
 import { Dropdown, Button, Menu } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 
-import { MetricsRoute, GoalsRoute, ProgressRoute } from "routes";
+import {
+  MetricsRoute,
+  GoalsRoute,
+  ProgressRoute,
+  ResourcesRoute,
+} from "routes";
 import { LogoutButton } from "components/UserManagment/logoutButton";
 
 import goalsIcon from "images/goals.png";
@@ -68,26 +73,26 @@ export function HomePagePresentational(props: IHomePagePresentationalProps) {
             {
               to: MetricsRoute.link(),
               imgSrc: dashboardIcon,
-              name: "Dashboard",
-              alt: "Go to Dashboard",
-            },
-            {
-              to: GoalsRoute.link(),
-              imgSrc: reflectionsIcon,
-              name: "Reflections",
-              alt: "Go to Reflections",
-            },
-            {
-              to: GoalsRoute.link(),
-              imgSrc: goalsIcon,
-              name: "Goals",
-              alt: "Go to Goals",
+              name: MetricsRoute.name,
+              alt: `Go to ${MetricsRoute}`,
             },
             {
               to: ProgressRoute.link(),
               imgSrc: progressIcon,
-              name: "Progress",
-              alt: "Go to Progress",
+              name: ProgressRoute.name,
+              alt: `Go to ${ProgressRoute.name}`,
+            },
+            {
+              to: GoalsRoute.link(),
+              imgSrc: goalsIcon,
+              name: GoalsRoute.name,
+              alt: `Go to ${GoalsRoute}`,
+            },
+            {
+              to: ResourcesRoute.link(),
+              imgSrc: reflectionsIcon,
+              name: ResourcesRoute.name,
+              alt: `Go to ${ResourcesRoute}`,
             },
           ].map((link, i) => (
             <Link to={link.to} key={i}>

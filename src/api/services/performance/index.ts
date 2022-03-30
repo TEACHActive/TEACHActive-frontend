@@ -11,7 +11,7 @@ export const performanceApi = createApi({
   baseQuery: baseQuery,
   endpoints: (builder) => ({
     getPerformanceForSession: builder.query<SessionPerformance | null, string>({
-      query: (sessionId: string) => `${baseEndpoint}/${sessionId}`,
+      query: (sessionId: string) => `${baseEndpoint}/stats/${sessionId}`,
       transformResponse: (response: Response<SessionPerformance>) => {
         return response.data;
       },

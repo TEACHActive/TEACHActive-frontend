@@ -1,38 +1,63 @@
+import React from "react";
+import { DateTime } from "luxon";
 import { Button, Table } from "antd";
+import { ColumnGroupType, ColumnsType, ColumnType } from "antd/lib/table";
 
 import { Session } from "api/services/sessions/types";
 import { CompareSessions } from "components/CompareSessions/compareSessions";
-import { DateTime } from "luxon";
-import React from "react";
 
 import "./progress.scss";
 
-const columns = [
+const columns: (
+  | (ColumnGroupType<Session> & { adminOnly: boolean })
+  | (ColumnType<Session> & { adminOnly: boolean })
+)[] = [
   {
     title: "Name",
     dataIndex: "name",
     key: "name",
+    sorter: (a: Session, b: Session) => {
+      const aName = a.name || a.createdAtISO;
+      const bName = b.name || b.createdAtISO;
+      return bName.localeCompare(aName);
+    },
+    // sortDirections: ["ascend", "descend", "ascend"],
+    adminOnly: false,
   },
   {
     title: "Created At",
     dataIndex: "createdAtISO",
     key: "createdAtISO",
     render: (iso: string) => DateTime.fromISO(iso).toLocaleString(),
+    sorter: (a: Session, b: Session) => {
+      const aDate = DateTime.fromISO(a.createdAtISO);
+      const bDate = DateTime.fromISO(b.createdAtISO);
+      return bDate.diff(aDate, "seconds").seconds;
+    },
+    // sortDirections: ["ascend", "descend", "ascend"],
+    adminOnly: false,
   },
   {
     title: "ID",
     dataIndex: "id",
     key: "id",
+    adminOnly: true,
   },
   {
     title: "UID",
     dataIndex: "userUID",
     key: "userUID",
+    sorter: (a: Session, b: Session) => {
+      return b.userUID.localeCompare(a.userUID);
+    },
+    // sortDirections: ["ascend", "descend", "ascend"],
+    adminOnly: true,
   },
 ];
 
 export interface IProgressPagePresentationalProps {
   sessions: Session[];
+  isAdmin: boolean;
 }
 
 export function ProgressPagePresentational(
@@ -81,7 +106,9 @@ export function ProgressPagePresentational(
         }}
         rowKey={(record) => record.id}
         dataSource={props.sessions}
-        columns={columns}
+        columns={columns.filter((col) =>
+          props.isAdmin ? true : !col.adminOnly
+        )}
       />
       <div>
         <Button

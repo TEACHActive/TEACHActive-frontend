@@ -92,8 +92,6 @@ export function MetricsPage(props: IMetricsPageProps) {
     // return <h2>Loading Session...</h2>;
   }
 
-  console.log(selectedSession);
-
   return (
     <MetricsPagePresentational
       session={selectedSession}

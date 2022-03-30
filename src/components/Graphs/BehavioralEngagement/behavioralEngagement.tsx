@@ -21,7 +21,9 @@ import { _useGetArmPoseDataInSessionQuery } from "api/services/armPose";
 import { _useGetCombinedSpeechDataInSessionQuery } from "api/services/speech";
 import { SessionMetricType } from "components/MetricDisplay/metricDisplay.types";
 
-export interface IBehavioralEngagementProps {}
+export interface IBehavioralEngagementProps {
+  sessionId?: string;
+}
 
 const defaultOptions = [
   {
@@ -50,20 +52,18 @@ export function BehavioralEngagement(props: IBehavioralEngagementProps) {
   );
   const [loading, setLoading] = React.useState(true);
 
-  const selectedSession = useSelector(selectSelectedSession);
-
   const getArmPoseDataInSessionResult = _useGetArmPoseDataInSessionQuery(
-    { sessionId: selectedSession?.id || "", chunkSizeInMinutes: 5 },
-    selectedSession ? null : skipToken
+    { sessionId: props.sessionId || "", chunkSizeInMinutes: 5 },
+    props.sessionId ? null : skipToken
   );
 
   const getCombinedSpeechDataInSessionResult = _useGetCombinedSpeechDataInSessionQuery(
     {
-      sessionId: selectedSession?.id || "",
+      sessionId: props.sessionId || "",
       minSpeakingAmp: 0,
       chunkSizeInMinutes: 5,
     },
-    selectedSession ? null : skipToken
+    props.sessionId ? null : skipToken
   );
 
   const onChange = (checkedValue: CheckboxValueType[]) => {

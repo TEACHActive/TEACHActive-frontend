@@ -18,6 +18,7 @@ const { Header: AntHeader } = Layout;
 
 export interface IHeaderPresentationalProps {
   sessions: ISession[];
+  isAdmin: boolean;
 }
 
 export function HeaderPresentational(props: IHeaderPresentationalProps) {
@@ -215,13 +216,13 @@ export function HeaderPresentational(props: IHeaderPresentationalProps) {
   }, [props.sessions, selectedSession]);
 
   const distinctUIDs = getDistinctUIDsFromSessions(props.sessions);
-  const isAdmin = distinctUIDs.length > 1;
+  //const isAdmin = distinctUIDs.length > 1; // Todo: Modify this to check is admin from user
 
   return (
     <AntHeader className="header">
       <SessionSelect
         selectedSession={selectedSession}
-        isAdmin={isAdmin}
+        isAdmin={props.isAdmin}
         cascaderOptions={options}
         cascaderDisplayRender={(
           label: string[],

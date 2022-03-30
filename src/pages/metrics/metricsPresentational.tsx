@@ -19,6 +19,9 @@ import { StudentSpeechMetricDisplay } from "components/MetricDisplay/Metrics/stu
 import { InstructorSpeechMetricDisplay } from "components/MetricDisplay/Metrics/instructorSpeechMetricDisplay";
 
 import "./metrics.scss";
+import { ClassroomDynamicsInfoCard } from "components/InfoCard/InfoCards/ClassroomDynamicsInfoCard";
+import { InstructorMovementInfoCard } from "components/InfoCard/InfoCards/InstructorMovementInfoCard";
+import { SitVStandInfoCard } from "components/InfoCard/InfoCards/sitVStandInfoCard";
 
 const { Title } = Typography;
 
@@ -139,42 +142,9 @@ export function MetricsPagePresentational(
         </div>
 
         <div className="infoCards">
-          <InfoCard
-            color={{ light: "#ED80A2", dark: "#D1728F" }}
-            title="Sit vs Stand"
-            helpWindowContent={<p>Sit vs stand data in session</p>}
-            style={{ margin: ".5em" }}
-          >
-            <div className="infoCardContent">
-              <SitVsStand />
-            </div>
-          </InfoCard>
-          <InfoCard
-            color={{ light: "#ED80A2", dark: "#D1728F" }}
-            title="Instructor Movement"
-            helpWindowContent={<p>Movement Patterns during class</p>}
-            style={{
-              margin: ".5em",
-              overflowY: "auto",
-              overflowX: "hidden",
-              height: "100%",
-            }}
-          >
-            <div className="infoCardContent">
-              <InstructorMovement />
-            </div>
-          </InfoCard>
-
-          <InfoCard
-            color={{ light: "#FAB558", dark: "#E09F4B" }}
-            title="Classroom Dynamics"
-            helpWindowContent={<p>Behavioral Engagement during class</p>}
-            style={{ margin: ".5em" }}
-          >
-            <div className="infoCardContent">
-              <BehavioralEngagement />
-            </div>
-          </InfoCard>
+          <SitVStandInfoCard sessionId={selectedSession?.id} />
+          <InstructorMovementInfoCard sessionId={selectedSession?.id} />
+          <ClassroomDynamicsInfoCard sessionId={selectedSession?.id} />
 
           {/* Todo: Add a seperate card for audio? */}
         </div>

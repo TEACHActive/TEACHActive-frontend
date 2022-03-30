@@ -18,7 +18,9 @@ import { _useGetInstructorMovementInSessionQuery } from "api/services/movement";
 
 // import Heatmap from "./heatmap";
 
-export interface IInstructorMovementProps {}
+export interface IInstructorMovementProps {
+  sessionId?: string;
+}
 
 type AgumentedInstructorMovementData = {
   podiumPos: number[];
@@ -29,16 +31,14 @@ type AgumentedInstructorMovementData = {
 }[];
 
 export function InstructorMovement(props: IInstructorMovementProps) {
-  const selectedSession = useSelector(selectSelectedSession);
-
   const {
     data,
     isLoading,
     isFetching,
     isError,
   } = _useGetInstructorMovementInSessionQuery(
-    { sessionId: selectedSession?.id || "", chunkSizeInMinutes: 5 },
-    selectedSession ? null : skipToken
+    { sessionId: props.sessionId || "", chunkSizeInMinutes: 5 },
+    props.sessionId ? null : skipToken
   );
 
   if (isLoading || isFetching) {
@@ -107,7 +107,10 @@ export function InstructorMovement(props: IInstructorMovementProps) {
         </ComposedChart>
       </div>
       <div style={{ margin: "2em" }}>
-        <Heatmap data={data.map((im) => im.instructor.avg.xPos)} />
+        <Heatmap
+          data={data.map((im) => im.instructor.avg.xPos)}
+          sessionId={props.sessionId || ""}
+        />
       </div>
     </>
   );

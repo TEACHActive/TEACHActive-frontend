@@ -15,7 +15,9 @@ import { selectSelectedSession } from "redux/sessionSlice";
 import { SitStandInFrame } from "api/services/sitStand/types";
 import { _useGetSitStandDataInSessionQuery } from "api/services/sitStand";
 
-export interface ISitVsStandProps {}
+export interface ISitVsStandProps {
+  sessionId?: string;
+}
 
 const toPercent = (decimal: number, fixed = 0) =>
   `${(decimal * 100).toFixed(fixed)}%`;
@@ -23,16 +25,14 @@ const toPercent = (decimal: number, fixed = 0) =>
 // const defaultResolution = 10;
 
 export function SitVsStand(props: ISitVsStandProps) {
-  const selectedSession = useSelector(selectSelectedSession);
-
   const {
     isLoading,
     isError,
     isFetching,
     data,
   } = _useGetSitStandDataInSessionQuery(
-    { sessionId: selectedSession?.id || "", chunkSizeInMinutes: 5 },
-    selectedSession ? null : skipToken
+    { sessionId: props.sessionId || "", chunkSizeInMinutes: 5 },
+    props.sessionId ? null : skipToken
   );
 
   if (isFetching || isLoading) {

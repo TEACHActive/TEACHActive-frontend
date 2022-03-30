@@ -7,21 +7,33 @@ import "./heatmap.scss";
 
 export interface IHeatmapProps {
   data: any[];
+  sessionId: string;
 }
 
 export function Heatmap(props: IHeatmapProps) {
+  let heatmapInstance: h337.Heatmap<"value", "x", "y">;
+
   React.useEffect(() => {
     const appContainer: HTMLElement | null = document.querySelector(
       ".instructorMovementChart"
     );
 
     if (appContainer) {
-      let heatmapInstance = h337.create({
-        // only container is required, the rest will be defaults
-        container: appContainer,
+      if (!heatmapInstance) {
+        heatmapInstance = h337.create({
+          // only container is required, the rest will be defaults
+          container: appContainer,
+        });
+      }
+      heatmapInstance.setData({
+        max: 0,
+        min: 0,
+        data: [],
       });
+      heatmapInstance.repaint();
+
       // var points = [];
-      var max = 0;
+      var max = Number.MIN_SAFE_INTEGER;
       let min = Number.MAX_SAFE_INTEGER;
       // var width = 500;
       // var height = 20;
@@ -50,7 +62,7 @@ export function Heatmap(props: IHeatmapProps) {
         };
       });
 
-      var data = {
+      let data = {
         max: max,
         min: min,
         data: newData,
@@ -60,12 +72,16 @@ export function Heatmap(props: IHeatmapProps) {
       // for data initialization
       heatmapInstance.setData(data);
     }
-  }, [props.data]);
+  }, [props.data, props.sessionId]);
 
   // console.log(props.data);
 
   return (
-    <div className="instructorMovementChart" />
+    <div>
+      <div className="instructorMovementChart" />
+      <br />
+      <p>Left {"<==>"} Right</p>
+    </div>
     // <div style={{ display: "flex" }}>
     //   <div className="classroomHeatmapHolder">
     //     <div className="instructorMovementChart" />

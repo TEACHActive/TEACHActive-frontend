@@ -107,16 +107,16 @@ export const MetricsRoute: IElementRoute = new ElementRoute({
   },
 });
 
-const progressPath = "progress";
+const progressPath = "trends";
 export const ProgressRoute: IElementRoute = new ElementRoute({
   routeObject: {
     path: progressPath,
     element: WithBreadcrumbs({ children: <Page.ProgressPage /> }, [
       <Link to={HomeRoute.link()}>Home</Link>,
-      "Progress",
+      "Trends",
     ]),
   },
-  name: "Progress",
+  name: "Trends",
   icon: <LineChartOutlined style={{ fontSize: iconFontSize }} />,
   link: () => progressPath,
   visible: true,
@@ -230,6 +230,25 @@ export const ForgotPasswordRoute: IElementRoute = new ElementRoute({
   },
 });
 
+const resourcesPath = "resources";
+export const ResourcesRoute: IElementRoute = new ElementRoute({
+  routeObject: {
+    path: resourcesPath,
+    element: <Page.ResourcesPage />,
+  },
+  name: "Resources",
+  icon: <VideoCameraOutlined />,
+  link: () => `/${resourcesPath}`,
+  visible: true,
+  secureRoute: true,
+  showInSidebar: false,
+  pathExtras: {
+    showSider: true,
+    showHeader: true,
+    showFooter: true,
+  },
+});
+
 const error404Path = "*";
 export const Error404Route: IElementRoute = new ElementRoute({
   routeObject: {
@@ -259,4 +278,5 @@ export const appRoutes: IElementRoute[] = [
   Error404Route,
   LogoutRoute,
   ForgotPasswordRoute,
+  ResourcesRoute,
 ];

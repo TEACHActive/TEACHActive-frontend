@@ -1,8 +1,9 @@
 import { createApi, skipToken } from "@reduxjs/toolkit/query/react";
 
-import { baseQuery } from "../util";
+import { baseQuery, getCameraFPS } from "../util";
 import { Response } from "api/types";
 import { ArmPoseStats, ArmPoseTotalsStats } from "./types";
+import { Session } from "../sessions/types";
 
 const baseEndpoint = "armPose";
 
@@ -27,6 +28,22 @@ export const armPoseApi = createApi({
       query: (sessionId: string) =>
         `${baseEndpoint}/totals/seconds/${sessionId}`,
       transformResponse: (response: Response<ArmPoseTotalsStats>) => {
+        return response.data;
+      },
+    }),
+    getArmPoseTotalsInMultipleSessions: builder.query<
+      { data: ArmPoseTotalsStats; session: Session }[] | null,
+      string[]
+    >({
+      query: (sessionIds: string[]) =>
+        `${baseEndpoint}/multiple/totals/seconds${sessionIds
+          .map(
+            (sessionId, i) => `${i == 0 ? "?" : "&"}sessionIds[]=${sessionId}`
+          )
+          .join("")}`,
+      transformResponse: (
+        response: Response<{ data: ArmPoseTotalsStats; session: Session }[]>
+      ) => {
         return response.data;
       },
     }),
@@ -66,6 +83,27 @@ export function _useGetArmPoseTotalsInSecondsSessionQuery(
     data:
       result.isSuccess && result.data
         ? new ArmPoseTotalsStats(result.data)
+        : null,
+  };
+}
+
+export function _useGetArmPoseTotalsInMultipleSessionsQuery(
+  sessionIds: string[] | typeof skipToken
+) {
+  const result = armPoseApi.useGetArmPoseTotalsInMultipleSessionsQuery(
+    sessionIds
+  );
+
+  return {
+    ...result,
+    data:
+      result.isSuccess && result.data
+        ? result.data.map((val) => {
+            return {
+              data: new ArmPoseTotalsStats(val.data),
+              session: new Session(val.session, getCameraFPS()),
+            };
+          })
         : null,
   };
 }

@@ -58,8 +58,8 @@ export function SessionSelect(props: ISessionSelectProps) {
             style={{ width: "200px" }}
             onChange={props.selectOnChange}
           >
-            {props.selectOptions.map((selectOption) => (
-              <Option value={selectOption.value}>
+            {props.selectOptions.map((selectOption, i) => (
+              <Option value={selectOption.value} key={i}>
                 <Tooltip
                   placement="right"
                   title={selectOption.dateTime.toLocaleString()}
