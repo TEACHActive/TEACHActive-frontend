@@ -10,12 +10,12 @@ export const speechApi = createApi({
   reducerPath: "speech",
   baseQuery: baseQuery,
   endpoints: (builder) => ({
-    getSpeechTotalsInSeconds: builder.query<
+    getSpeechTotals: builder.query<
       SpeechSessionTotals | null,
       { sessionId: string; minSpeakingAmp: number }
     >({
       query: (arg: { sessionId: string; minSpeakingAmp: number }) =>
-        `${baseEndpoint}/totals/seconds/${arg.sessionId}?minSpeakingAmp=${arg.minSpeakingAmp}`,
+        `${baseEndpoint}/totals/${arg.sessionId}?minSpeakingAmp=${arg.minSpeakingAmp}`,
       transformResponse: (response: Response<SpeechSessionTotals>) => {
         return response.data;
       },
@@ -37,11 +37,11 @@ export const speechApi = createApi({
   }),
 });
 
-export function _useGetSpeechTotalsInSecondsQuery(
+export function _useGetSpeechTotalsQuery(
   arg: { sessionId: string; minSpeakingAmp: number },
   skip: typeof skipToken | null
 ) {
-  const result = speechApi.useGetSpeechTotalsInSecondsQuery(
+  const result = speechApi.useGetSpeechTotalsQuery(
     skip ?? {
       sessionId: arg.sessionId,
       minSpeakingAmp: arg.minSpeakingAmp,

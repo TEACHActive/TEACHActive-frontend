@@ -9,6 +9,7 @@ import {
   DashboardOutlined,
   LineChartOutlined,
   VideoCameraOutlined,
+  PaperClipOutlined,
 } from "@ant-design/icons";
 import { RouteObject } from "react-router-dom";
 
@@ -22,7 +23,7 @@ import { Link } from "react-router-dom";
 export interface IElementRoute {
   routeObject: RouteObject; // Contains path, element, and children
   name: string; // The name of the route
-  icon: React.ReactNode; // Icon representing the path
+  icon?: React.ReactNode; // Icon representing the path
   link: (data?: any) => string; // The prefered way to get the path of a route when navigating to it (in case any params need to be passed)
   visible: boolean; // If false, path will not be used in route switch
   secureRoute: boolean; // If true, route is protected by authentication
@@ -37,7 +38,7 @@ export interface IElementRoute {
 export class ElementRoute implements IElementRoute {
   routeObject: RouteObject;
   name: string;
-  icon: React.ReactNode;
+  icon?: React.ReactNode;
   link: (data: any) => string;
   visible: boolean;
   secureRoute: boolean;
@@ -180,7 +181,6 @@ export const LogInRoute: IElementRoute = new ElementRoute({
     element: <Page.LoginPage />,
   },
   name: "Sign In",
-  icon: <VideoCameraOutlined />,
   link: () => "/login",
   visible: true,
   secureRoute: false,
@@ -199,7 +199,6 @@ export const LogoutRoute: IElementRoute = new ElementRoute({
     element: <Page.LogoutPage />,
   },
   name: "Log Out",
-  icon: <VideoCameraOutlined />,
   link: () => "/logout",
   visible: true,
   secureRoute: false,
@@ -218,7 +217,6 @@ export const ForgotPasswordRoute: IElementRoute = new ElementRoute({
     element: <Page.ForgotPasswordPage />,
   },
   name: "Forgot Password",
-  icon: <VideoCameraOutlined />,
   link: () => `/${forgotPasswordPath}`,
   visible: true,
   secureRoute: false,
@@ -237,15 +235,15 @@ export const ResourcesRoute: IElementRoute = new ElementRoute({
     element: <Page.ResourcesPage />,
   },
   name: "Resources",
-  icon: <VideoCameraOutlined />,
+  icon: <PaperClipOutlined style={{ fontSize: iconFontSize }} />,
   link: () => `/${resourcesPath}`,
   visible: true,
   secureRoute: true,
-  showInSidebar: false,
+  showInSidebar: true,
   pathExtras: {
     showSider: true,
     showHeader: true,
-    showFooter: true,
+    showFooter: false,
   },
 });
 

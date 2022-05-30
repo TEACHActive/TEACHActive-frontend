@@ -6,5 +6,9 @@ import "./resources.scss";
 export interface IResourcesPageProps {}
 
 export function ResourcesPage(props: IResourcesPageProps) {
-  return <ResourcesPagePresentational />;
+  return (
+    <div style={{ height: "100%" }}>
+      <ResourcesPagePresentational />
+    </div>
+  );
 }

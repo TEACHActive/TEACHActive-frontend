@@ -5,17 +5,31 @@ enum Speaker {
   Instructor = "instructor",
   Student = "student",
   Ambiant = "ambiant",
+  Silent = "silent",
 }
 
 export class SpeechSessionTotals {
-  [Speaker.Instructor]: number;
-  [Speaker.Student]: number;
-  [Speaker.Ambiant]: number;
+  speakerMap: {
+    [Speaker.Instructor]: number;
+    [Speaker.Student]: number;
+    [Speaker.Ambiant]: number;
+    [Speaker.Silent]: number;
+  };
+  sessionLength: number;
+  speakingTime: {
+    [Speaker.Student]: number;
+    [Speaker.Instructor]: number;
+  };
+  speakingPercent: {
+    [Speaker.Student]: number;
+    [Speaker.Instructor]: number;
+  };
 
   constructor(data: any) {
-    this[Speaker.Instructor] = data[Speaker.Instructor];
-    this[Speaker.Student] = data[Speaker.Student];
-    this[Speaker.Ambiant] = data[Speaker.Ambiant];
+    this.speakerMap = data.speakerMap;
+    this.sessionLength = data.sessionLength;
+    this.speakingTime = data.speakingTime;
+    this.speakingPercent = data.speakingPercent;
   }
 }
 

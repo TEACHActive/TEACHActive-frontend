@@ -4,7 +4,7 @@ import { skipToken } from "@reduxjs/toolkit/dist/query";
 import MetricDisplay from "../metricDisplay";
 import { selectSelectedSession } from "redux/sessionSlice";
 import BlockContent from "components/BlockContent/blockContent";
-import { _useGetSpeechTotalsInSecondsQuery } from "api/services/speech";
+import { _useGetSpeechTotalsQuery } from "api/services/speech";
 import { MetricNumberType, SessionMetricType } from "../metricDisplay.types";
 
 export interface IInstructorSpeechMetricDisplayProps {
@@ -21,7 +21,7 @@ export function InstructorSpeechMetricDisplay(
     isFetching,
     isLoading,
     // isSuccess,
-  } = _useGetSpeechTotalsInSecondsQuery(
+  } = _useGetSpeechTotalsQuery(
     { sessionId: props.sessionId || "", minSpeakingAmp: 0 },
     props.sessionId ? null : skipToken
   );
@@ -38,11 +38,13 @@ export function InstructorSpeechMetricDisplay(
       style={{ marginTop: "2em", marginBottom: "2em" }}
     >
       <MetricDisplay<MetricNumberType>
-        metric={new MetricNumberType((data?.instructor || 0) / 60)}
+        metric={
+          new MetricNumberType((data?.speakingPercent.instructor || 0) * 100)
+        }
         canEdit={false}
         trend={undefined}
         metricPrepend={"~"}
-        unit="min"
+        unit="%"
         trend_metric={undefined}
         metricType={SessionMetricType.InstructorSpeech}
         loading={isFetching || isLoading}

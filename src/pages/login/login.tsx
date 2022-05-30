@@ -86,6 +86,7 @@ export function LoginPage(props: ILoginPageProps) {
   }
 
   if (error) {
+    
     <Result
       status="500"
       title="Authentication Error"
